@@ -8,16 +8,28 @@ We recommend that you use the release notes as a guide for migrating your
 applications to this release, and the manual for complete details on a
 particular aspect of Ice.
 
+- [Changes in Ice 3.7.0 Hotfix for Xcode 9](#changes-in-ice-370-hotfix-for-xcode-9)
+  - [Objective-C Changes](#objective-c-changes)
 - [Changes in Ice 3.7.0](#changes-in-ice-370)
   - [General Changes](#general-changes)
   - [C++ Changes](#c-changes)
   - [C# Changes](#c-changes-1)
   - [Java Changes](#java-changes)
   - [JavaScript Changes](#javascript-changes)
-  - [Objective-C Changes](#objective-c-changes)
+  - [Objective-C Changes](#objective-c-changes-1)
   - [PHP Changes](#php-changes)
   - [Python Changes](#python-changes)
   - [Ruby Changes](#ruby-changes)
+
+# Changes in Ice 3.7.0 Hotfix for Xcode 9
+
+These are the changes since Ice 3.7.0 included in this release.
+
+## Objective-C Changes
+
+- Fixed the generated code to specify the __autoreleasing qualifier on
+  parameters returned by reference. Xcode 9.0 now emits a warning if this
+  qualifier is omitted.
 
 # Changes in Ice 3.7.0
 
