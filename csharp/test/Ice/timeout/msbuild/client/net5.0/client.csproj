@@ -20,6 +20,7 @@
       <SliceCompileSource>../../../Test.ice</SliceCompileSource>
     </Compile>
     <PackageReference Include="zeroc.icebuilder.msbuild" Version="5.0.6" />
+    <ProjectReference Include="..\..\..\..\..\..\src\Ice\msbuild\net5.0\ice.csproj" />
     <SliceCompile Include="../../../Test.ice" />
   </ItemGroup>
   <Choose>
@@ -28,10 +29,6 @@
         <PackageReference Include="zeroc.ice.net" Version="3.7.5" />
       </ItemGroup>
     </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="../../../../../../lib/net5.0/Ice.dll" />
-      </ItemGroup>
-    </Otherwise>
+    <Otherwise />
   </Choose>
 </Project>
