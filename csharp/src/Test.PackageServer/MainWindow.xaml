@@ -224,7 +224,7 @@
 				  HorizontalAlignment="Left"
 				  VerticalAlignment="Top">
 
-                <RichTextBox x:Name="rtRecPush"  Width="{Binding ActualWidth, ElementName=gb1}" Height="{Binding ActualHeight, ElementName=dataGrid}"
+                <RichTextBox x:Name="rtRecPush"  Width="{Binding ActualWidth, ElementName=gb1}" Height="{Binding ActualHeight, ElementName=gb1}"
 						 HorizontalAlignment="Left"
 						 VerticalAlignment="Top"
 						 HorizontalScrollBarVisibility="Auto"
@@ -242,7 +242,7 @@
 				  Header="收到信息"
 				  HorizontalAlignment="Left"
 				  VerticalAlignment="Top">
-                <RichTextBox x:Name="rtRec" Width="{Binding ActualWidth, ElementName=gb2}" Height="{Binding ActualHeight, ElementName=dataGrid}"
+                <RichTextBox x:Name="rtRec" Width="{Binding ActualWidth, ElementName=gb2}" Height="{Binding ActualHeight, ElementName=gb2}"
 						 HorizontalAlignment="Left"
 						 VerticalAlignment="Top"
 						 HorizontalScrollBarVisibility="Auto"
