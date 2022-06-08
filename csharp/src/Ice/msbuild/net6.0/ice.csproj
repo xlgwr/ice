@@ -131,7 +131,6 @@
   <ItemGroup>
       <PackageReference Include="zeroc.icebuilder.msbuild" Version="5.0.9" PrivateAssets="All" />
       <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-      <PackageReference Include="zeroc.ice.net" Version="3.7.7" />
   </ItemGroup>
   <Import Project="$(MSBuildThisFileDirectory)../../../../msbuild/ice.sign.targets" />
 </Project>
