@@ -57,5 +57,18 @@ namespace SlmCommunicator
         {
             return paging.pSize * (paging.pIndex - 1);
         }
+        /// <summary>
+        /// 把一个基本类型转成2维数组
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string[][] MakeStringArray(this object obj)
+        {
+            string[][] newData = new string[1][];
+            string[] tmp = new string[1];
+            tmp[0] = obj.ToString();
+            newData[0] = tmp;
+            return newData;
+        }
     }
 }

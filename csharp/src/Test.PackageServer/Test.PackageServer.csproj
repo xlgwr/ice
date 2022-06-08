@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<Version>6.0.0.0</Version>
+		<ApplicationIcon>main.ico</ApplicationIcon>
+		<PackageIcon>main.ico</PackageIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="main.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ICE.Communicator.ServerAndClient\ICE.Communicator.ServerAndClient.csproj" />
+		<ProjectReference Include="..\Solomon.Logger\Solomon.Logger.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="main.ico">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+
+</Project>
