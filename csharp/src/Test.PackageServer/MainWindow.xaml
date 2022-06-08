@@ -10,8 +10,13 @@
 		Width="1024">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />           
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid>
         <Label Content="服务IP"
 			   HorizontalAlignment="Left"
 			   Margin="7,8,0,0"
@@ -52,56 +57,6 @@
 				Margin="216,15,0,0"
 				Height="50"
 				Click="Button_Click_1" />
-        <GroupBox x:Name="gb1"
-				  Header="推送信息"
-				  HorizontalAlignment="Left"
-				  Height="340"
-				  Margin="0,69,0,0"
-				  VerticalAlignment="Top"
-				  Width="470">
-            <RichTextBox x:Name="rtRecPush"
-						 HorizontalAlignment="Left"
-						 Height="316"
-						 VerticalAlignment="Top"
-						 Width="450"
-						 Margin="0,0,-2,0"
-						 HorizontalScrollBarVisibility="Auto"
-						 VerticalScrollBarVisibility="Auto"
-						 ScrollViewer.CanContentScroll="True"
-						 RenderTransformOrigin="0.5,0.5">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="RichTextBox" />
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-
-        </GroupBox>
-        <GroupBox x:Name="gb2"
-				  Header="收到信息"
-				  HorizontalAlignment="Left"
-				  Height="340"
-				  Margin="451,69,0,0"
-				  VerticalAlignment="Top"
-				  Width="528">
-            <RichTextBox x:Name="rtRec"
-						 HorizontalAlignment="Left"
-						 Height="316"
-						 VerticalAlignment="Top"
-						 Width="517"
-						 Margin="0,0,-1,0"
-						 HorizontalScrollBarVisibility="Auto"
-						 VerticalScrollBarVisibility="Auto"
-						 ScrollViewer.CanContentScroll="True"
-						 RenderTransformOrigin="0.5,0.5">
-                <FlowDocument>
-                    <Paragraph>
-                        <Run Text="RichTextBox" />
-                    </Paragraph>
-                </FlowDocument>
-            </RichTextBox>
-
-        </GroupBox>
         <Button x:Name="btnClear"
 				Content="清空"
 				HorizontalAlignment="Left"
@@ -252,5 +207,57 @@
             Margin="604,14,0,0"
             Height="50"
             Click="btnSendPush_Cache_Click" />-->
+
+
+        </Grid>
+        <Grid Grid.Row="1" Name="dataGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <GroupBox x:Name="gb1" Grid.Column="0"
+				  Header="推送信息"
+				  HorizontalAlignment="Left"
+				  VerticalAlignment="Top">
+
+                <RichTextBox x:Name="rtRecPush"  Width="{Binding ActualWidth, ElementName=gb1}" Height="{Binding ActualHeight, ElementName=dataGrid}"
+						 HorizontalAlignment="Left"
+						 VerticalAlignment="Top"
+						 HorizontalScrollBarVisibility="Auto"
+						 VerticalScrollBarVisibility="Auto"
+						 ScrollViewer.CanContentScroll="True"
+						 RenderTransformOrigin="0.5,0.5">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="RichTextBox" />
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox> 
+            </GroupBox>
+            <GroupBox x:Name="gb2" Grid.Column="1" 
+				  Header="收到信息"
+				  HorizontalAlignment="Left"
+				  VerticalAlignment="Top">
+                <RichTextBox x:Name="rtRec" Width="{Binding ActualWidth, ElementName=gb2}" Height="{Binding ActualHeight, ElementName=dataGrid}"
+						 HorizontalAlignment="Left"
+						 VerticalAlignment="Top"
+						 HorizontalScrollBarVisibility="Auto"
+						 VerticalScrollBarVisibility="Auto"
+						 ScrollViewer.CanContentScroll="True"
+						 RenderTransformOrigin="0.5,0.5">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="RichTextBox" />
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+
+            </GroupBox>
+        </Grid>
     </Grid>
+   
 </Window>

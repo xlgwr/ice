@@ -118,7 +118,7 @@ namespace Test.PackageServer
             cInfo.ConnectionId = info.ConnectionId;
             cInfo.ClientType = EnumHelper.GetValue<ClientType>(info.ClientType);
             //发送消息
-            App._ActionAll.ClientConnectedStateEvent(isAdd, cInfo);
+            App._ActionAll.ClientConnectedStateEvent?.Invoke(isAdd, cInfo);
             //修改列表
             sessionChange(isAdd, info.ConnectionId);
 
@@ -220,14 +220,14 @@ namespace Test.PackageServer
             short type = 1;
             if (state == ConnectState.Connect_Fail)
             {
-                App._ActionAll.OnFrontServerStateEvent(false);
+                App._ActionAll.OnFrontServerStateEvent?.Invoke(false);
                 type = 2;
                 _isStart = false;
             }
             else
             {
                 _isStart = true;
-                App._ActionAll.OnFrontServerStateEvent(true);
+                App._ActionAll.OnFrontServerStateEvent?.Invoke(true);
                 msg = "交易服务已开启...";
             }
             Console.WriteLine(msg);

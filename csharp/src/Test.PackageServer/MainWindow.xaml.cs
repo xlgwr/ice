@@ -61,9 +61,6 @@ namespace Test.PackageServer
 
             initPushText();
 
-            this.SizeChanged += MainWindow_SizeChanged;
-            this.StateChanged += MainWindow_StateChanged;
-
             BatchPushDemoHelper.GetInstance().StartThread();
             this.Closing += MainWindow_Closing;
 
@@ -101,41 +98,7 @@ namespace Test.PackageServer
         {
 
             BatchPushDemoHelper.GetInstance().Dispose(); 
-        }
-
-        private void MainWindow_StateChanged(object sender, EventArgs e)
-        {
-            initWidth();
-        }
-
-        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            initWidth();
-        }
-        private void initWidth()
-        {
-            try
-            {
-                if (this.WindowState == WindowState.Maximized)
-                {
-                    this.gb1.Height = this.ActualHeight - 130;
-                    this.gb2.Height = this.ActualHeight - 130;
-                    this.gb2.Width = this.ActualWidth - 38;
-                }
-                else
-                {
-                    this.gb1.Height = this.Height - 130;
-                    this.gb2.Height = this.Height - 130;
-                    this.gb2.Width = this.Width - 38;
-                }
-                rtRec.Width = this.gb2.Width - 10;
-                rtRec.Height = this.gb2.Height - 30;
-                rtRecPush.Height = this.gb1.Height - 30;
-            }
-            catch (Exception ex)
-            {
-            }
-        }
+        }       
         public void init()
         { 
 
