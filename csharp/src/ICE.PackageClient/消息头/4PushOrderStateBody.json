@@ -1,0 +1,29 @@
+{
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 1,
+  "ServiceNo": 930001,
+  "Head": [],
+  "DataBody": [],
+  "PushOrderStateBody": {
+    "OrderNo": 0,
+    "OrderState": 0,
+    "OrderJourNo": "1",
+    "UpdateDate": 0,
+    "UpdateTime": 0,
+    "ErrNo": 0,
+    "ErrInfo": "",
+    "OrderPrice": 0.0,
+    "OrderVol": 0,
+    "TriggerPrice": 0.0,
+    "ExchangeOrderNo": "",
+    "ExchangeDateTime": "",
+    "MatchVol": 0,
+    "BrokerOrderNo": "",
+    "BrokerOrderJourNo": "100",
+    "OrderType": 0,
+    "OrderFrom": 0,
+    "Remarks": "",
+    "CurMatchVol": 0,
+    "Action": 0
+  }
+}

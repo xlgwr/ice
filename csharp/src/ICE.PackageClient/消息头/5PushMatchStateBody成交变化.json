@@ -1,0 +1,29 @@
+{
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 1,
+  "ServiceNo": 930002,
+  "Head": [],
+  "DataBody": [],
+  "PushMatchStateBody": {
+    "AccountNo": "110",
+    "OrderNo": 0,
+    "TradeDate": 0,
+    "TradeNo": "",
+    "TradeTime": 0,
+    "TradePrice": 0.0,
+    "TradeVol": 0,
+    "ProxyId": 0,
+    "BrokerTradeNo": "",
+    "ExchangeTradeNo": "",
+    "OperatorNo": "",
+    "Info1": "",
+    "Info2": "",
+    "Info3": "",
+    "OrderInsertType": 0,
+    "OrderFrom": 0,
+    "CommodityCode": "",
+    "ContractCode": "",
+    "BuySell": ""
+
+  }
+}

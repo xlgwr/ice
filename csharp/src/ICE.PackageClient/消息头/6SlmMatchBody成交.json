@@ -1,0 +1,39 @@
+{
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 1,
+  "ServiceNo": 920002,
+  "Head": [],
+  "DataBody": [],
+  "SlmMatchBody": [
+    {
+      "InitDate": 0,
+      "AccountNo": "1134234",
+      "OrderDate": 0,
+      "OrderTime": 0,
+      "OrderNo": 0,
+      "TradeDate": 0,
+      "TradeNo": 0,
+      "TradeTime": 0,
+      "TradePrice": 0.0,
+      "TradeVol": 0,
+      "CurrencyCode": "",
+      "IsTplusone": 0,
+      "OpenClose": 0,
+      "ProxyId": 0,
+      "BrokerTradeNo": "",
+      "ExchangeTradeNo": "",
+      "ProductType": 0,
+      "ExchangeCode": "",
+      "CommodityCode": "",
+      "ContractCode": "",
+      "BuySell": 0,
+      "TradeFee": 0.0,
+      "OperatorNo": "",
+      "Info1": "",
+      "Info2": "",
+      "Info3": "",
+      "OrderInsertType": 0,
+      "OrderFrom": 0
+    }
+  ]
+}

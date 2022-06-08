@@ -1,0 +1,35 @@
+{
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 3,
+  "PackageData": {
+    "ServiceNo": 38000021,
+    "MsgId": "0",
+    
+    "Head": [],
+    "DataBody": {
+      "1": [ "1", "1", "a" ],
+      "2": [ "2", "2", "b" ]
+    }
+  },
+  "Positions": [
+    {
+      "MsgNum": 0,
+      "InitDate": 20220520,
+      "OpenNo": 1001,
+      "AccountNo": "5412",
+      "OpenDate": 20220520,
+      "OpenPrice": 90.00000000,
+      "OpenNum": 3,
+      "CurrencyCode": "USD",
+      "ProxyId": 1001,
+      "ProductType": "0",
+      "ExchangeCode": "CBOT",
+      "CommodityCode": "C",
+      "ContractCode": "1907",
+      "BuySell": "0",
+      "ExpiryDate": 20190712,
+      "LastTradeDate": 20190712,
+      "MarketValue": 0.00000000
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 3,
+  "PackageData": {
+    "ServiceNo": 380000016,
+    "MsgId": "0",
+    
+    "Head": [],
+    "DataBody": {
+      "1": [ "1", "1", "a" ],
+      "2": [ "2", "2", "b" ]
+    }
+  },
+  "Trades": [
+    {
+      "MsgNum": 0,
+      "InitDate": 20220520,
+      "OrderNo": 12021110300000000,
+      "TradeDate": 20220520,
+      "TradeNo": 12021110300000000,
+      "AccountNo": "2008040008",
+      "OrderDate": 20211103,
+      "OrderTime": 191818,
+      "TradeTime": 191818,
+      "TradePrice": -207.5,
+      "TradeVol": 35,
+      "CurrencyCode": "USD",
+      "IsTplusone": 0,
+      "OpenClose": 1,
+      "ProxyId": 1001,
+      "BrokerTradeNo": "Simulation-8c0c6b6f-243c-41f6-95a2-70f0db764a36",
+      "ExchangeTradeNo": "",
+      "ProductType": 0,
+      "ExchangeCode": "COMEX",
+      "CommodityCode": "GC",
+      "ContractCode": "2112",
+      "BuySell": 1,
+      "TradeFee": 349.999969,
+      "OperatorNo": "7777",
+      "Info1": "拆分成交",
+      "Info2": "",
+      "Info3": "USD",
+      "OrderInsertType": 0,
+      "OrderFrom": "0"
+    }
+  ]
+}

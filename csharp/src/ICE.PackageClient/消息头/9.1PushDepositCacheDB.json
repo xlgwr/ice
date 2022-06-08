@@ -1,0 +1,30 @@
+{
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 3,
+  "PackageData": {
+    "ServiceNo": 38000032,
+    "MsgId": "0",
+    "Head": [],
+    "DataBody": {
+      "1": [ "1", "1", "a" ],
+      "2": [ "2", "2", "b" ]
+    }
+  },
+  "Deposits": [
+    {
+      "MsgNum": 0,
+      "InitDate": 20220520,
+      "BusinessNo": "0",
+      "BusinessFlag": 1,
+      "OccurTime": 2201,
+      "OperatorNo": "7777",
+      "AccountNo": "1120",
+      "CurrencyCode": "usd",
+      "OccurBalance": 110.20,
+      "Remark": "test",
+      "AuditFlag": 1,
+      "OccurDate": 20220426,
+      "TplusFlag": 1
+    }
+  ]
+}

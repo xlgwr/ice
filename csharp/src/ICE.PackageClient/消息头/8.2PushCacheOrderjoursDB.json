@@ -1,0 +1,58 @@
+{
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 3,
+  "PackageData": {
+    "ServiceNo": 38000006,
+    "MsgId": "0",
+    
+    "Head": [],
+    "DataBody": {
+      "1": [ "1", "1", "a" ],
+      "2": [ "2", "2", "b" ]
+    }
+  },
+  "Orderjours": [
+    {
+      "MsgNum": 0,
+      "InitDate": 20220520,
+      "OrderDate": 20220520,
+      "OrderNo": 12021110300000000,
+      "RouterNo": "006",
+      "OperatorNo": "7777",
+      "OrderPerson": "7777",
+      "UpdatePerson": "",
+      "ProxyId": 1001,
+      "AccountNo": "2008040003",
+      "ProductType": 0,
+      "ExchangeCode": "COMEX",
+      "CommodityCode": "GC",
+      "ContractCode": "2112",
+      "CallPut": 3,
+      "StrikePrice": "",
+      "BuySell": 0,
+      "OrderPrice": 0.0,
+      "OrderNum": 1,
+      "OrderType": 1,
+      "OrderLife": 0,
+      "OrderFrom": "0",
+      "TriggerPrice": 0.0,
+      "OrderStatus": 5,
+      "FilledNum": 1,
+      "OrderTime": 110305,
+      "UpdateDate": 20211103,
+      "UpdateTime": 110305,
+      "ExchangeDate": 0,
+      "ExchangeTime": 0,
+      "OrderJourNo": 2,
+      "BrokerOrderNo": "",
+      "BrokerOrderJourNo": "",
+      "ExchangeOrderNo": "99ffdd24-19cb-463a-bb06-05affe9eebc6",
+      "ErrorNo": 0,
+      "ErrorInfo": "Simulation-成交委托状态返回PushOrderStateRow",
+      "RemarkCus": "",
+      "InfoS1": "",
+      "InfoS2": "FD110,192.168.94.91,F8:B4:6A:B0:6D:F4,;",
+      "Action": "49"
+    }
+  ]
+}

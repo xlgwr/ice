@@ -1,0 +1,33 @@
+{ 
+  //0:old 消息类,1:批量类,2:内存 通用,3:内存 交易
+  "MType": 1,
+  "ServiceNo": 920001,
+  "Head": [],
+  "DataBody": [],
+  "SendOrderStatusBody": {
+    "AccountNo": "111010",
+    "OperatorNo": "",
+    "OrderNo": 0,
+    "OrderState": 0,
+    "OrderJourNo": 0,
+    "UpdateDate": 0,
+    "UpdateTime": 0,
+    "ErrorNo": 0,
+    "ErrorInfo": "",
+    "OrderPrice": 0.0,
+    "OrderNum": 0,
+    "TriggerPrice": 0.0,
+    "ExchangeDate": 0,
+    "ExchangeTime": 0,
+    "ExchangeOrderNo": "",
+    "FilledNum": 0,
+    "BrokerOrderNo": "",
+    "BrokerOrderJourNo": "",
+    "InfoS1": "",
+    "InfoS2": "",
+    "InitDate": 0,
+    "OrderType": 0,
+    "OrderFrom": 0,
+    "Remarks": ""
+  }
+}

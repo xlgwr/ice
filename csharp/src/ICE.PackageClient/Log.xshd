@@ -1,0 +1,52 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="Log" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" />
+  <Color name="String" foreground="Blue" />
+  <Color name="Error" foreground="Red" />
+  <Color name="Red" foreground="Red" />
+	
+	<!-- This is the main ruleset. -->
+	<RuleSet>
+    <Span color="Error" begin="Error" />
+    <Span color="Comment" begin="//" />
+		<Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+		
+		<Span color="String">
+			<Begin>"</Begin>
+			<End>"</End>
+			<RuleSet>
+				<!-- nested span for escape sequences -->
+				<Span begin="\\" end="." />
+			</RuleSet>
+		</Span>
+		
+		<Keywords fontWeight="bold" foreground="LightSlateGray">
+      <Word>-></Word>
+      <Word>if</Word>
+			<Word>else</Word>
+			<!-- ... -->
+		</Keywords>
+		
+		<Keywords fontWeight="bold" fontStyle="italic" foreground="Red">
+      <Word>Error</Word>
+		</Keywords>
+
+    <Keywords fontWeight="bold" fontStyle="italic" foreground="Yellow">
+      <Word>Warn</Word>
+    </Keywords>
+    
+		<!-- Error -->
+    <Rule foreground="Red"  fontWeight="bold">
+      [eE]rror
+      |
+      [Pp]ort:\d+
+      |
+      [Cc]onfig:
+    </Rule>
+    
+    <!-- Digits -->
+    <Rule foreground="Red"  fontWeight="bold">
+      \d+=
+    </Rule>
+	</RuleSet>
+</SyntaxDefinition>
