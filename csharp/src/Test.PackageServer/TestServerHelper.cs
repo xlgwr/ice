@@ -174,7 +174,7 @@ namespace Test.PackageServer
         #endregion
 
 
-        public void Init(string ip, string port)
+        public void Init(string ip, string port, bool iszip = false)
         {
             if (_isStart)
             {
@@ -195,7 +195,7 @@ namespace Test.PackageServer
             _communicator.RegSendPackageCacheDBEvent(onSendPackageCacheDB);
             _communicator.RegSendPackageCacheTradeEvent(onSendPackageCacheTrade);
 
-            _communicator.Init(ip, port);
+            _communicator.Init(ip, port, 60, iszip);
         }
 
 

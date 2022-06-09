@@ -10,38 +10,38 @@
 		Width="1024">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />           
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="80"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid>
-        <Label Content="服务IP"
+            <Label Content="服务IP"
 			   HorizontalAlignment="Left"
 			   Margin="7,8,0,0"
 			   VerticalAlignment="Top"
 			   Width="54" />
-        <TextBox x:Name="txtIP"
+            <TextBox x:Name="txtIP"
 				 HorizontalAlignment="Left"
 				 Margin="49,13,0,0"
 				 TextWrapping="Wrap"
 				 Text="0.0.0.0"
 				 VerticalAlignment="Top"
 				 Width="106" />
-        <Label Content="端口"
+            <Label Content="端口"
 			   HorizontalAlignment="Left"
 			   Margin="7,39,0,0"
 			   VerticalAlignment="Top"
 			   Width="54" />
-        <TextBox x:Name="txtPort"
+            <TextBox x:Name="txtPort"
 				 HorizontalAlignment="Left"
 				 Margin="49,44,0,0"
 				 TextWrapping="Wrap"
 				 Text="15001"
 				 VerticalAlignment="Top"
 				 Width="106" />
-        <Button x:Name="btnConnect"
+            <Button x:Name="btnConnect"
 				Content="启动"
 				HorizontalAlignment="Left"
 				VerticalAlignment="Top"
@@ -49,7 +49,7 @@
 				Margin="163,15,0,0"
 				Height="50"
 				Click="Button_Click" />
-        <Button x:Name="btnDisconnect"
+            <Button x:Name="btnDisconnect"
 				Content="断开"
 				HorizontalAlignment="Left"
 				VerticalAlignment="Top"
@@ -57,7 +57,7 @@
 				Margin="216,15,0,0"
 				Height="50"
 				Click="Button_Click_1" />
-        <Button x:Name="btnClear"
+            <Button x:Name="btnClear"
 				Content="清空"
 				HorizontalAlignment="Left"
 				VerticalAlignment="Top"
@@ -65,7 +65,7 @@
 				Margin="672,15,0,0"
 				Height="50"
 				Click="btnClear_Click" />
-        <Button x:Name="btnSendPush"
+            <Button x:Name="btnSendPush"
 				Content="推送(旧)"
 				HorizontalAlignment="Left"
 				VerticalAlignment="Top"
@@ -73,7 +73,7 @@
 				Margin="502,15,0,0"
 				Height="50"
 				Click="btnSendPush_Click" />
-        <Button x:Name="btnSendPush_Stop"
+            <Button x:Name="btnSendPush_Stop"
 				Content="停止推送"
                   FontSize="12"
 				HorizontalAlignment="Left"
@@ -82,43 +82,43 @@
 				Margin="615,15,0,0"
 				Height="50"
 				Click="btnSendPush_Stop_Click" />
-        <Label Content="推送频率ms"
+            <Label Content="推送频率ms"
 			   HorizontalAlignment="Left"
 			   Margin="316,16,0,0"
 			   VerticalAlignment="Top"
 			   Width="78" />
-        <TextBox x:Name="txtPushTime"
+            <TextBox x:Name="txtPushTime"
 				 HorizontalAlignment="Left"
 				 Margin="321,44,0,0"
 				 TextWrapping="Wrap"
 				 Text="1000"
 				 VerticalAlignment="Top"
 				 Width="62" />
-        <Label Content="客户Type"
+            <Label Content="客户Type"
 			   HorizontalAlignment="Left"
 			   Margin="262,15,0,0"
 			   VerticalAlignment="Top"
 			   Width="61" />
-        <TextBox x:Name="txtPushType"
+            <TextBox x:Name="txtPushType"
 				 HorizontalAlignment="Left"
 				 Margin="264,44,0,0"
 				 TextWrapping="Wrap"
 				 Text="1" ToolTip="1,2,3"
 				 VerticalAlignment="Top"
 				 Width="52" />
-        <Label Content="合包数"
+            <Label Content="合包数"
 			   HorizontalAlignment="Left"
 			   Margin="388,16,0,0"
 			   VerticalAlignment="Top"
 			   Width="54" />
-        <TextBox x:Name="DataSize"
+            <TextBox x:Name="DataSize"
 				 HorizontalAlignment="Left"
 				 Margin="388,44,0,0"
 				 TextWrapping="Wrap"
 				 Text="3"
 				 VerticalAlignment="Top"
 				 Width="47" />
-        <Button x:Name="btnSendPush_CopyList"
+            <Button x:Name="btnSendPush_CopyList"
             Content="推送(合包)"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -126,70 +126,71 @@
             Margin="557,15,0,0"
             Height="50"
             Click="btnSendPush_CopyList_Click" />
-        <CheckBox x:Name="isShowMsg" Content="是否显示信息内容" Margin="734,15,0,0" Height="25" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Click="isShowMsg_Click"></CheckBox>
-        <CheckBox x:Name="isPushAsync" Content="是否异步推送合包" Margin="734,33,0,0" Height="25" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Click="isPushAsync_Click"/>
-        <CheckBox x:Name="isPushOver" Content="是否转推送合包" Margin="734,53,0,0" Height="25" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Click="isPushOver_Click"/>
-        <Label Content="路由IP"
+            <CheckBox x:Name="isShowMsg" Content="是否显示信息内容" Margin="734,5,0,0"  Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Click="isShowMsg_Click"></CheckBox>
+            <CheckBox x:Name="isPushAsync" Content="是否异步推送合包" Margin="734,23,0,0"  Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Click="isPushAsync_Click"/>
+            <CheckBox x:Name="isPushOver" Content="是否转推送合包" Margin="734,43,0,0" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" Click="isPushOver_Click"/>
+            <CheckBox x:Name="ckZip" Content="是否ICE zip压缩"  Margin="734,63,0,0"  Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <Label Content="路由IP"
             HorizontalAlignment="Left"
             Margin="864,25,0,0"
             VerticalAlignment="Top" Visibility="Hidden"
             Width="44" />
-        <TextBox x:Name="txtRoute_IP"
+            <TextBox x:Name="txtRoute_IP"
             HorizontalAlignment="Left"
             Margin="911,30,0,0"
             TextWrapping="Wrap"
             Text="127.0.0.1"
             VerticalAlignment="Top" Visibility="Hidden"
             Width="95" />
-        <Label Content="端口"
+            <Label Content="端口"
             HorizontalAlignment="Left"
             Margin="874,47,0,0"
             VerticalAlignment="Top" Visibility="Hidden"
             Width="34" />
-        <TextBox x:Name="txtRoute_Port"
+            <TextBox x:Name="txtRoute_Port"
             HorizontalAlignment="Left"
             Margin="911,51,0,0"
             TextWrapping="Wrap"
             Text="20001"
             VerticalAlignment="Top" Visibility="Hidden"
             Width="95" />
-        <Label Content="路由单元"
+            <Label Content="路由单元"
             HorizontalAlignment="Left"
             Margin="852,2,0,0"
             VerticalAlignment="Top" Visibility="Hidden"
             Width="61" />
-        <TextBox x:Name="txtRouteName"
+            <TextBox x:Name="txtRouteName"
             HorizontalAlignment="Left"
             Margin="911,7,0,0"
             TextWrapping="Wrap"
             Text="A1"
             VerticalAlignment="Top" Visibility="Hidden"
             Width="95" />
-        <Label Content="主备ID"
+            <Label Content="主备ID"
             HorizontalAlignment="Left" ToolTip="内存服务器"
             Margin="852,2,0,0"
             VerticalAlignment="Top" 
             Width="61" />
-        <TextBox x:Name="txtActiveAndsandby"
+            <TextBox x:Name="txtActiveAndsandby"
             HorizontalAlignment="Left"
             Margin="911,7,0,0"
             TextWrapping="Wrap" ToolTip="clientid为主备"
             Text="C1,C2"
             VerticalAlignment="Top" 
             Width="95" />
-        <Label Content="交主备ID"
+            <Label Content="交主备ID"
             HorizontalAlignment="Left" ToolTip="交易服务器"
             Margin="849,37,0,0"
             VerticalAlignment="Top" 
             Width="59" />
-        <TextBox x:Name="txtActiveAndsandbyTrade"
+            <TextBox x:Name="txtActiveAndsandbyTrade"
             HorizontalAlignment="Left"
             Margin="911,41,0,0"
             TextWrapping="Wrap" ToolTip="clientid为主备"
             Text="T1,T2"
             VerticalAlignment="Top" 
             Width="95" Height="18" />
-        <Button x:Name="btnSendPush_Copy"
+            <Button x:Name="btnSendPush_Copy"
             Content="推送(All)"  Background="LightBlue" ToolTip="MType: 0:old 消息类,1:批量类,2:内存 通用,3:内存 交易 " 
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -198,7 +199,7 @@
             Height="50"
             Click="btnSendPush_Copy_Click" />
 
-        <!--<Button x:Name="btnSendPush_Cache"
+            <!--<Button x:Name="btnSendPush_Cache"
             Content="推送Cache包"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -236,7 +237,7 @@
                             <Run Text="RichTextBox" />
                         </Paragraph>
                     </FlowDocument>
-                </RichTextBox> 
+                </RichTextBox>
             </GroupBox>
             <GroupBox x:Name="gb2" Grid.Column="1" 
 				  Header="收到信息"
@@ -259,5 +260,5 @@
             </GroupBox>
         </Grid>
     </Grid>
-   
+
 </Window>

@@ -21,6 +21,7 @@ namespace SlmCommunicator.Server
         private string _port = string.Empty;
         private bool _isReady = false;
         public int ACM_TIME_OUT = 60; //60秒 心跳间隔
+        public bool _iszip = false;
         #region ssl
         private bool _enableSSL = false;
         private string _sslPath = string.Empty;
@@ -115,9 +116,10 @@ namespace SlmCommunicator.Server
 
                 _communicator = Ice.Util.initialize(initData);
                 string needZip = string.Empty;
-                if (System.Configuration.ConfigurationManager.AppSettings["NeedZip"] == "1")
+                if (System.Configuration.ConfigurationManager.AppSettings["NeedZip"] == "1" || _iszip)
                 {
                     needZip = " -z";
+                    _iszip = true;
                 }
                 endPointStr = string.Format("tcp -h {0} -p {1}{2}", _ip, _port, needZip);
                 if (_enableSSL) //如果启用SSL
@@ -150,10 +152,11 @@ namespace SlmCommunicator.Server
         #endregion
 
         #region 公有方法
-        public int Init(string ip, string port)
+        public int Init(string ip, string port, bool iszip = false)
         {
             _ip = ip;
             _port = port;
+            _iszip = iszip;
             Thread initThread = new Thread(workThread);
             initThread.IsBackground = true;
             initThread.Name = "initIceThread";
@@ -196,7 +199,7 @@ namespace SlmCommunicator.Server
         }
         public string GetIPStr()
         {
-            return $"{_ip}:{_port} ACM_TIME_OUT：{ACM_TIME_OUT}";
+            return $"{_ip}:{_port} ACM_TIME_OUT：{ACM_TIME_OUT},_iszip:{_iszip}";
         }
         //public byte[] readByteSeq(SlmOrderRow requestPackageOrderLog)
         //{

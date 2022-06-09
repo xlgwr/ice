@@ -97,10 +97,10 @@ namespace Test.PackageServer
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
 
-            BatchPushDemoHelper.GetInstance().Dispose(); 
-        }       
+            BatchPushDemoHelper.GetInstance().Dispose();
+        }
         public void init()
-        { 
+        {
 
             //启动推送线程
             FrontPushHelper.GetInstance().StartThread();
@@ -108,11 +108,12 @@ namespace Test.PackageServer
             //连接路由
             //connectRoute(txtRoute_IP.Text, txtRoute_Port.Text, txtRouteName.Text);
 
+            bool iszip = ckZip.IsChecked.GetValueOrDefault();
             //启动
-            startTradeService(txtIP.Text.Trim(), txtPort.Text.Trim());
+            startTradeService(txtIP.Text.Trim(), txtPort.Text.Trim(), iszip);
         }
 
-        private void startTradeService(string ip = "0.0.0.0", string port = "10000")
+        private void startTradeService(string ip = "0.0.0.0", string port = "10000", bool iszip = false)
         {
             //启动交易服务 
             //初始化server
@@ -125,7 +126,7 @@ namespace Test.PackageServer
             {
                 AddClientType(clienttype, isadd);
             };
-            TestServerHelper.GetInstance().Init(ip, port);
+            TestServerHelper.GetInstance().Init(ip, port, iszip);
             _startServer = true;
         }
 
@@ -170,7 +171,7 @@ namespace Test.PackageServer
             }));
         }
         #endregion
-        public void changeNotice(string msg,short type)
+        public void changeNotice(string msg, short type)
         {
             changeNotice(msg);
         }
