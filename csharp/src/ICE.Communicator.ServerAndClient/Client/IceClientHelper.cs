@@ -648,18 +648,24 @@ namespace SlmCommunicator.Client
             return 0;
         }
 
-        public void Close()
+        public async Task Close()
         {
             try
             {
                 _stopConnect = true;
+                ConnectionClose connectionClose = ConnectionClose.Forcefully;
 
                 if (_server != null)
                 {
                     try
                     {
-                        _server.ice_ping();
-                        _server.ice_getConnection().close(ConnectionClose.Gracefully);
+                        var dd = _server.ice_pingAsync(_server.ice_getContext());
+                        await dd.WaitAsync(new TimeSpan(0, 0, 2));
+                        if (dd.IsCompletedSuccessfully)
+                        {
+                            connectionClose = ConnectionClose.Gracefully;
+                        }
+                        _server.ice_getConnection().close(connectionClose);
                     }
                     catch (System.Exception ex)
                     {
@@ -672,8 +678,13 @@ namespace SlmCommunicator.Client
                 {
                     try
                     {
-                        _serverOne.ice_ping();
-                        _serverOne.ice_getConnection().close(ConnectionClose.Gracefully);
+                        var dd = _serverOne.ice_pingAsync(_serverOne.ice_getContext());
+                        await dd.WaitAsync(new TimeSpan(0, 0, 2));
+                        if (dd.IsCompletedSuccessfully)
+                        {
+                            connectionClose = ConnectionClose.Gracefully;
+                        }
+                        _serverOne.ice_getConnection().close(connectionClose);
                     }
                     catch (System.Exception ex)
                     {

@@ -148,13 +148,13 @@ namespace SlmCommunicator.Client
         /// <summary>
         /// 释放资源
         /// </summary>
-        public void Dispose()
+        public async void Dispose()
         {
             if (_ice != null)
             {
                 _ice.SetNormalClose();
                 //关闭ice
-                _ice.Close();
+                await _ice.Close();
 
                 _ice = null;
             }
@@ -864,7 +864,7 @@ namespace SlmCommunicator.Client
             return result;
         }
         #endregion
-        
+
 
         /// <summary>
         /// 注册收包回调事件
