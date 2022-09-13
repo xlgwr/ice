@@ -109,7 +109,7 @@ namespace SlmCommunicator.Server
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        public int Init(string ip, string port, int ACM_TIME_OUT = 60)
+        public int Init(string ip, string port, int ACM_TIME_OUT = 60, bool iszip = false)
         {
             //启动ice连接
             IceServerHelper.GetInstance().ACM_TIME_OUT = ACM_TIME_OUT;
@@ -118,7 +118,7 @@ namespace SlmCommunicator.Server
             RegInitDefaultEven();
 
             //init
-            IceServerHelper.GetInstance().Init(ip, port);
+            IceServerHelper.GetInstance().Init(ip, port, iszip);
 
             return 0;
         }

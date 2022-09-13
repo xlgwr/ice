@@ -22,6 +22,7 @@ namespace SlmCommunicator.Server
         private bool _isReady = false;
         public int ACM_TIME_OUT = 60; //60秒 心跳间隔
         public string needZip = string.Empty;
+        public bool _iszip = false;
         #region ssl
         private bool _enableSSL = false;
         private string _sslPath = string.Empty;
@@ -116,7 +117,7 @@ namespace SlmCommunicator.Server
 
                 _communicator = Ice.Util.initialize(initData);
                 needZip = string.Empty;
-                if (System.Configuration.ConfigurationManager.AppSettings["NeedZip"] == "1")
+                if (System.Configuration.ConfigurationManager.AppSettings["NeedZip"] == "1" || _iszip)
                 {
                     needZip = " -z";
                 }
@@ -151,10 +152,11 @@ namespace SlmCommunicator.Server
         #endregion
 
         #region 公有方法
-        public int Init(string ip, string port)
+        public int Init(string ip, string port, bool iszip = false)
         {
             _ip = ip;
             _port = port;
+            _iszip = iszip;
             Thread initThread = new Thread(workThread);
             initThread.IsBackground = true;
             initThread.Name = "initIceThread";
