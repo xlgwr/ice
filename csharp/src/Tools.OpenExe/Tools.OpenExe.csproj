@@ -274,4 +274,15 @@
 		<Delete Files="@(OtherFiles)" />
 		<RemoveDir Directories="$(OutputPath)\ca-ES\;$(OutputPath)\cs-CZ\;$(OutputPath)\cs-CZ\;$(OutputPath)\de\;$(OutputPath)\es\;$(OutputPath)\fr\;$(OutputPath)\hu\;$(OutputPath)\it\;$(OutputPath)\ja\;$(OutputPath)\ja\;$(OutputPath)\ko\;$(OutputPath)\nl-BE\;$(OutputPath)\pl\;$(OutputPath)\pt\;$(OutputPath)\ro\;$(OutputPath)\ru\;$(OutputPath)\sv\;$(OutputPath)\zh-Hant\;$(OutputPath)\tr\;$(OutputPath)\pt-BR\;$(OutputPath)\cs\;$(OutputPath)\zh-Hans\" />
 	</Target>
+
+	<Target Condition="'$(TargetFramework)' == 'net6.0-windows'" Name="DeleteOtherFileNet6" AfterTargets="AfterBuild">
+
+		<Message Text="Project File Name = $(MSBuildProjectFile)" />
+		<Message Text="Project Extension = $(MSBuildProjectExtension)" />
+
+		<ItemGroup>
+			<OtherFiles Include="$(OutputPath)\System.*;" />
+		</ItemGroup>
+		<Delete Files="@(OtherFiles)" />
+	</Target>
 </Project>
