@@ -1,0 +1,88 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="Log" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" />
+	<Color name="String" foreground="Blue" />
+	<Color name="Error" foreground="Red" />
+	<Color name="Red" foreground="Red" />
+	<Color name="Blue" foreground="Blue" />
+	<Color name="Warn" foreground="Blue" />
+	<Color name="Green" foreground="Green" />
+	<Color name="Yellow" foreground="Yellow" />
+
+	<!-- This is the main ruleset. -->
+	<RuleSet>
+		<Span color="Error" begin="Error:" />
+		<Span color="Green" begin="Success:" />
+		<Span color="Warn" begin="Warn:" fontStyle="italic"/>
+		<Span color="Blue" begin="MsgId:" />
+		<Span color="Blue" begin="Notice:" fontWeight="bold" />
+		<Span color="Comment" begin="//" />
+		<Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+
+		<Span color="String">
+			<Begin>"</Begin>
+			<End>"</End>
+			<RuleSet>
+				<!-- nested span for escape sequences -->
+				<Span begin="\\" end="." />
+			</RuleSet>
+		</Span>
+
+		<Keywords fontWeight="bold" foreground="LightSlateGray">
+			<Word>-></Word>
+			<Word>if</Word>
+			<Word>else</Word>
+			<!-- ... -->
+		</Keywords>
+
+		<Keywords fontWeight="bold" fontStyle="italic" foreground="Red">
+			<Word>Error</Word>
+			<Word>UNKNOW</Word>
+		</Keywords>
+
+		<Keywords fontWeight="bold" fontStyle="italic" foreground="Yellow">
+			<Word>Warn</Word>
+		</Keywords>
+
+		<Keywords fontWeight="bold" foreground="Blue">
+			<Word>MsgId:</Word>
+			<Word>msgId:</Word>
+			<Word>msgid:</Word>
+		</Keywords>
+
+		<!-- Error -->
+		<Rule foreground="Red"  fontWeight="bold">
+			[eE]rror
+			|
+			[Pp]ort:\d+
+			|
+			[Cc]onfig:
+			|
+			清理
+			|
+			参数
+			|
+			退出
+		</Rule>
+
+		<!-- Digits -->
+		<Rule foreground="Red"  fontWeight="bold">
+			\d+\.\d+
+			|
+			\.\d+\:\d+
+			|
+			\.\d+
+			|
+			\d+[\.=条]
+			|
+			【\d+\:\d+】
+		</Rule>
+		<!-- Digits 端口 -->
+		<Rule foreground="Blue"  fontWeight="bold" fontStyle="italic">
+			\d+=
+		</Rule>
+		<Rule foreground="Blue"  fontWeight="bold">
+			客户端\w+:\w+
+		</Rule>
+	</RuleSet>
+</SyntaxDefinition>

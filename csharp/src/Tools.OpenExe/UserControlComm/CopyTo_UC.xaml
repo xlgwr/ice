@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="Tools.OpenExe.UserControlComm.CopyTo_UC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Tools.OpenExe.UserControlComm"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button x:Name="btnSeletFilePath" Content="当前目录" Margin="0" Width="140" Height="25" Click="btnSeletFilePath_Click" />
+            <TextBox x:Name="txtSource" Height="25" Margin="0" MinWidth="390" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"  />
+            <Button x:Name="btnPull" Margin="5,0,0,0" ToolTip="拉取 git pull;" Click="btnPull_Click">拉取 Git pull</Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Button x:Name="btnSelectOtherFilePath" Content="选择另一目录" Margin="0" Width="140" Height="25" Click="btnSelectOtherFilePath_Click" />
+            <TextBox x:Name="txtDestination" Height="25" Margin="0" MinWidth="390" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" />
+            <Button x:Name="btnPush" Margin="5,0,0,0" ToolTip="推送 git pull;git commit -m 'update';git push;" Click="btnPush_Click">推送 Git Push</Button>
+            <TextBox x:Name="txtUpdate" Height="25" Margin="5,0,0,0" MinWidth="100" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" ToolTip="git commit -m 'update' Msg" Text="update"/>
+        </StackPanel>
+        <Button Grid.Row="2" x:Name="btnCopy" Content="复制增量更新文件" Margin="0" Width="140" Height="25" Click="btnCopy_Click" />
+        <TextBox Grid.Row="3" Name="lblmsg" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"></TextBox>
+    </Grid>
+</UserControl>

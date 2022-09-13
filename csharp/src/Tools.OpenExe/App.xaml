@@ -1,0 +1,25 @@
+﻿<Application x:Class="Tools.OpenExe.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainRibbonWindow.xaml"
+            >
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                
+                <ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Generic.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Themes/Light.Green.xaml" />
+                <!--<ResourceDictionary Source="pack://application:,,,/Fluent;component/Themes/Themes/Dark.Green.xaml" />-->
+                
+                <!--<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            >
+                    <Style
+				x:Key="{x:Type LayoutAnchorableFloatingWindowControl}"
+				BasedOn="{StaticResource {x:Type LayoutAnchorableFloatingWindowControl}}"
+				TargetType="{x:Type LayoutAnchorableFloatingWindowControl}" />
+
+                </ResourceDictionary>-->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

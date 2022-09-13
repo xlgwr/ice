@@ -1,0 +1,252 @@
+﻿<Window x:Name="window" x:Class="Tools.OpenExe.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tools.OpenExe"
+        xmlns:Forms ="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:my="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration" xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        mc:Ignorable="d"
+        Title="一键启动多功能工具"
+        Height="666"
+        Width="900" MinHeight="300"
+        ResizeMode="CanResize"
+        >
+    <DockPanel x:Name="maindock" LastChildFill="True">
+
+        <Grid Margin="0" DockPanel.Dock="Top" Height="140">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="519"/>
+                <ColumnDefinition Width="281"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2"   Width="888" Margin="4,8,-90,8">
+                <Button x:Name="btnSelectPath" Content=" 目录切换 " Margin="5,0,0,0" Click="btnSelectPath_Click"  Height="34" Width="82"/>
+                <Button x:Name="btnLoadData"  Content="获取当前目录文件"
+                 HorizontalAlignment="Center" 
+                 VerticalAlignment="Center"
+                Width="154"  Height="34"  
+                Click="Button_Click"/>
+                <Button x:Name="btn2"   Content="运行选择的Exe"
+                  HorizontalAlignment="Center" 
+                 VerticalAlignment="Center"
+                Width="111" Click="Btn2_Click" Height="34" />
+                <Button x:Name="btn3"   Content="关闭当前所有Exe"
+                  HorizontalAlignment="Center" 
+                 VerticalAlignment="Center"
+                Width="135" Click="Btn3_Click" Height="34" />
+                <my:WindowsFormsHost Margin="8,0,8,0" Height="26" Width="153" >
+                    <Forms:DateTimePicker Format="Custom" ShowUpDown="True"  CustomFormat="yyyy-MM-dd HH:mm:ss" x:Name="selectDateTime"/>
+                </my:WindowsFormsHost>
+                <Button x:Name="btnSetTime"   Content="修改电脑时间"
+                  HorizontalAlignment="Center" 
+                 VerticalAlignment="Center"
+                Width="80" Click="btnSetTime_Click" Height="34" />
+                <Button x:Name="btnOpenDic"   Content="打开Local目录"
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center"
+                        Margin="5,0,5,0" ToolTip="C:\Users\%USERNAME%\AppData\Local\Yintech,修改本地config设置"
+                    Width="90" Click="btnSetTime_Copy_Click" Height="34" />
+                <Button x:Name="btntop" Width="35" Click="Button_Click_1">置顶</Button>
+
+            </StackPanel>
+            <StackPanel Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,-90,0">
+                <StackPanel  Orientation="Vertical"   HorizontalAlignment="Left" Margin="1,0,0,0"  Width="auto">
+                    <StackPanel Orientation="Horizontal" Width="auto">
+                        <Label>查找类型:</Label>
+                        <ComboBox x:Name="GetNameExt" Text=".exe"  Width="193"  Height="24" IsEditable="True" SelectionChanged="GetName_SelectionChanged" >
+                            <ListBoxItem Content=".exe"/>
+                            <ListBoxItem Content=".dll"/>
+                            <ListBoxItem Content=".log"/>
+                            <ListBoxItem Content=".txt"/>
+                            <ListBoxItem Content=".csv"/>
+                            <ListBoxItem Content=".json"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="auto" Margin="0,6,5,0">
+                        <Label>方案组别:</Label>
+                        <ComboBox x:Name="projectList" Width="193" Height="24" SelectionChanged="projectList_SelectionChanged"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" >
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="删除log目录:" x:Name="ckRemoveLog" Click="CheckBox_Checked2"></CheckBox>
+                        <CheckBox Content="关闭byName" x:Name="ckCloseByName" IsChecked="True"></CheckBox>
+                    </StackPanel>
+                    <TextBox x:Name="txtlogPath" Margin="1" Width="185" TextWrapping="Wrap" Height="48" VerticalScrollBarVisibility="Auto" >log,CSVLog,csv,tmp</TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                    <TextBlock Margin="0">文件名过滤:</TextBlock>
+                    <TextBox x:Name="filterName" Text="updater,upgrade,other" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="1" Width="185" Height="48">
+                    </TextBox>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                    <Button x:Name="NewWindows" Width="80" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Content="新窗口功能" Click="NewWindows_Click"></Button>
+                    <Button x:Name="NewWindows2" Width="80" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Content="新窗口功能2" Click="NewWindows2_Click"></Button>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Width="792" Grid.ColumnSpan="2" Margin="0,0,8,0" Grid.RowSpan="2">
+                <CheckBox x:Name="cbAll"  Content="选择" Margin="3"
+                  HorizontalAlignment="Left" 
+                  VerticalAlignment="Bottom" Click="CheckBox_Checked" IsChecked="True" Width="44" Height="15"
+                  />
+
+                <Button x:Name="sortBySelect"  Content="排序by选择" Background="Transparent" BorderThickness="0" Click="sortBySelect_Click"
+                  />
+                <Label Content="过滤:"></Label>
+                <TextBox Text="" Name="SearchFilter" Width="102" Margin="2" TextChanged="SearchFilter_TextChanged" TextAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+
+                <Label x:Name="lblmsg"  Content="" Foreground="Red" HorizontalContentAlignment="Center"
+                   FontWeight="Bold" Grid.RowSpan="2" Grid.ColumnSpan="2" Width="466"/>
+            </StackPanel>
+
+
+            <Button x:Name="configUpdate" Grid.Column="1" Grid.Row="0" Content="gitConfig更新" HorizontalAlignment="Left" Margin="6,10,0,0" 
+                    VerticalAlignment="Top" Width="110" Height="34" Click="ConfigUpdate_Click" Visibility="Hidden" />
+        </Grid>
+        <Border BorderThickness="0,1,0,0"  BorderBrush="LightGray">
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="leftCol" MinWidth="100" Width="3*"></ColumnDefinition>
+                    <ColumnDefinition MinWidth="100" Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="0.01*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <ListBox Grid.Row="0" Grid.Column="0" Margin="0" x:Name="allLst" BorderThickness="0"
+                 ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible" >
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="运行" Click="MenuItem_Click_2"/>
+                            <MenuItem Header="重启" Click="MenuItem_Click_23"/>
+                            <MenuItem Header="关闭" Click="MenuItem_Click_3"/>
+                            <MenuItem Header="关闭并删除log" Click="MenuItem_Click_6"/>
+                            <MenuItem Header="打开当前目录" Click="MenuItem_Click"/>
+                            <MenuItem Header="添加到过滤" Click="MenuItem_Click_1"/>
+                            <MenuItem Header="保存当前方案" Click="MenuItem_Click_4"/>
+                            <MenuItem Header="选择方案" Click="MenuItem_Click_5"/>
+                            <MenuItem Header="生成MD5版本校验" Click="MenuItem_Click_md5" ToolTip="选择项生成,由测试人员生成，测试环境，非发版目录"/>
+                            <MenuItem Header="校验选择版本及MD5" ToolTip="校验,exe及应用目录下dll" Click="MenuItem_Click_md5_check"/>
+                            <MenuItem Header="复制到另一目录" Click="MenuItem_Click_Copyto" ToolTip="当前目录下文件，全部复制到另一目录。"/>
+                            <MenuItem Header="置顶切换" Click="MenuItem_Click_top"/>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+
+                    <ListBoxItem Background="LightCoral" Foreground="Red"
+             FontFamily="Verdana" FontSize="12" FontWeight="Bold">
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox ToolTip="DelFlag"/>
+                            <CheckBox>
+                                <TextBlock Text="Coffie"></TextBlock>
+                            </CheckBox>
+                            <TextBlock Margin="5,0,0,0" Foreground="#FF613636" >00</TextBlock>
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="5">
+                    <Label x:Name="btnMove" MouseDown="btnMove_MouseDown" MouseUp="btnMove_MouseUp" HorizontalContentAlignment="Center" ToolTip="左右大小调整" Margin="10,0,10,0">---|||---</Label>
+                    <StackPanel>
+                        <Button x:Name="ckLogSearch" Click="ckLogSearch_Click"  Margin="2" Height="25"  Content="文本内容搜索" ToolTip="查询文本文件内容功能"/>
+                        <Button x:Name="fixLogSearch" Click="fixLogSearch_Click"  Margin="2" Height="25"  Content="Fix内容统计" ToolTip="统计fix日志tag功能"/>
+                        <Button x:Name="fixLogDiffCheck" Click="fixLogAutoCheck_Click"  Margin="2" Height="25"  Content="启动Fix自动检测" ToolTip="Fix自动检测功能"/>
+                        <Button x:Name="fixLogDiffStop" Click="fixLogAutoStop_Click"  Margin="2" Height="25"  Content="停止Fix自动检测" ToolTip="Fix自动检测功能"/>
+                        <Button x:Name="addCustomerFile" Click="addCustomerFile_Click"  Margin="2" Height="25"  Content="添加文件检测" ToolTip="用于生成MD5校验"/>
+                    </StackPanel>
+
+                </StackPanel>
+                <DockPanel  Grid.Row="0" Grid.Column="2" >
+                    <GroupBox Header="行搜索条件" DockPanel.Dock="Top">
+                        <Grid>
+                            <Grid.ColumnDefinitions></Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <StackPanel Orientation="Vertical"   HorizontalAlignment="Left" >
+                                        <RadioButton GroupName="rbFlag" IsChecked="True" Margin="0,15,0,0" Width="55">包含</RadioButton>
+                                        <!--<RadioButton GroupName="rbFlag">不包含</RadioButton>-->
+                                    </StackPanel>
+                                    <TextBox x:Name="txtFilter" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="5,0,0,0" MinWidth="300" ToolTip="多个分号或逗号隔开，如：123;abc;ddd" Height="48">
+                                    </TextBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
+                                    <RadioButton GroupName="rbFlagOrAnd" IsChecked="True">并且</RadioButton>
+                                    <!--<RadioButton GroupName="rbFlagOrAnd"  Margin="20,0,0,0">或</RadioButton>-->
+                                    <Label HorizontalContentAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="10,0,0,0">过滤符合行条数：</Label>
+                                    <TextBox x:Name="txtTopCount" Width="90">1000</TextBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <StackPanel Orientation="Vertical"   HorizontalAlignment="Center" >
+                                        <!--<RadioButton GroupName="rbFlag2" >包含</RadioButton>-->
+                                        <RadioButton GroupName="rbFlag2" IsChecked="True" Margin="0,15,0,0" Width="55">不包含</RadioButton>
+                                    </StackPanel>
+                                    <TextBox x:Name="txtFilterNo" Text="" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="5,0,0,0" MinWidth="300" ToolTip="多个分号或逗号隔开，如：123;abc;ddd，显示内容：aa|cc" Height="48">
+                                    </TextBox>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
+                                    <TextBlock Margin="5">TT FIX URL:</TextBlock>
+                                    <TextBox Margin="5" x:Name="txtfixurl" MinWidth="500" Height="20">https://library.tradingtechnologies.com/tt-fix/uat/TT-FIX42.xml</TextBox>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Message">
+                        <DockPanel DockPanel.Dock="Bottom">
+                            <ToolBar DockPanel.Dock="Top">
+                                <ToolBar.Resources>
+                                    <Style TargetType="{x:Type Image}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ButtonBase}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+                                                <Setter Property="Opacity" Value="0.30" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToolBar.Resources>
+                                <CheckBox IsChecked="{Binding ElementName=rtRec,Path=WordWrap}">
+                                    <Image Source="Images/WordWrap.png" Height="16"/>
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding ElementName=rtRec,Path=ShowLineNumbers}">
+                                    <TextBlock Width="16" TextAlignment="Center">#</TextBlock>
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding ElementName=rtRec,Path=Options.ShowEndOfLine}">
+                                    <TextBlock Width="16" TextAlignment="Center">¶</TextBlock>
+                                </CheckBox>
+                                <Separator/>
+                            </ToolBar>
+                            <avalonEdit:TextEditor DockPanel.Dock="Bottom" Margin="5"
+				        Name="rtRec"
+				        FontFamily="Consolas"
+				        FontSize="10pt"
+				        SyntaxHighlighting="log" 
+                        Width="auto" 
+                        ShowLineNumbers="True"                         
+			        >
+                                欢迎来到一键启动多功能工具！
+                                <avalonEdit:TextEditor.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="清空" Click="btnClear_Click"/>
+                                        <MenuItem Header="另存为" Click="btnSave_Click"/>
+                                    </ContextMenu>
+                                </avalonEdit:TextEditor.ContextMenu>
+                            </avalonEdit:TextEditor>
+
+                        </DockPanel>
+                    </GroupBox>
+                </DockPanel>
+            </Grid>
+        </Border>
+    </DockPanel>
+
+</Window>

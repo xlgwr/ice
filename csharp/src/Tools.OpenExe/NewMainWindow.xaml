@@ -1,0 +1,84 @@
+﻿<Window x:Class="Tools.OpenExe.NewMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tools.OpenExe"
+        xmlns:avalonDock="https://github.com/Dirkster99/AvalonDock" xmlns:local1="clr-namespace:Tools.OpenExe.UserControlComm"
+        mc:Ignorable="d"
+        Title="测试窗口功能" Height="450" Width="800"
+        UseLayoutRounding="True">
+    <Grid x:Name="layoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Tools">
+                <MenuItem Click="OnShowWinformsWindow" Header="WinForms Window" />
+            </MenuItem>
+        </Menu>
+
+        <DockingManager x:Name="dockManager"
+            Grid.Row="1"
+            AllowMixedOrientation="True"
+            AutoWindowSizeWhenOpened="True"
+            DocumentClosing="DockManager_DocumentClosing"
+            IsVirtualizingAnchorable="True"
+            IsVirtualizingDocument="True">
+            <DockingManager.Theme>
+                <Vs2013LightTheme />
+            </DockingManager.Theme>
+            <DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Margin="0,0,4,0" Source="{Binding IconSource}" />
+                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DataTemplate>
+            </DockingManager.DocumentHeaderTemplate>
+            <LayoutRoot PropertyChanged="OnLayoutRootPropertyChanged">
+                <LayoutPanel Orientation="Horizontal">
+                     
+                    <LayoutDocumentPaneGroup>
+                        <LayoutDocumentPane x:Name="LayoutDocumentPane">
+                            <LayoutDocument CanClose="False"
+                                Title="Document 1"
+                                ContentId="document1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Button
+                                        Height="28"
+                                        VerticalAlignment="Top"
+                                        Click="AddTwoDocuments_click"
+                                        Content="Click to add 2 documents" />
+                                    <TextBox Grid.Row="1" Text="Document 1 Content" />
+                                </Grid>
+                            </LayoutDocument>
+                            <LayoutDocument Title="Document 2"
+                                ContentId="document2">
+                                <local1:UserControl1 ></local1:UserControl1>
+                            </LayoutDocument>
+                        </LayoutDocumentPane>
+                    </LayoutDocumentPaneGroup>
+                </LayoutPanel>
+
+                <LayoutRoot.LeftSide>
+                    <LayoutAnchorSide>
+                        <LayoutAnchorGroup>
+                            <LayoutAnchorable Title="AutoHide2 Content" ContentId="AutoHide2Content">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBox />
+                                    <TextBox />
+                                </StackPanel>
+                            </LayoutAnchorable>
+                        </LayoutAnchorGroup>
+                    </LayoutAnchorSide>
+                </LayoutRoot.LeftSide>
+            </LayoutRoot>
+        </DockingManager>
+    </Grid>
+</Window>

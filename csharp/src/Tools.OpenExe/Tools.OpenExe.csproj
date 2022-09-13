@@ -1,0 +1,277 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Title>一键开启或者关闭V8</Title>
+		<Product>Tools.OpenExe</Product>
+		<Copyright>Copyright ©  2022</Copyright>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Version>7.0.8.2</Version>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFrameworks>net6.0-windows;</TargetFrameworks>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net6.0-windows'">
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeAllContentInSingleFile>true</IncludeAllContentInSingleFile>
+		<!--<IncludeContentInSingleFile>true</IncludeContentInSingleFile>-->
+		<SelfContained>false</SelfContained>
+		<!--启用使用assemby修剪-仅支持自包含应用程序-->
+		<!--<PublishTrimmed>true</PublishTrimmed>-->
+		<!--启用AOT编译 目前暂不支持预编译-->
+		<!--<PublishReadyToRun>true</PublishReadyToRun>-->
+	</PropertyGroup>
+
+
+	<PropertyGroup>
+		<ApplicationIcon>processing3.ico</ApplicationIcon>
+		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+		<UseWindowsForms>True</UseWindowsForms>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<StartupObject>Tools.OpenExe.App</StartupObject>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+	  <ApplicationDefinition Remove="App.xaml" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Compile Remove="Exts\ExtensionClass.cs" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<None Remove="Config\ICEClient布局.config" />
+		<None Remove="Config\ICEServer布局.config" />
+		<None Remove="Images\app_logo_solomon.ico" />
+		<None Remove="Images\banner.png" />
+		<None Remove="Images\Blue.png" />
+		<None Remove="Images\BlueLarge.png" />
+		<None Remove="Images\Bold.png" />
+		<None Remove="Images\Box.png" />
+		<None Remove="Images\Brown.png" />
+		<None Remove="Images\BrownLarge.png" />
+		<None Remove="Images\ChangeCase.png" />
+		<None Remove="Images\ClearFormatting.png" />
+		<None Remove="Images\FontColor.png" />
+		<None Remove="Images\FormatPainter.png" />
+		<None Remove="Images\GalleryLarge.png" />
+		<None Remove="Images\Gray.png" />
+		<None Remove="Images\GrayLarge.png" />
+		<None Remove="Images\Green.png" />
+		<None Remove="Images\GreenLarge.png" />
+		<None Remove="Images\GrowFont.png" />
+		<None Remove="Images\icon_light_off.png" />
+		<None Remove="Images\icon_light_on.png" />
+		<None Remove="Images\isTop.png" />
+		<None Remove="Images\isUp.png" />
+		<None Remove="Images\Italic.png" />
+		<None Remove="Images\logo.ico" />
+		<None Remove="Images\Orange.png" />
+		<None Remove="Images\OrangeLarge.png" />
+		<None Remove="Images\PasteFormating.png" />
+		<None Remove="Images\PasteImage.png" />
+		<None Remove="Images\PasteSourceFormating.png" />
+		<None Remove="Images\PasteText.png" />
+		<None Remove="Images\PasteTextOnly.png" />
+		<None Remove="Images\Pink.png" />
+		<None Remove="Images\PinkLarge.png" />
+		<None Remove="Images\Red.png" />
+		<None Remove="Images\RedLarge.png" />
+		<None Remove="Images\SampleImageForScreenTip.png" />
+		<None Remove="Images\Send.png" />
+		<None Remove="Images\ShrinkFont.png" />
+		<None Remove="Images\Strikethrough.png" />
+		<None Remove="Images\Subscript.png" />
+		<None Remove="Images\Superscript.png" />
+		<None Remove="Images\Test16.png" />
+		<None Remove="Images\Test32.png" />
+		<None Remove="Images\TextEffects.png" />
+		<None Remove="Images\TextHighlightColor.png" />
+		<None Remove="Images\Underline.png" />
+		<None Remove="Images\Yellow.png" />
+		<None Remove="Images\YellowLarge.png" />
+		<None Remove="processing.ico" />
+		<None Remove="processing1.ico" />
+		<None Remove="processing2.ico" />
+		<None Remove="processing3.ico" />
+		<None Remove="消息头\0默认样例.json" />
+		<None Remove="消息头\2SlmOrderBody订单.json" />
+		<None Remove="消息头\3SendOrderStatusBody状态变化.json" />
+		<None Remove="消息头\4PushOrderStateBody.json" />
+		<None Remove="消息头\5PushMatchStateBody成交变化.json" />
+		<None Remove="消息头\6SlmMatchBody成交.json" />
+		<None Remove="消息头\7SlmOrderJourBody流水.json" />
+		<None Remove="消息头\8.0SendPackageCacheDB.json" />
+		<None Remove="消息头\8.1PushCacheOrderDB.json" />
+		<None Remove="消息头\8.2PushCacheOrderjoursDB.json" />
+		<None Remove="消息头\8.3PushCacheTradesDB.json" />
+		<None Remove="消息头\8.4PushCachePositionsDB.json" />
+		<None Remove="消息头\8.5PushCacheOffset.json" />
+		<None Remove="消息头\8.6PushCacheStartVote.json" />
+		<None Remove="消息头\9.1PushDepositCacheDB.json" />
+		<None Remove="消息头\9.1主备.json" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Page Remove="Images\VectorIcons.xaml" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Config\ICEClient布局.config" />
+		<EmbeddedResource Include="Config\ICEServer布局.config" />
+		<EmbeddedResource Include="Log.xshd" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Images\Blue.png" />
+		<Resource Include="Images\BlueLarge.png" />
+		<Resource Include="Images\Bold.png" />
+		<Resource Include="Images\Box.png" />
+		<Resource Include="Images\Brown.png" />
+		<Resource Include="Images\BrownLarge.png" />
+		<Resource Include="Images\ChangeCase.png" />
+		<Resource Include="Images\ClearFormatting.png" />
+		<Resource Include="Images\FontColor.png" />
+		<Resource Include="Images\FormatPainter.png" />
+		<Resource Include="Images\GalleryLarge.png" />
+		<Resource Include="Images\Gray.png" />
+		<Resource Include="Images\GrayLarge.png" />
+		<Resource Include="Images\Green.png" />
+		<Resource Include="Images\GreenLarge.png" />
+		<Resource Include="Images\GrowFont.png" />
+		<Resource Include="Images\isTop.png" />
+		<Resource Include="Images\isUp.png" />
+		<Resource Include="Images\Italic.png" />
+		<Resource Include="Images\Orange.png" />
+		<Resource Include="Images\OrangeLarge.png" />
+		<Resource Include="Images\PasteFormating.png" />
+		<Resource Include="Images\PasteImage.png" />
+		<Resource Include="Images\PasteSourceFormating.png" />
+		<Resource Include="Images\PasteText.png" />
+		<Resource Include="Images\PasteTextOnly.png" />
+		<Resource Include="Images\Pink.png" />
+		<Resource Include="Images\PinkLarge.png" />
+		<Resource Include="Images\Red.png" />
+		<Resource Include="Images\RedLarge.png" />
+		<Resource Include="Images\SampleImageForScreenTip.png" />
+		<Resource Include="Images\Send.png" />
+		<Resource Include="Images\ShrinkFont.png" />
+		<Resource Include="Images\Strikethrough.png" />
+		<Resource Include="Images\Subscript.png" />
+		<Resource Include="Images\Superscript.png" />
+		<Resource Include="Images\Test16.png" />
+		<Resource Include="Images\Test32.png" />
+		<Resource Include="Images\TextEffects.png" />
+		<Resource Include="Images\TextHighlightColor.png" />
+		<Resource Include="Images\Underline.png" />
+		<Resource Include="Images\VectorIcons.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Resource>
+		<Resource Include="Images\Yellow.png" />
+		<Resource Include="Images\YellowLarge.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Images\1.png" />
+		<Resource Include="Images\2.png" />
+		<Resource Include="Images\3.png" />
+		<Resource Include="Images\4.png" />
+		<Resource Include="Images\5.png" />
+		<Resource Include="Images\Copy.png" />
+		<Resource Include="Images\Cut.png" />
+		<Resource Include="Images\Delete.png" />
+		<Resource Include="Images\Open.png" />
+		<Resource Include="Images\Paste.png" />
+		<Resource Include="Images\Redo.png" />
+		<Resource Include="Images\Save.png" />
+		<Resource Include="Images\saveas.png" />
+		<Resource Include="Images\Undo.png" />
+		<Resource Include="Images\WordWrap.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="方案\可保存选择项.txt" />
+		<EmbeddedResource Include="消息头\0默认样例.json" />
+		<EmbeddedResource Include="消息头\2SlmOrderBody订单.json" />
+		<EmbeddedResource Include="消息头\3SendOrderStatusBody状态变化.json" />
+		<EmbeddedResource Include="消息头\4PushOrderStateBody.json" />
+		<EmbeddedResource Include="消息头\5PushMatchStateBody成交变化.json" />
+		<EmbeddedResource Include="消息头\6SlmMatchBody成交.json" />
+		<EmbeddedResource Include="消息头\7SlmOrderJourBody流水.json" />
+		<EmbeddedResource Include="消息头\8.0SendPackageCacheDB.json" />
+		<EmbeddedResource Include="消息头\8.1PushCacheOrderDB.json" />
+		<EmbeddedResource Include="消息头\8.2PushCacheOrderjoursDB.json" />
+		<EmbeddedResource Include="消息头\8.3PushCacheTradesDB.json" />
+		<EmbeddedResource Include="消息头\8.4PushCachePositionsDB.json" />
+		<EmbeddedResource Include="消息头\8.5PushCacheOffset.json" />
+		<EmbeddedResource Include="消息头\8.6PushCacheStartVote.json" />
+		<EmbeddedResource Include="消息头\9.1PushDepositCacheDB.json" />
+		<EmbeddedResource Include="消息头\9.1主备.json" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AvalonEdit" Version="6.1.3.50" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.Aero" Version="4.70.2" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.Expression" Version="4.70.2" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.Metro" Version="4.70.2" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.VS2010" Version="4.70.2" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" Version="4.70.2" />
+		<PackageReference Include="Fluent.Ribbon" Version="9.0.4" />
+		<PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+		<PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.11.0" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<!--<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />-->
+		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+		<PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.346201">
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ApplicationDefinition Update="App.xaml">
+	    <Generator></Generator>
+	  </ApplicationDefinition>
+	</ItemGroup>
+	<ItemGroup>
+	  <Page Include="App.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\ICE.Communicator.ServerAndClient\ICE.Communicator.ServerAndClient.csproj" />
+	  <ProjectReference Include="..\IceSSL\msbuild\net6.0\icessl.csproj" />
+	  <ProjectReference Include="..\Ice\msbuild\net6.0\ice.csproj" />
+	  <ProjectReference Include="..\Solomon.Logger\Solomon.Logger.csproj" />
+	</ItemGroup>
+	<Target Condition="'$(TargetFramework)' == 'net48'" Name="AfterResolveReferencesAdd" AfterTargets="AfterResolveReferences">
+		<ItemGroup>
+			<EmbeddedResource Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll' And !$([System.Text.RegularExpressions.Regex]::IsMatch(&#xD;&#xA;        '%(ReferenceCopyLocalPaths.Filename)', '^System'))">
+				<LogicalName>%(ReferenceCopyLocalPaths.DestinationSubDirectory)%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)</LogicalName>
+			</EmbeddedResource>
+			<Message Text="Project File Name = $(MSBuildProjectFile)" />
+			<Message Text="Project Extension = $(MSBuildProjectExtension)" />
+		</ItemGroup>
+	</Target>
+	<Target Condition="'$(TargetFramework)' == 'net48'" Name="DeleteOtherFile" AfterTargets="AfterBuild">
+
+		<Message Text="Project File Name = $(MSBuildProjectFile)" />
+		<Message Text="Project Extension = $(MSBuildProjectExtension)" />
+
+		<ItemGroup>
+			<!--<OtherFiles Include="$(OutputPath)\*;" Exclude="$(OutputPath)\$(AssemblyName).exe;$(OutputPath)\$(AssemblyName).exe.config;$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).dll.config;$(OutputPath)\OpenExeConfig.json;$(OutputPath)\$(AssemblyName).deps.json;$(OutputPath)\$(AssemblyName).runtimeconfig.json;$(OutputPath)\$(AssemblyName).runtimeconfig.dev.json;$(OutputPath)\方案\*;$(OutputPath)\Solomon.Logger.dll;$(OutputPath)\Solomon.Communicator.ServerAndClient.dll;$(OutputPath)\Ice.dll" />-->
+			<OtherFiles Include="$(OutputPath)\*;" Exclude="$(OutputPath)\$(AssemblyName).exe;$(OutputPath)\$(AssemblyName).exe.config;$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).dll.config;$(OutputPath)\OpenExeConfig.json;$(OutputPath)\$(AssemblyName).deps.json;$(OutputPath)\$(AssemblyName).runtimeconfig.json;$(OutputPath)\$(AssemblyName).runtimeconfig.dev.json;$(OutputPath)\方案\*;" />
+		</ItemGroup>
+		<Delete Files="@(OtherFiles)" />
+		<RemoveDir Directories="$(OutputPath)\ca-ES\;$(OutputPath)\cs-CZ\;$(OutputPath)\cs-CZ\;$(OutputPath)\de\;$(OutputPath)\es\;$(OutputPath)\fr\;$(OutputPath)\hu\;$(OutputPath)\it\;$(OutputPath)\ja\;$(OutputPath)\ja\;$(OutputPath)\ko\;$(OutputPath)\nl-BE\;$(OutputPath)\pl\;$(OutputPath)\pt\;$(OutputPath)\ro\;$(OutputPath)\ru\;$(OutputPath)\sv\;$(OutputPath)\zh-Hant\;$(OutputPath)\tr\;$(OutputPath)\pt-BR\;$(OutputPath)\cs\;$(OutputPath)\zh-Hans\" />
+	</Target>
+</Project>

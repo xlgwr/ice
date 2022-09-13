@@ -1,0 +1,109 @@
+﻿<UserControl x:Class="Tools.OpenExe.UserControlComm.AvalonEditUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Tools.OpenExe.UserControlComm" xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <GroupBox Header="Message">
+        <DockPanel DockPanel.Dock="Bottom">
+            <ToolBar DockPanel.Dock="Top">
+                <ToolBar.Resources>
+                    <Style TargetType="{x:Type Image}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ButtonBase}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+                                <Setter Property="Opacity" Value="0.30" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToolBar.Resources>
+                <StackPanel Orientation="Horizontal" Name="tbToolEdit" Margin="0" >
+                    <Button x:Name="btnRunLog" Click="btnRunLog_Click" Background="Transparent" Visibility="Collapsed">
+                        <Image Source="/Images/Send.png" Height="16" />
+                    </Button>
+                    <Button Click="openFileClick" Background="Transparent">
+                        <Image Source="/Images/Open.png" Height="16"/>
+                    </Button>
+                    <Button Click="saveFileClick" Background="Transparent">
+                        <Image Source="/Images/Save.png" Height="16"/>
+                    </Button>
+                    <Button Click="saveFileAsClick" ToolTip="SaveAs|另存为" Background="Transparent">
+                        <Image Source="/Images/saveas.png" Height="16"/>
+                    </Button> 
+                    <Button Command="Cut" Background="Transparent">
+                        <Image Source="/Images/Cut.png" Height="16"/>
+                    </Button>
+                    <Button Command="Copy" Background="Transparent">
+                        <Image Source="/Images/Copy.png" Height="16"/>
+                    </Button>
+                    <Button Command="Paste" Background="Transparent">
+                        <Image Source="/Images/Paste.png" Height="16"/>
+                    </Button>
+                    <Button Command="Delete" Background="Transparent">
+                        <Image Source="/Images/Delete.png" Height="16"/>
+                    </Button> 
+                    <Button Command="Undo" Background="Transparent">
+                        <Image Source="/Images/Undo.png" Height="16"/>
+                    </Button>
+                    <Button Command="Redo" Background="Transparent">
+                        <Image Source="/Images/Redo.png" Height="16"/>
+                    </Button> 
+                    <!--<CheckBox IsChecked="{Binding ElementName=rtSend,Path=ShowLineNumbers}">
+                        <TextBlock Width="16" TextAlignment="Center">#</TextBlock>
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding ElementName=rtSend,Path=Options.ShowEndOfLine}">
+                        <TextBlock Width="16" TextAlignment="Center">¶</TextBlock>
+                    </CheckBox>-->
+                    <ComboBox Name="highlightingComboBox"
+				SelectedItem="{Binding SyntaxHighlighting, ElementName=rtRec}"
+				ItemsSource="{Binding Source={x:Static avalonEdit:HighlightingManager.Instance}, Path=HighlightingDefinitions}"
+				SelectionChanged="HighlightingComboBox_SelectionChanged"  Background="Transparent"/> 
+                </StackPanel>
+                <Separator/>
+                <CheckBox IsChecked="{Binding ElementName=rtRec,Path=WordWrap}">
+                    <Image Source="/Images/WordWrap.png" Height="16"/>
+                </CheckBox>
+                <CheckBox IsChecked="{Binding ElementName=rtRec,Path=ShowLineNumbers}">
+                    <TextBlock Width="16" TextAlignment="Center">#</TextBlock>
+                </CheckBox>
+                <CheckBox IsChecked="{Binding ElementName=rtRec,Path=Options.ShowEndOfLine}">
+                    <TextBlock Width="16" TextAlignment="Center">¶</TextBlock>
+                </CheckBox>
+                <Separator/>
+                <ComboBox x:Name="cmbLogLine" MinWidth="30" ToolTip="滚动显示日志条数">
+                    <ComboBoxItem>100</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">300</ComboBoxItem>
+                    <ComboBoxItem>500</ComboBoxItem>
+                    <ComboBoxItem>1000</ComboBoxItem>
+                </ComboBox>
+                <Separator/>
+                <CheckBox IsChecked="{Binding isScrollToEnd}" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" >
+                    <TextBlock Width="16" TextAlignment="Center" ToolTip="日志是否自动滚动到最底部">$</TextBlock>
+                </CheckBox>
+                <Separator/>
+                <CheckBox IsChecked="{Binding isSyntaxHighlighting, Mode=TwoWay}" Checked="CheckBox_Checked_S" Unchecked="CheckBox_Unchecked_S" >
+                    <TextBlock Width="16" TextAlignment="Center" ToolTip="日志是启用语法高亮，超10w个字符，不语法高亮">ST</TextBlock>
+                </CheckBox>
+            </ToolBar>
+            <avalonEdit:TextEditor DockPanel.Dock="Bottom" Margin="5"
+				                                Name="rtRec"
+				                                FontFamily="Consolas"
+				                                FontSize="10pt"
+				                                SyntaxHighlighting="log" 
+                                                Width="auto" 
+                                                ShowLineNumbers="True"                         
+			                                        >
+                欢迎来到一键启动多功能工具！
+                <avalonEdit:TextEditor.ContextMenu>
+                    <ContextMenu x:Name="btnRunLogMenu">
+                        <MenuItem Header="发送" Name="btnMenuLog" Visibility="Collapsed" Click="btnToDo_Click"/>
+                        <MenuItem Header="清空" Click="btnClear_Click"/>
+                        <MenuItem Header="另存为" Click="btnSave_Click"/>
+                    </ContextMenu>
+                </avalonEdit:TextEditor.ContextMenu>
+            </avalonEdit:TextEditor>
+
+        </DockPanel>
+    </GroupBox>
+</UserControl>
