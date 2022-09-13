@@ -4,6 +4,7 @@
 
 import os, sys, runpy, getopt, traceback, types, threading, time, datetime, re, itertools, random, subprocess, shutil
 import copy, inspect, xml.sax.saxutils
+from platform import machine as platform_machine
 
 isPython2 = sys.version_info[0] == 2
 if isPython2:
@@ -3389,7 +3390,8 @@ class JavaMapping(Mapping):
         }[processType]
 
     def getSDKPackage(self):
-        return "system-images;android-31;google_apis;x86_64"
+        return "system-images;android-31;google_apis;{}".format(
+            "arm64-v8a" if platform_machine() == "arm64" else "x86_64")
 
     def getApk(self, current):
         return os.path.join(self.getPath(), "test", "android", "controller", "build", "outputs", "apk", "debug",
@@ -3425,7 +3427,8 @@ class JavaCompatMapping(JavaMapping):
         return { "CLASSPATH" : os.pathsep.join(classPath) }
 
     def getSDKPackage(self):
-        return "system-images;android-31;google_apis;x86_64"
+        return "system-images;android-31;google_apis;{}".format(
+            "arm64-v8a" if platform_machine() == "arm64" else "x86_64")
 
 class CSharpMapping(Mapping):
 
@@ -3578,7 +3581,8 @@ class CSharpMapping(Mapping):
         return command
 
     def getSDKPackage(self):
-        return "system-images;android-31;google_apis;x86_64"
+        return "system-images;android-31;google_apis;{}".format(
+            "arm64-v8a" if platform_machine() == "arm64" else "x86_64")
 
     def getApk(self, current):
         return os.path.join(self.getPath(), "test", "xamarin", "controller.Android", "bin", current.config.buildConfig,
@@ -3851,8 +3855,10 @@ class MatlabMapping(CppBasedClientMapping):
         mappingDesc = "MATLAB"
 
     def getCommandLine(self, current, process, exe, args):
+        matlabHome = os.getenv("MATLAB_HOME")
         # -wait and -minimize are not available on Linux, -log causes duplicate output to stdout on Linux
-        return "matlab -nodesktop -nosplash{0} -r \"cd '{1}', runTest {2} {3} {4}\"".format(
+        return "{0} -nodesktop -nosplash{1} -r \"cd '{2}', runTest {3} {4} {5}\"".format(
+            "matlab" if matlabHome is None else os.path.join(matlabHome, "bin", "matlab"),
             " -wait -log -minimize" if isinstance(platform, Windows) else "",
             os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "matlab", "test", "lib")),
             self.getTestCwd(process, current),
