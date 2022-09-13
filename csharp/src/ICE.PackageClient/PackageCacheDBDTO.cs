@@ -183,7 +183,7 @@ namespace Test.PackageClient
         public string UpdatePerson { get; set; }
 
 
-        public int ProxyId { get; set; }
+        public short ProxyId { get; set; }
 
 
         public string AccountNo { get; set; }
@@ -231,7 +231,7 @@ namespace Test.PackageClient
         public byte DelTag { get; set; }
 
 
-        public string OrderFrom { get; set; }
+        public byte OrderFrom { get; set; }
 
 
         public short OrderSubNumMin { get; set; }
@@ -246,7 +246,7 @@ namespace Test.PackageClient
         public double TriggerPrice { get; set; }
 
 
-        public byte OrderStatus { get; set; }
+        public byte OrderState { get; set; }
 
 
         public short FilledNum { get; set; }
@@ -368,7 +368,7 @@ namespace Test.PackageClient
 
             curr.TriggerPrice = m.TriggerPrice;
 
-            curr.OrderStatus = m.OrderStatus;
+            curr.OrderState = m.OrderState;
 
             curr.FilledNum = m.FilledNum;
 
@@ -435,7 +435,7 @@ namespace Test.PackageClient
         public string UpdatePerson { get; set; }
 
 
-        public int ProxyId { get; set; }
+        public short ProxyId { get; set; }
 
 
         public string AccountNo { get; set; }
@@ -465,7 +465,7 @@ namespace Test.PackageClient
         public double OrderPrice { get; set; }
 
 
-        public int OrderNum { get; set; }
+        public short OrderNum { get; set; }
 
 
         public byte OrderType { get; set; }
@@ -474,7 +474,7 @@ namespace Test.PackageClient
         public byte OrderLife { get; set; }
 
 
-        public string OrderFrom { get; set; }
+        public byte OrderFrom { get; set; }
 
 
         public double TriggerPrice { get; set; }
@@ -507,7 +507,7 @@ namespace Test.PackageClient
         public long OrderNo { get; set; }
 
 
-        public int OrderJourNo { get; set; }
+        public short OrderJourNo { get; set; }
 
 
         public string BrokerOrderNo { get; set; }
@@ -519,7 +519,7 @@ namespace Test.PackageClient
         public string ExchangeOrderNo { get; set; }
 
 
-        public int ErrorNo { get; set; }
+        public short ErrorNo { get; set; }
 
 
         public string ErrorInfo { get; set; }
@@ -666,7 +666,7 @@ namespace Test.PackageClient
         public byte OpenClose { get; set; }
 
 
-        public int ProxyId { get; set; }
+        public short ProxyId { get; set; }
 
 
         public string BrokerTradeNo { get; set; }
@@ -708,7 +708,7 @@ namespace Test.PackageClient
         public byte OrderInsertType { get; set; }
 
 
-        public string OrderFrom { get; set; }
+        public byte OrderFrom { get; set; }
 
         #endregion
 
@@ -877,43 +877,43 @@ namespace Test.PackageClient
     {
         #region Slice data members
 
-        
+
         public long MsgNum { get; set; }
 
-        
+
         public int InitDate { get; set; }
 
-        
+
         public int BusinessFlag { get; set; }
 
-        
+
         public string BusinessNo { get; set; }
 
-        
+
         public int OccurTime { get; set; }
 
-        
+
         public string OperatorNo { get; set; }
 
-        
+
         public string AccountNo { get; set; }
 
-        
+
         public string CurrencyCode { get; set; }
 
-        
+
         public double OccurBalance { get; set; }
 
-        
+
         public string Remark { get; set; }
 
-        
+
         public byte AuditFlag { get; set; }
 
-        
+
         public int OccurDate { get; set; }
 
-        
+
         public int TplusFlag { get; set; }
 
         #endregion
