@@ -75,8 +75,11 @@ module SlmCommunicator
 		DepositCacheDBs Deposits;// 出入金表
 		PositionCacheDBs PrePositions;// 昨持仓表
 		PositionCacheDBs Positions;// 持仓表
-	};
-	
+	}; 
+
+	sequence<CacheTradeDB> CacheTradeDBList; //合包参数
+	sequence<PackageCacheDB> PackageCacheDBList; //合包参数
+
 	/**
 	* 表同步相关功能,服务端推送对应缓存信息 extends
 	**/
@@ -91,6 +94,14 @@ module SlmCommunicator
 		* 缓存同步 接收数据包 A.交易类 trade
 		**/
 		PackageCacheDB ReceivePackageCacheTrade(CacheTradeDB responseField);
+		/**
+		* 缓存同步 接收数据包 A.交易类 trade list 合包
+		**/
+		PackageCacheDB ReceivePackageCacheTradeList(CacheTradeDBList responseFieldes);
+		/**
+		* 缓存同步 接收数据包 Base 合包
+		**/
+		PackageCacheDB ReceivePackageCacheBaseList(PackageCacheDBList responseFieldes);
 	};
 
 	/**
@@ -106,7 +117,15 @@ module SlmCommunicator
 		/**
 		* 缓存同步 发送数据包 A.交易类 trade
 		**/
-		CacheTradeDB SendPackageCacheTrade(CacheTradeDB requestField);
+		CacheTradeDB SendPackageCacheTrade(CacheTradeDB requestField);		
+		/**
+		* 缓存同步 发送数据包 A.交易类 trade list 合包
+		**/
+		CacheTradeDB SendPackageCacheTradeList(CacheTradeDBList requestFieldes);
+		/**
+		* 缓存同步 发送数据包 通用类 List
+		**/
+		PackageCacheDB SendPackageCacheBaseList(PackageCacheDBList requestFieldes);
 	};
 
  // end

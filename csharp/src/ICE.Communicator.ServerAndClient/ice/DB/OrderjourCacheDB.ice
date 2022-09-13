@@ -17,7 +17,7 @@ module SlmCommunicator
 		string OperatorNo; 
 		string OrderPerson; 
 		string UpdatePerson; 
-		int ProxyId; 
+		short ProxyId; 
 		string AccountNo; 
 		byte ProductType; 
 		string ExchangeCode; 
@@ -27,10 +27,10 @@ module SlmCommunicator
 		string StrikePrice; 
 		byte BuySell; 
 		double OrderPrice; 
-		int OrderNum; 
+		short OrderNum; 
 		byte OrderType; 
 		byte OrderLife; 
-		string OrderFrom; 
+		byte OrderFrom; 
 		double TriggerPrice; 
 		byte OrderStatus; 
 		int FilledNum; 
@@ -41,15 +41,15 @@ module SlmCommunicator
 		int ExchangeDate; 
 		int ExchangeTime; 
 		long OrderNo; 
-		int OrderJourNo; 
+		short OrderJourNo; 
 		string BrokerOrderNo; 
 		string BrokerOrderJourNo; 
 		string ExchangeOrderNo; 
-		int ErrorNo; 
+		short ErrorNo; 
 		string ErrorInfo; 
 		string RemarkCus; 
 		string InfoS1; 
-		string InfoS2;
+		string InfoS2; 
 		byte Action;
 	};
  //end

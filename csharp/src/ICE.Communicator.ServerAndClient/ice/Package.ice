@@ -13,6 +13,7 @@ module SlmCommunicator
 {
     
 	/**
+	*  byte 编号 1
 	*  交易服 模拟交易 SlmOrder  940001
 	*  交易前置 交易服 SlmOrder  910001
 	**/
@@ -68,6 +69,7 @@ module SlmCommunicator
 		byte Action;
 	};
 	/**
+	* byte 编号 2
 	* 网关推送成交结构
 	* 模拟交易 交易服推送成交 PushMatchState 930002
 	**/
@@ -94,6 +96,7 @@ module SlmCommunicator
 		string BuySell; 
 	};
 	/**
+	* byte 编号 3
 	* 网关推送下单状态结构
 	* 模拟交易->交易服 推送委托状态 PushOrderState 930001 
 	**/
@@ -122,6 +125,7 @@ module SlmCommunicator
 	};
 
 	/**
+	* byte 编号 4
 	* 交易服->交易前置 SendOrderStatus
 	* 920001 委托状态变化
 	**/
@@ -155,6 +159,7 @@ module SlmCommunicator
 	};
 
 	/**
+	* byte 编号 5
 	* 交易服->交易前置 SlmOrderJour
 	* 920005 委托流水变化
 	**/
@@ -202,6 +207,7 @@ module SlmCommunicator
 	};
 
 	/**
+	* byte 编号 6
 	* 交易服->交易前置 SlmMatch[]
 	* 920002 成交变化
 	**/
@@ -237,6 +243,7 @@ module SlmCommunicator
 		byte OrderFrom; 
 	};
 	/**
+	* byte 编号 7
 	* 持仓
 	**/
 	struct SlmPositionRow{
@@ -259,6 +266,7 @@ module SlmCommunicator
 		double MarketValue; 
 	};
 	/**
+	* byte 编号 8
 	* 平仓结构
 	**/
 	struct SlmCloseRow{ 
@@ -443,6 +451,42 @@ module SlmCommunicator
 	}; 
 	sequence<RequestPackageOrderLog> RequestPackageLogList;
 
+	
+	sequence<byte> ByteRow;	
+	sequence<ByteRow> ByteGroup;
+	dictionary<string, string> DataICEDic; // 示例字典
+
+	/**
+	* 通用包 byte二进制数据 用于ice对象传输及转换
+	**/
+	struct StreamPackage
+	{
+		/**
+		* 服务号
+		**/		
+		int ServiceNo;
+		string ClientId; // 客户端id
+		string UUID; // ice 对应uuid
+		string MsgId; // 消息标记guid
+		int ErrorNo; // 通用错误码 主要用于返回确认
+		string ErrorInfo; // 通用错误码信息 主要用于返回确认		
+		DataICEDic DatasDic;// <key,value> string,string 字典 用于其它参数设置
+		DataRow Head; //string[]
+		DataGroup DataBody; // string[][]
+		ByteGroup DataStreamBody; // byte[][]
+	};	
+	sequence<StreamPackage> StreamPackageList;
+
+	/**
+	*  通于用于存二进制实体
+	**/	
+	struct StreamBinFilePackage
+	{
+		byte PackageOrderType; // 1:SlmOrderBody 2:SlmOrderJourBody 3:SendOrderStatusBody 4:SlmMatchBody 5:PushOrderStateBody 6:PushMatchStateBody
+		ByteRow DataStreamBody; // 流对象二制
+	};	
+	sequence<StreamBinFilePackage> StreamBinFilePackageList;
+
 	interface PackageReceiver extends PackageReceiverCacheDB
 	{
 		/**
@@ -453,6 +497,12 @@ module SlmCommunicator
 		 * 接收数据包list
 		 **/
 		int ReceivePackageList(ResponsePackageList responseFields);
+		
+		/**
+		 * 接收数据包 ICEStream list
+		 * msgName 消息类型，发送 or 接收 用于合包发送持久化用于生成对应日志文件前缀或文件名
+		 **/
+		StreamPackage ReceiveICEStreamPackageList(StreamPackageList responseFields,string msgName);
 
 		/**
 		 * 注册回调对象
@@ -470,7 +520,12 @@ module SlmCommunicator
 		 * 发送数据包list
 		 **/
 		ResponsePackageOrderBackMsg SendPackageList(RequestPackageList requestFields);
-
+		
+		/**
+		 * 发送数据包 ICEStream list
+		 * msgName 消息类型，发送 or 接收 用于合包发送持久化用于生成对应日志文件前缀或文件名
+		 **/
+		StreamPackage SendICEStreamPackageList(StreamPackageList requestFields,string msgName);
 
 		/**
 		 * 发送数据包日志

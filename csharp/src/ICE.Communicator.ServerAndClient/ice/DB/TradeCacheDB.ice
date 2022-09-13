@@ -25,7 +25,7 @@ module SlmCommunicator
 		string CurrencyCode; 
 		byte IsTplusone; 
 		byte OpenClose; 
-		int ProxyId; 
+		short ProxyId; 
 		string BrokerTradeNo; 
 		string ExchangeTradeNo; 
 		byte ProductType; 
@@ -33,13 +33,13 @@ module SlmCommunicator
 		string CommodityCode; 
 		string ContractCode; 
 		byte BuySell; 
-		float TradeFee; 
+		double TradeFee; 
 		string OperatorNo; 
 		string Info1; 
 		string Info2; 
 		string Info3; 
 		byte OrderInsertType; 
-		string OrderFrom;
+		byte OrderFrom; 
 	};
  //end
 };
