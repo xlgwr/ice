@@ -8,8 +8,8 @@
 		<TargetFramework>net6.0</TargetFramework>
 
 	</PropertyGroup>
-	<PropertyGroup>
-		<IceToolsPath>C:\Users\fd110\.nuget\packages\zeroc.ice.net\3.7.8\tools</IceToolsPath>
+	<PropertyGroup  Condition="!Exists('$(IceToolsPath)')">
+		<IceToolsPath>C:\Users\$(username)\.nuget\packages\zeroc.ice.net\3.7.8\tools</IceToolsPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="generated\BuiltinSequences.cs">
