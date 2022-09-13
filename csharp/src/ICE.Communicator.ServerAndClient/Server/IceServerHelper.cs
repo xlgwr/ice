@@ -133,7 +133,7 @@ namespace SlmCommunicator.Server
                 //adapter->activate();
                 //m_connCallback->OnConnectChangeEvent(CONNECT_OK);
                 //m_communicator->waitForShutdown();
-                adapter.add(new PackageSenderServerI(), _communicator.stringToIdentity("packageSender"));
+                adapter.add(new PackageSenderServerI(), Ice.Util.stringToIdentity("packageSender"));
                 adapter.activate();
                 EventServerHelper.GetInstance().OnConnectChangeEvent(ConnectStateServer.Connect_Ready);
                 LogHelper.WriteSystemLog($"Client ICE:{GetIPStr()}");
