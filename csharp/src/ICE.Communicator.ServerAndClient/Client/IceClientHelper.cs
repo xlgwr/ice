@@ -1,5 +1,6 @@
 ﻿
 using Ice;
+using IceInternal;
 using Solomon.Log;
 using System;
 using System.Collections.Generic;
@@ -71,7 +72,7 @@ namespace SlmCommunicator.Client
         private EventClientHelper _eventHelper;
         public int ACM_TIME_OUT = 60; //60秒 //ACM心跳间隔
         private int CONN_TIME_OUT { get; set; } = 2000; //2秒 //连接超时
-        private int INVOCAION_TIME_OUT { get; set; } = 10 * 1000; //10秒 //调用超时
+        private int INVOCAION_TIME_OUT { get; set; } = 10 * 1000; //100秒 //调用超时
         /// <summary>
         /// 是否启用连接成功后的重连机制
         /// </summary>
@@ -151,6 +152,13 @@ namespace SlmCommunicator.Client
                 INVOCAION_TIME_OUT = INVOCAION_TIME_OUT * 50;
                 CONN_TIME_OUT = CONN_TIME_OUT * 5;
             }
+
+            if (type == ClientType.CACHE_SERVER)
+            {
+                INVOCAION_TIME_OUT = INVOCAION_TIME_OUT * 50;
+                CONN_TIME_OUT = CONN_TIME_OUT * 5;
+            }
+
             _mode = mode;
             _type = type;
             if (_mode == 't')
@@ -186,7 +194,7 @@ namespace SlmCommunicator.Client
         }
         public string GetIPStr()
         {
-            return $"{_clientId} {_uuid} {_ip}:{_port} CONN_TIME_OUT:{CONN_TIME_OUT}ms INVOCAION_TIME_OUT:{INVOCAION_TIME_OUT}ms NeedZip:{NeedZip} ACM_TIME_OUT:{ACM_TIME_OUT}";
+            return $"{_clientId} {_uuid} {_ip}:{_port} CONN_TIME_OUT:{CONN_TIME_OUT}ms INVOCAION_TIME_OUT:{INVOCAION_TIME_OUT}ms NeedZip:{NeedZip} ACM_TIME_OUT:{ACM_TIME_OUT},BZip2:{BZip2.supported()}";
         }
         private void workThread()
         {
@@ -210,10 +218,10 @@ namespace SlmCommunicator.Client
                 //initData.properties.setProperty("Ice.Override.Timeout", "500000");
 
                 //tcp,upd缓存 字节
-                initData.properties.setProperty("Ice.TCP.RcvSize", "10240000");
-                initData.properties.setProperty("Ice.TCP.SndSize", "10240000");
-                initData.properties.setProperty("Ice.UDP.RcvSize", "10240000");
-                initData.properties.setProperty("Ice.UDP.SndSize", "10240000");
+                initData.properties.setProperty("Ice.TCP.RcvSize", "1024000000");
+                initData.properties.setProperty("Ice.TCP.SndSize", "1024000000");
+                initData.properties.setProperty("Ice.UDP.RcvSize", "1024000000");
+                initData.properties.setProperty("Ice.UDP.SndSize", "1024000000");
                 //服务器线程设置
                 //initData.properties.setProperty("Ice.ThreadPool.Client.Size", "4");
                 //initData.properties.setProperty("Ice.ThreadPool.Client.SizeMax", "4");
@@ -318,6 +326,7 @@ namespace SlmCommunicator.Client
                     _uuid = Guid.NewGuid().ToString("N");
                     id.name = _uuid;
                     id.category = _clientId;
+                    _event._uuid = _uuid;
                     _server.RegClientExt(_receiver, id, (int)_type);
                 }
                 else if (_mode == 'o')
@@ -333,7 +342,8 @@ namespace SlmCommunicator.Client
                     _clientServer.activate();
                     _server.ice_getConnection().setAdapter(_clientServer);
                     //设置连接消息回调
-                    _server.ice_getConnection().setCallback(_event);
+                    _server.ice_getConnection().setCloseCallback(_event.closed);
+                    _server.ice_getConnection().setHeartbeatCallback(_event.heartbeat);
                     _server.RegClient(ident, (int)_type);
                 }
                 else if (_mode == 'p')
@@ -372,7 +382,8 @@ namespace SlmCommunicator.Client
                     _clientServer.activate();
                     _server.ice_getConnection().setAdapter(_clientServer);
                     //设置连接消息回调
-                    _server.ice_getConnection().setCallback(_event);
+                    _server.ice_getConnection().setCloseCallback(_event.closed);
+                    _server.ice_getConnection().setHeartbeatCallback(_event.heartbeat);
                     _server.RegQuotClient(ident, quotIdent, (int)_type);
                 }
 
@@ -382,6 +393,7 @@ namespace SlmCommunicator.Client
                 //发送连接成功的消息
                 _eventHelper.OnConnectionEvent(_uuid, ConnectStateClient.CONNECT_OK);
                 _isReady = true;
+                instance = IceInternal.Util.getInstance(_communicator);
                 _communicator?.waitForShutdown();
                 _communicator?.Dispose();
             }
@@ -473,7 +485,20 @@ namespace SlmCommunicator.Client
                 try
                 {
                     LogMsgAction?.Invoke("heartBeatProcess", $"开始断线重连:{GetIPStr()}", 1);
-                    _server.ice_ping();
+                    //检测是否连通，默认2秒超时
+                    var isOK = _server.ice_ping_WaitTimeOut(2000, GetIPStr());
+                    if (!isOK)
+                    {
+                        if (isRequestStartVote)
+                        {
+                            //第一次断开重联，触发请求投票
+                            _eventHelper.OnRequestStartVoteEvent(KeyIDAndType);
+                            isRequestStartVote = false;
+                        }
+                        //等待下一秒继续
+                        Thread.Sleep(1000);
+                        continue;
+                    }
                     if (this._isNormalClose)
                     {
                         LogMsgAction?.Invoke("heartBeatProcess", $"_isNormalClose is True,无需自动重连!{GetIPStr()}", 1);
@@ -487,7 +512,8 @@ namespace SlmCommunicator.Client
                         err = _server.RegClientExt(_receiver, id, (int)_type);
                         //注册连接回调
                         _event._uuid = _uuid;
-                        _server.ice_getConnection().setCallback(_event);
+                        _server.ice_getConnection().setCloseCallback(_event.closed);
+                        _server.ice_getConnection().setHeartbeatCallback(_event.heartbeat);
                     }
                     else if (_mode == 'o')//一条tcp
                     {
@@ -501,7 +527,8 @@ namespace SlmCommunicator.Client
                         _clientServer.activate();
                         _server.ice_getConnection().setAdapter(_clientServer);
                         //设置连接消息回调
-                        _server.ice_getConnection().setCallback(_event);
+                        _server.ice_getConnection().setCloseCallback(_event.closed);
+                        _server.ice_getConnection().setHeartbeatCallback(_event.heartbeat);
                         err = _server.RegClient(ident, (int)_type);
                     }
                     else if (_mode == 'p')
@@ -540,7 +567,8 @@ namespace SlmCommunicator.Client
                         _clientServer.activate();
                         _server.ice_getConnection().setAdapter(_clientServer);
                         //设置连接消息回调
-                        _server.ice_getConnection().setCallback(_event);
+                        _server.ice_getConnection().setCloseCallback(_event.closed);
+                        _server.ice_getConnection().setHeartbeatCallback(_event.heartbeat);
                         err = _server.RegQuotClient(ident, quotIdent, (int)_type);
                     }
                     if (err == 0 || err == 1)
@@ -620,6 +648,15 @@ namespace SlmCommunicator.Client
                 throw ex;
             }
         }
+        public Task<bool> ice_pingasync()
+        {
+            return _server.ice_pingasync();
+        }
+        public bool ice_ping_WaitTimeOut(int millisecondsTimeout = 2000)
+        {
+            return _server.ice_ping_WaitTimeOut(millisecondsTimeout);
+        }
+
         public int SSLInit(string clientId, string ip, string port, string path, string pem, string p12, string pass, string dllName)
         {
             //安全加密只支持一条tcp连接方式
@@ -1228,9 +1265,156 @@ namespace SlmCommunicator.Client
                 return null;
             }
         }
+        /// <summary>
+        /// 异步发送
+        /// </summary>
+        /// <param name="requestPackages"></param>
+        /// <returns></returns>
+        public Ice.AsyncResult<SlmCommunicator.Callback_PackageSenderCacheDB_SendPackageCacheTradeList> SendPackageCacheTradeListAsync(CacheTradeDB[] requestPackages, bool isChangeUUId = true)
+        {
+            try
+            {
+                if (_server == null)
+                {
+                    LogHelper.WriteErrorLog("通信失去连接-1,_server为null");
+                    return null;
+                }
+                if (isChangeUUId)
+                {
+                    UpdateParamUUID(requestPackages);
+                }
+                return _server.begin_SendPackageCacheTradeList(requestPackages);
+            }
+            catch (Ice.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1001", $"SendPackageCacheTradeListAsync:{requestPackages?.Length}");
+                return null;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1002", $"SendPackageCacheTradeListAsync:{requestPackages?.Length}");
+                return null;
+            }
+        }
+        /// <summary>
+        /// 异步发送
+        /// </summary>
+        /// <param name="requestPackages"></param>
+        /// <returns></returns>
+        public Ice.AsyncResult<SlmCommunicator.Callback_PackageSenderCacheDB_SendPackageCacheBaseList> SendPackageCacheBaseListAsync(PackageCacheDB[] requestPackages, bool isChangeUUId = true)
+        {
+            try
+            {
+                if (_server == null)
+                {
+                    LogHelper.WriteErrorLog("通信失去连接-1,_server为null");
+                    return null;
+                }
+                if (isChangeUUId)
+                {
+                    UpdateParamUUID(requestPackages);
+                }
+                return _server.begin_SendPackageCacheBaseList(requestPackages);
+            }
+            catch (Ice.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1001", $"SendPackageCacheBaseListAsync:{requestPackages?.Length}");
+                return null;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1002", $"SendPackageCacheBaseListAsync:{requestPackages?.Length}");
+                return null;
+            }
+        }
+        /// <summary>
+        /// 同步发送 ice stream list
+        /// </summary>
+        /// <param name="requestPackages"></param>
+        /// <returns></returns>
+        public StreamPackage SendStreamPackageList(StreamPackage[] requestPackages, string msgName = "Send", bool updateUUID = true)
+        {
+            try
+            {
+                if (_server == null)
+                {
+                    // LogHelper.WriteErrorLog("通信失去连接-1,_server为null");
+                    return null;
+                }
+                if (updateUUID)
+                {
+                    UpdateParamUUID(requestPackages);
+                }
+                return _server.SendICEStreamPackageList(requestPackages, msgName);
+            }
+            catch (Ice.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1001", $"SendStreamPackageList:{requestPackages?.Length}");
+                return null;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1002", $"SendStreamPackageList:{requestPackages?.Length}");
+                return null;
+            }
+        }
+        /// <summary>
+        /// 异步发送 ice stream list
+        /// </summary>
+        /// <param name="requestPackages"></param>
+        /// <returns></returns>
+        public Ice.AsyncResult<SlmCommunicator.Callback_PackageSender_SendICEStreamPackageList> SendStreamPackageListAsync(StreamPackage[] requestPackages, string msgName = "Send", bool updateUUID = true)
+        {
+            try
+            {
+                if (_server == null)
+                {
+                    // LogHelper.WriteErrorLog("通信失去连接-1,_server为null");
+                    return null;
+                }
+                if (updateUUID)
+                {
+                    UpdateParamUUID(requestPackages);
+                }
+                return _server.begin_SendICEStreamPackageList(requestPackages, msgName);
+            }
+            catch (Ice.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1001", $"SendStreamPackageListAsync:{requestPackages?.Length}");
+                return null;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "通信失去连接1002", $"SendStreamPackageListAsync:{requestPackages?.Length}");
+                return null;
+            }
+        }
         #endregion
         #region UUID update
-
+        /// <summary>
+        /// 更新参数中的uuid及clientid
+        /// </summary>
+        /// <param name="package"></param>
+        public void UpdateParamUUID(StreamPackage package)
+        {
+            if (package == null)
+            {
+                return;
+            }
+            package.UUID = _uuid;
+            package.ClientId = _clientId;
+        }
+        public void UpdateParamUUID(StreamPackage[] package)
+        {
+            if (package == null)
+            {
+                return;
+            }
+            foreach (var item in package)
+            {
+                UpdateParamUUID(item);
+            }
+        }
         /// <summary>
         /// 更新参数中的uuid及clientid
         /// </summary>
@@ -1243,6 +1427,20 @@ namespace SlmCommunicator.Client
             }
             package.PackageData.UUID = _uuid;
             package.PackageData.ClientId = _clientId;
+        }
+        public void UpdateParamUUID(CacheTradeDB[] package)
+        {
+            foreach (var item in package)
+            {
+                UpdateParamUUID(item);
+            }
+        }
+        public void UpdateParamUUID(PackageCacheDB[] package)
+        {
+            foreach (var item in package)
+            {
+                UpdateParamUUID(item);
+            }
         }
         public void UpdateParamUUID(PackageCacheDB package)
         {
@@ -1359,6 +1557,31 @@ namespace SlmCommunicator.Client
         public ObjectPrx GetObjectPrx()
         {
             return prx;
+        }
+        IceInternal.Instance instance;
+        public IceInternal.Instance GetInstanceOs()
+        {
+            lock (this)
+            {
+                if (instance != null)
+                {
+                    return instance;
+                }
+                if (_communicator == null)
+                {
+                    return IceInternal.Util.getInstance(Ice.Util.initialize());
+                }
+                instance = IceInternal.Util.getInstance(_communicator);
+                return instance;
+            }
+        }
+        public Ice.EncodingVersion GetEncodingVersion()
+        {
+            if (prx == null)
+            {
+                return Ice.Util.currentEncoding;
+            }
+            return prx.ice_getEncodingVersion();
         }
         #endregion
     }

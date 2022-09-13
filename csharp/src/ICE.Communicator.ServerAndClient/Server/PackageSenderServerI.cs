@@ -42,7 +42,8 @@ namespace SlmCommunicator.Server
                 PackageReceiverPrx client = PackageReceiverPrxHelper.uncheckedCast(@base);
                 Ice.IPConnectionInfo info = current.con.getInfo() as Ice.IPConnectionInfo;
                 ConnectionServerEvent conn = new ConnectionServerEvent(ident.name);
-                current.con.setCallback(conn);
+                current.con.setCloseCallback(conn.closed);
+                current.con.setHeartbeatCallback(conn.heartbeat);
                 if (info != null)
                 {
                     return SessionServerManager.GetInstance().AddClient(ident.category, ident.name, info.remoteAddress, info.remotePort.ToString(), type, client, null, conn);
@@ -59,7 +60,8 @@ namespace SlmCommunicator.Server
                 ConnectionServerEvent conn = new ConnectionServerEvent(ident.name);
                 //反注册
                 proxy.RegCallbackClient();
-                current.con.setCallback(conn);
+                current.con.setCloseCallback(conn.closed);
+                current.con.setHeartbeatCallback(conn.heartbeat);
                 if (info != null)
                 {
                     return SessionServerManager.GetInstance().AddClient(ident.category, ident.name, info.remoteAddress, info.remotePort.ToString(), type, proxy, null, conn);
@@ -81,7 +83,8 @@ namespace SlmCommunicator.Server
 
                 Ice.IPConnectionInfo info = current.con.getInfo() as Ice.IPConnectionInfo;
                 ConnectionServerEvent conn = new ConnectionServerEvent(ident.name);
-                current.con.setCallback(conn);
+                current.con.setCloseCallback(conn.closed);
+                current.con.setHeartbeatCallback(conn.heartbeat);
                 if (info != null)
                 {
                     return SessionServerManager.GetInstance().AddClient(ident.category, ident.name, info.remoteAddress, info.remotePort.ToString(), type, client, client2, conn);
@@ -155,6 +158,45 @@ namespace SlmCommunicator.Server
                 return sendHandle(requestField);
             }
             var rsp = new PackageCacheDB() { ErrorInfo = "SendPackageCacheBase 没有关联注册服务sendHandle处理方法!", ErrorNo = -1 };
+            return rsp;
+        }
+
+        public override CacheTradeDB SendPackageCacheTradeList(CacheTradeDB[] requestFieldes, Current current__)
+        {
+            //获取相应的服务
+            var sendHandle = EventServerHelper.GetInstance().GetReceivePackageCacheTradeListEvent();
+            if (sendHandle != null)
+            {
+                return sendHandle(requestFieldes);
+            }
+            int? serverNo = requestFieldes.FirstOrDefault()?.PackageData?.ServiceNo;
+            var rsp = new CacheTradeDB() { PackageData = new PackageCacheDB() { ServiceNo = serverNo.GetValueOrDefault(), ErrorInfo = "SendPackageCacheTradeList 没有关联注册服务sendHandle处理方法!", ErrorNo = -1 } };
+            return rsp;
+        }
+
+        public override PackageCacheDB SendPackageCacheBaseList(PackageCacheDB[] requestFieldes, Current current__)
+        {
+            //获取相应的服务
+            var sendHandle = EventServerHelper.GetInstance().GetReceivePackageCacheBaseListEvent();
+            if (sendHandle != null)
+            {
+                return sendHandle(requestFieldes);
+            }
+            int? serverNo = requestFieldes.FirstOrDefault()?.ServiceNo;
+            var rsp = new PackageCacheDB() { ServiceNo = serverNo.GetValueOrDefault(), ErrorInfo = "SendPackageCacheBaseList 没有关联注册服务sendHandle处理方法!", ErrorNo = -1 };
+            return rsp;
+        }
+
+        public override StreamPackage SendICEStreamPackageList(StreamPackage[] requestFields, string msgName, Current current__)
+        {
+            //获取相应的服务
+            var sendHandle = EventServerHelper.GetInstance().GetReceiveStreamPackageListEvent();
+            if (sendHandle != null)
+            {
+                return sendHandle(requestFields, msgName);
+            }
+            int? serverNo = requestFields.FirstOrDefault()?.ServiceNo;
+            var rsp = new StreamPackage() { ServiceNo = serverNo.GetValueOrDefault(), ErrorInfo = "SendICEStreamPackageList 没有关联注册服务sendHandle处理方法!", ErrorNo = -1 };
             return rsp;
         }
     }

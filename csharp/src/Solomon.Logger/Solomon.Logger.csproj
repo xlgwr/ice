@@ -66,15 +66,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AesHelper.cs" />
+    <Compile Include="BaseEntity\CacheTradeDBEx.cs" />
+    <Compile Include="BaseEntity\Deposit.cs" />
     <Compile Include="BaseEntity\ExtModels.cs" />
     <Compile Include="BaseEntity\GlobalErrorNo.cs" />
+    <Compile Include="BaseEntity\InternalType.cs" />
+    <Compile Include="BaseEntity\PackageCacheDBEx.cs" />
     <Compile Include="BaseEntity\PushData.cs" />
     <Compile Include="BaseEntity\CommunicationClientInfo.cs" />
     <Compile Include="BaseEntity\RequestData.cs" />
+    <Compile Include="BaseEntity\RequestPackageActiveSendEx.cs" />
+    <Compile Include="BaseEntity\RequestPackageLogSendEx.cs" />
+    <Compile Include="BaseEntity\RequestPackageOrderLogSendEx.cs" />
+    <Compile Include="BaseEntity\RequestPackagePushEx.cs" />
+    <Compile Include="BaseEntity\ResponsePackagePushEx.cs" />
+    <Compile Include="BaseEntity\RulesUtilHelper.cs" />
+    <Compile Include="BaseEntity\SlmOrder.cs" />
     <Compile Include="BaseInstance.cs" />
     <Compile Include="BaseLogClass.cs" />
+    <Compile Include="CommandDict.cs" />
     <Compile Include="ConfigHelp.cs" />
     <Compile Include="Country.cs" />
+    <Compile Include="DictionaryHelper.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="EnumHelper.cs" />
     <Compile Include="ExtensionClass.cs" />
@@ -85,7 +98,6 @@
     <Compile Include="LogHelper.cs" />
     <Compile Include="PagingInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RulesUtilHelper.cs" />
     <Compile Include="StopwatchHelper.cs" />
     <Compile Include="TradeServerLogFormat.cs" />
     <Compile Include="TypeConverters.cs" />

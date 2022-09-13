@@ -8,6 +8,11 @@ namespace Solomon.Logger.BaseEntity
 {
     public static class GlobalErrorNo
     {
+
+        /// <summary>
+        /// 当前增量号不连续
+        /// </summary>
+        public const int MsgNumNotSort = -7777;
         /// <summary>
         /// 当前增量号重复
         /// </summary>

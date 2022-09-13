@@ -28,6 +28,16 @@ namespace System
             }
             return decimal.Parse(str);
         }
+
+        public static string ScienceToString(this string str)
+        {
+            if (str.Contains("E"))
+            {
+                return Decimal.Parse(str, System.Globalization.NumberStyles.Float).ToString();
+            }
+            return str;
+        }
+
         public static bool IntToBool(this int i)
         {
             if (i == 1)
@@ -125,6 +135,14 @@ namespace System
             if (obj == null)
             {
                 return string.Empty;
+            }
+            return obj.ToString();
+        }
+        public static string ToNotNullString(this object obj, string defaultvalue = "")
+        {
+            if (obj == null)
+            {
+                return defaultvalue;
             }
             return obj.ToString();
         }
@@ -406,7 +424,21 @@ namespace System
                 return tmp;
             }
         }
+        public static decimal TryToDecimal(this double obj)
+        {
+            try
+            {
+                decimal tmp = Convert.ToDecimal(obj);
+                return tmp;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("double转decimal出错." + ex.Message);
+            }
 
+
+
+        }
         public static string TryToInterStr(this string obj)
         {
             var deci = obj.TryToDecimal();
@@ -507,10 +539,9 @@ namespace System
             return defaultV;
         }
 
-        public static Int64 ToInt64(this string m, Int64 defaultV = 0)
+        public static Int64 ToInt64(this string m, Int64 defaultV = -1)
         {
-            Int64 result = 0;
-            if (Int64.TryParse(m, out result))
+            if (Int64.TryParse(m, out Int64 result))
             {
                 return result;
             };
@@ -783,9 +814,27 @@ namespace System
             byte[] outputb = Convert.FromBase64String(m);
             return Encoding.Default.GetString(outputb);
         }
-        public static void SaveLogFile(this byte[] bytes, string logPath)
+
+        public static byte[] GetCopyArray(this byte[] bytes, int offset, int len)
         {
-            using (FileStream fs = new FileStream(logPath, FileMode.Append))
+            if (offset + len > bytes.Length)
+            {
+                throw new InvalidOperationException("buffer underflow");
+            }
+
+            byte[] array = new byte[len];
+            //Array.Copy(bytes, offset, array, 0, len);
+            System.Buffer.BlockCopy(bytes, offset, array, 0, len);
+            return array;
+        }
+        /// <summary>
+        /// 二进制流写文件
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="logPath"></param>
+        public static void SaveLogFile(this byte[] bytes, string logPath, FileMode fileMode = FileMode.Append)
+        {
+            using (FileStream fs = new FileStream(logPath, fileMode))
             {
                 //将byte数组写入文件中
                 fs.Seek(0, System.IO.SeekOrigin.End);
@@ -794,9 +843,18 @@ namespace System
                 fs.Close();
             }
         }
+        /// <summary>
+        /// 获取文件二进制流
+        /// </summary>
+        /// <param name="logPath"></param>
+        /// <returns></returns>
         public static byte[] GetbytesByFilePath(this string logPath)
         {
-            byte[] array;
+            byte[] array = null;
+            if (!logPath.FileExists())
+            {
+                return array;
+            }
             using (FileStream fs = new FileStream(logPath, FileMode.Open))
             {
                 //获取文件大小
@@ -1324,7 +1382,7 @@ namespace System
         /// <param name="datas"></param>
         public static void AddOrUpdateDatas(this ConcurrentDictionary<long, bool> dics, IEnumerable<long> datas, bool defaultvalue = false)
         {
-            if (dics == null || !datas.HasItem())
+            if (dics == null)
             {
                 return;
             }
@@ -1340,7 +1398,7 @@ namespace System
         /// <param name="datas"></param>
         public static void TryAddDatas(this ConcurrentDictionary<long, bool> dics, IEnumerable<long> datas, bool defaultvalue = false)
         {
-            if (dics == null || !datas.HasItem())
+            if (dics == null)
             {
                 return;
             }
@@ -1348,6 +1406,45 @@ namespace System
             {
                 dics.TryAdd(item, defaultvalue);
             }
+        }
+        public static void AddOrUpdateData(this SortedDictionary<long, bool> dics, IEnumerable<long> datas, bool defaultvalue = false)
+        {
+            if (dics == null)
+            {
+                return;
+            }
+            lock (dics)
+            {
+                foreach (var item in datas)
+                {
+                    dics[item] = defaultvalue;
+                }
+            }
+
+        }
+        /// <summary>
+        /// 对比，只存最大值
+        /// </summary>
+        /// <param name="dics"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static void AddMaxValue(this Dictionary<CacheSeverType, long> dics, CacheSeverType key, long value)
+        {
+            if (dics == null)
+            {
+                return;
+            }
+            if (!dics.ContainsKey(key))
+            {
+                dics[key] = value;
+                return;
+            }
+            if (dics[key] < value)
+            {
+                dics[key] = value;
+            }
+
+
         }
     }
 
@@ -1368,6 +1465,8 @@ namespace System
         public const decimal DEFAULT_PRICE = -999999;
         public const string NegativePrice = "NegativePrice";
         public static string NYMEX_CL { get; set; }
+
+        public static string CloseTime = "CloseTime";
 
 
     }
@@ -2119,6 +2218,7 @@ namespace System
             }
         }
     }
+
     public static class strExtsLen
     {
         public static int getLetterLen(this string StrContert)

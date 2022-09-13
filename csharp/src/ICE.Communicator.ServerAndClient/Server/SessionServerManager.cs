@@ -84,10 +84,11 @@ namespace SlmCommunicator.Server
     {
         #region 属性变量
         private static SessionServerManager _instance = null;
-        private static object _lock = new object();
-        private static object _lockPush = new object();
-        private static object _lockPushlist = new object();
-        private static object _lockRemove = new object();
+        private static readonly object _lock = new object();
+        private static readonly object _lockPush = new object();
+        private static readonly object _lockPushlist = new object();
+        private static readonly object _lockRemove = new object();
+        private static readonly object _lockPushQuote = new object();
         //private List<SessionInfo> _sessionList = new List<SessionInfo>();
         private Dictionary<string, SessionInfo> _sessionList = new Dictionary<string, SessionInfo>();
         private Dictionary<string, List<SessionInfo>> _sessionGroupList = new Dictionary<string, List<SessionInfo>>();
@@ -135,8 +136,10 @@ namespace SlmCommunicator.Server
                     //清理旧对象
                     var oldSessionInfo = _sessionList[connectionId];
                     LogHelper.CoreJsonLog($"开始断开旧对象:{connectionId}:{oldSessionInfo.IP}:{oldSessionInfo.Port}");
-                    oldSessionInfo.PackagePrx?.ice_getConnection()?.setCallbackNull();
-                    oldSessionInfo.QuotPackage?.ice_getConnection()?.setCallbackNull();
+                    oldSessionInfo.PackagePrx?.ice_getConnection()?.setCloseCallback(null);
+                    oldSessionInfo.PackagePrx?.ice_getConnection()?.setHeartbeatCallback(null);
+                    oldSessionInfo.QuotPackage?.ice_getConnection()?.setCloseCallback(null);
+                    oldSessionInfo.QuotPackage?.ice_getConnection()?.setHeartbeatCallback(null);
                     oldSessionInfo.PackagePrx?.ice_getConnection()?.close(ConnectionClose.Forcefully);
                     oldSessionInfo.QuotPackage?.ice_getConnection()?.close(ConnectionClose.Forcefully);
                     LogHelper.CoreJsonLog($"开始清理旧对象:{connectionId}:{oldSessionInfo.IP}:{oldSessionInfo.Port}");
@@ -518,12 +521,12 @@ namespace SlmCommunicator.Server
                     UpdateUUID(currSessionInfo, package);
                     currSessionInfo.PackagePrx.begin_ReceivePackageCacheTrade(package).whenCompleted(
                         (rsp) =>
-                            {
-                                LogHelper.WriteLog("whenCompleted_ReceivePackageCacheTrade", $"MsgId:{package.PackageData.MsgId},CallBack MsgId:{rsp.MsgId},{rsp.ServiceNo}");
-                                //收到回报处理回调
-                                EventServerHelper.GetInstance().OnReceivePackageCacheTradeAsyncCallBackEvent(rsp);
+                        {
+                            LogHelper.WriteLog("whenCompleted_ReceivePackageCacheTrade", $"MsgId:{package.PackageData.MsgId},CallBack MsgId:{rsp.MsgId},{rsp.ServiceNo}");
+                            //收到回报处理回调
+                            EventServerHelper.GetInstance().OnReceivePackageCacheTradeAsyncCallBackEvent(rsp);
 
-                            },
+                        },
                             (Ice.Exception ex) =>
                             {
                                 LogHelper.IceError(ex, "ReceivePackageCacheTrade1", package.toJsonStr());
@@ -554,6 +557,124 @@ namespace SlmCommunicator.Server
             }
         }
 
+        /// <summary>
+        /// 推送 ReceivePackageCacheTrade List
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public bool ReceivePackageCacheTradeListAsync(CacheTradeDB[] package, string connectionId)
+        {
+            try
+            {
+                lock (_lockPush)
+                {
+
+
+                    if (!_sessionList.ContainsKey(connectionId))
+                    {
+                        return false;
+                    }
+                    //Stopwatch stopwatch = new Stopwatch();
+                    //stopwatch.Start();
+                    var currSessionInfo = _sessionList[connectionId];
+                    UpdateUUID(currSessionInfo, package);
+                    currSessionInfo.PackagePrx.begin_ReceivePackageCacheTradeList(package).whenCompleted(
+                        (rsp) =>
+                        {
+                            LogHelper.WriteLog("whenCompleted_ReceivePackageCacheTradeList", $"MsgId:{rsp.MsgId},CallBack  ServiceNo {rsp.ServiceNo}");
+                            //收到回报处理回调
+                            EventServerHelper.GetInstance().OnReceivePackageCacheTradeAsyncCallBackEvent(rsp);
+
+                        },
+                            (Ice.Exception ex) =>
+                            {
+                                LogHelper.IceError(ex, "ReceivePackageCacheTradeList1", package.toJsonStr());
+                            });
+                    //var totalSeconds = stopwatch.Elapsed.TotalSeconds;
+                    //if (totalSeconds > 3)
+                    //{
+                    //	LogHelper.Error($"ReceivePackage:本次推送耗时{totalSeconds}");
+                    //}
+                    return true;
+                }
+            }
+            catch (Ice.UnknownException ex)
+            {
+                LogHelper.IceError(ex, "ReceivePackageCacheTradeList2", package.toJsonStr());
+                RemoveClient(connectionId);
+                return false;
+            }
+            catch (Ice.Exception ex)
+            {
+                LogHelper.IceError(ex, "ReceivePackageCacheTradeList3", package.toJsonStr());
+                RemoveClient(connectionId);
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 推送 ReceivePackageCacheDBListAsync List
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public bool ReceivePackageCacheBaseListAsync(PackageCacheDB[] package, string connectionId)
+        {
+            try
+            {
+                lock (_lockPush)
+                {
+
+
+                    if (!_sessionList.ContainsKey(connectionId))
+                    {
+                        return false;
+                    }
+                    //Stopwatch stopwatch = new Stopwatch();
+                    //stopwatch.Start();
+                    var currSessionInfo = _sessionList[connectionId];
+                    UpdateUUID(currSessionInfo, package);
+                    currSessionInfo.PackagePrx.begin_ReceivePackageCacheBaseList(package).whenCompleted(
+                        (rsp) =>
+                        {
+                            LogHelper.WriteLog("whenCompleted_ReceivePackageCacheDBListAsync", $"MsgId:{rsp.MsgId},CallBack  ServiceNo {rsp.ServiceNo}");
+                            //收到回报处理回调
+                            EventServerHelper.GetInstance().OnReceivePackageCacheTradeAsyncCallBackEvent(rsp);
+
+                        },
+                            (Ice.Exception ex) =>
+                            {
+                                LogHelper.IceError(ex, "ReceivePackageCacheDBListAsync", package.toJsonStr());
+                            });
+                    //var totalSeconds = stopwatch.Elapsed.TotalSeconds;
+                    //if (totalSeconds > 3)
+                    //{
+                    //	LogHelper.Error($"ReceivePackage:本次推送耗时{totalSeconds}");
+                    //}
+                    return true;
+                }
+            }
+            catch (Ice.UnknownException ex)
+            {
+                LogHelper.IceError(ex, "ReceivePackageCacheTradeList2", package.toJsonStr());
+                RemoveClient(connectionId);
+                return false;
+            }
+            catch (Ice.Exception ex)
+            {
+                LogHelper.IceError(ex, "ReceivePackageCacheTradeList3", package.toJsonStr());
+                RemoveClient(connectionId);
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         /// <summary>
         /// 推送 ReceivePackageCacheBase
         /// </summary>
@@ -614,6 +735,67 @@ namespace SlmCommunicator.Server
 
         #endregion
         #endregion
+
+
+        /// <summary>
+        /// 推送 ReceiveStreamPackage List
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public bool ReceiveStreamPackageListAsync(StreamPackage[] package, string msgName, string connectionId)
+        {
+            try
+            {
+                lock (_lockPush)
+                {
+
+
+                    if (!_sessionList.ContainsKey(connectionId))
+                    {
+                        return false;
+                    }
+                    //Stopwatch stopwatch = new Stopwatch();
+                    //stopwatch.Start();
+                    var currSessionInfo = _sessionList[connectionId];
+                    UpdateUUID(currSessionInfo, package);
+                    currSessionInfo.PackagePrx.begin_ReceiveICEStreamPackageList(package, msgName).whenCompleted(
+                        (rsp) =>
+                        {
+                            // LogHelper.WriteLog("whenCompleted_ReceiveStreamPackageList", $"MsgId:{package?.Length},CallBack MsgId:{rsp.MsgId},{rsp.ServiceNo}");
+                            //收到回报处理回调
+                        },
+                        (Ice.Exception ex) =>
+                        {
+                            LogHelper.IceError(ex, "ReceiveStreamPackageList1", package.toJsonStr());
+                        });
+                    //var totalSeconds = stopwatch.Elapsed.TotalSeconds;
+                    //if (totalSeconds > 3)
+                    //{
+                    //	LogHelper.Error($"ReceivePackage:本次推送耗时{totalSeconds}");
+                    //}
+                    return true;
+                }
+            }
+            catch (Ice.UnknownException ex)
+            {
+                LogHelper.IceError(ex, "ReceiveStreamPackageList2", package.toJsonStr());
+                RemoveClient(connectionId);
+                return false;
+            }
+            catch (Ice.Exception ex)
+            {
+                LogHelper.IceError(ex, "ReceiveStreamPackageList3", package.toJsonStr());
+                RemoveClient(connectionId);
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
         public bool ReceivePackageWithResult(ResponsePackage package, string connectionId)
         {
             try
@@ -708,22 +890,25 @@ namespace SlmCommunicator.Server
         {
             try
             {
-                //推送所有
-                if (connectionId.Equals(string.Empty))
+                lock (_lockPushQuote)
                 {
-                    foreach (var info in _sessionList.Values)
+                    //推送所有
+                    if (connectionId.Equals(string.Empty))
                     {
-                        info.QuotPackage.begin_PushPackage(type, nfArray.ToArray(), dArray.ToArray());
+                        foreach (var info in _sessionList.Values)
+                        {
+                            info.QuotPackage.begin_PushPackage(type, nfArray.ToArray(), dArray.ToArray());
+                        }
+                        return true;
                     }
+                    //推送某个客户端
+                    if (!_sessionList.ContainsKey(connectionId))
+                    {
+                        return false;
+                    }
+                    _sessionList[connectionId].QuotPackage.begin_PushPackage(type, nfArray.ToArray(), dArray.ToArray());
                     return true;
                 }
-                //推送某个客户端
-                if (!_sessionList.ContainsKey(connectionId))
-                {
-                    return false;
-                }
-                _sessionList[connectionId].QuotPackage.begin_PushPackage(type, nfArray.ToArray(), dArray.ToArray());
-                return true;
             }
             catch (Ice.UnknownException ex)
             {
@@ -760,6 +945,13 @@ namespace SlmCommunicator.Server
                 item.UUID = uuid.ConnectionId;
             }
         }
+        void UpdateUUID(SessionInfo uuid, CacheTradeDB[] package)
+        {
+            foreach (var item in package)
+            {
+                UpdateUUID(uuid, item);
+            }
+        }
         void UpdateUUID(SessionInfo uuid, ResponsePackage package)
         {
             package.UUID = uuid.ConnectionId;
@@ -770,12 +962,31 @@ namespace SlmCommunicator.Server
             package.UUID = uuid.ConnectionId;
             package.ClientId = uuid.ClientId;
         }
+        void UpdateUUID(SessionInfo uuid, PackageCacheDB[] package)
+        {
+            foreach (var item in package)
+            {
+                UpdateUUID(uuid, item);
+            }
+        }
         void UpdateUUID(SessionInfo uuid, CacheTradeDB package)
         {
             package.PackageData.UUID = uuid.ConnectionId;
             package.PackageData.ClientId = uuid.ClientId;
         }
-        #endregion
+        void UpdateUUID(SessionInfo uuid, StreamPackage[] package)
+        {
+            foreach (var item in package)
+            {
+                UpdateUUID(uuid, item);
+            }
+        }
+        void UpdateUUID(SessionInfo uuid, StreamPackage package)
+        {
+            package.UUID = uuid.ConnectionId;
+            package.ClientId = uuid.ClientId;
+        }
+        #endregion  
         #endregion
     }
 }

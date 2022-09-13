@@ -160,4 +160,42 @@ namespace System
         [Description("内存服务")]
         CACHE_SERVER = 29,
     }
+
+    /// <summary>
+    /// StreamPackage 对象映射
+    /// 1,9:SlmOrderBody 2,10:SlmOrderJourBody 3:SendOrderStatusBody 4,11:SlmMatchBody 5:PushOrderStateBody 6:PushMatchStateBody
+    /// 7:SlmPositionRow 8:SlmCloseRow 12:Deposits
+    /// </summary>
+    public enum PackageOrderType
+    {
+        Unkow = 0,
+        SlmOrderBody = 1,
+        SlmOrderJourBody = 2,
+        SendOrderStatusBody = 3,
+        SlmMatchBody = 4,
+        PushMatchStateBody = 5,
+        PushOrderStateBody = 6,
+        SlmPositionRow = 7,
+        SlmCloseRow = 8,
+        Orders = 9,
+        Orderjours = 10,
+        Trades = 11,
+        Deposits = 12
+
+    }
+    /// <summary>
+    /// 数据库MsgName标记
+    /// </summary>
+    public enum StreamPackageMsgNameEnum
+    {       
+        DB = 1
+    } 
+
+    public static class EnumCurrExts
+    {
+        public static string ToIntString(this PackageOrderType e)
+        {
+            return ((int)e).ToString();
+        }
+    }
 }

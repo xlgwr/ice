@@ -180,12 +180,12 @@ namespace Solomon.Log
                 "order_no",
                 "order_date",
                 "order_time",
-                "strategy_reference",
-                "strategy_type",
-                "strategy_content",
                 "proxy_id",
-                "front_id",
+                "router_no",
                 "init_date",
+                "order_status",
+                "action",
+                "msg_num",
             };
             servers.Add(slc);
             #endregion

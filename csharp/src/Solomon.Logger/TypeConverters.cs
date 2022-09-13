@@ -16,7 +16,7 @@ namespace System
         {
             Type type = typeof(T);
             object obj = Activator.CreateInstance<T>();
-            PropertyInfo[] pis = type.GetProperties().OrderBy(a=>a.MetadataToken).ToArray();
+            PropertyInfo[] pis = type.GetProperties().OrderBy(a => a.MetadataToken).ToArray();
             PropertyInfo PInfo = null;
             for (int num = 0; num < array.Count(); num++)
             {
@@ -31,13 +31,41 @@ namespace System
                     {
                         PInfo.SetValue(obj, Convert.ToSByte(array[num]));
                     }
+                    else if (PInfo.PropertyType == typeof(byte) && !string.IsNullOrEmpty(array[num]))
+                    {
+                        PInfo.SetValue(obj, Convert.ToByte(array[num]));
+                    }
+                    else if (PInfo.PropertyType == typeof(int) && !string.IsNullOrEmpty(array[num]))
+                    {
+                        PInfo.SetValue(obj, Convert.ToInt32(array[num]));
+                    }
+                    else if (PInfo.PropertyType == typeof(Int16) && !string.IsNullOrEmpty(array[num]))
+                    {
+                        PInfo.SetValue(obj, Convert.ToInt16(array[num]));
+                    }
                     else if (PInfo.PropertyType == typeof(Int32) && !string.IsNullOrEmpty(array[num]))
                     {
                         PInfo.SetValue(obj, Convert.ToInt32(array[num]));
                     }
+                    else if (PInfo.PropertyType == typeof(UInt32) && !string.IsNullOrEmpty(array[num]))
+                    {
+                        PInfo.SetValue(obj, Convert.ToUInt32(array[num]));
+                    }
+                    else if (PInfo.PropertyType == typeof(uint) && !string.IsNullOrEmpty(array[num]))
+                    {
+                        PInfo.SetValue(obj, Convert.ToUInt32(array[num]));
+                    }
+                    else if (PInfo.PropertyType == typeof(UInt64) && !string.IsNullOrEmpty(array[num]))
+                    {
+                        PInfo.SetValue(obj, Convert.ToUInt64(array[num]));
+                    }
                     else if (PInfo.PropertyType == typeof(short) && !string.IsNullOrEmpty(array[num]))
                     {
                         PInfo.SetValue(obj, Convert.ToInt16(array[num]));
+                    }
+                    else if (PInfo.PropertyType == typeof(double) && !string.IsNullOrEmpty(array[num]))
+                    {
+                        PInfo.SetValue(obj, Convert.ToDouble(array[num]));
                     }
                     else if (PInfo.PropertyType == typeof(Decimal) && !string.IsNullOrEmpty(array[num]))
                     {
@@ -62,6 +90,13 @@ namespace System
                     else if (PInfo.PropertyType == typeof(IsCrash) && !string.IsNullOrEmpty(array[num]))
                     {
                         PInfo.SetValue(obj, (array[num]).GetValue<IsCrash>());
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(array[num]))
+                        {
+                            LogHelper.WriteLog("ErrorLog", $"StringArray2Object:{type.Name} {PInfo.Name} 转换类型：{PInfo.PropertyType}不存在，{array[num]}");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -226,7 +261,7 @@ namespace System
             foreach (T model in modelList)
             {
                 DataRow dataRow = dt.NewRow();
-                PropertyInfo[] pArray = typeof(T).GetProperties().OrderBy(a => a.MetadataToken).ToArray(); 
+                PropertyInfo[] pArray = typeof(T).GetProperties().OrderBy(a => a.MetadataToken).ToArray();
                 foreach (PropertyInfo propertyInfo in pArray)
                 {
                     dataRow[propertyInfo.Name] = propertyInfo.GetValue(model, null);
@@ -235,7 +270,25 @@ namespace System
             }
             return dt;
         }
+        public static DataTable FillDataTable<T>(this T model)
+        {
+            if (model == null)
+            {
+                return new DataTable();
+            }
+            DataTable dt = CreateData(model);
 
+            DataRow dataRow = dt.NewRow();
+            PropertyInfo[] pArray = typeof(T).GetProperties().OrderBy(a => a.MetadataToken).ToArray();
+            foreach (PropertyInfo propertyInfo in pArray)
+            {
+                dataRow[propertyInfo.Name] = propertyInfo.GetValue(model, null);
+            }
+
+            dt.Rows.Add(dataRow);
+
+            return dt;
+        }
         /// <summary>
         /// 根据实体类得到表结构
         /// </summary>

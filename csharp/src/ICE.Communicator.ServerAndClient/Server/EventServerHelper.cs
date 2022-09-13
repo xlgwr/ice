@@ -15,6 +15,9 @@ namespace SlmCommunicator.Server
     public delegate ResponsePackage SendPackageServerEventHandler(RequestPackageEx param);
     public delegate ResponsePackageOrderBackMsg SendPackageListServerEventHandler(RequestPackageOrder[] param);
     public delegate CacheTradeDB SendPackageCacheTradeServerEventHandler(CacheTradeDB param);
+    public delegate CacheTradeDB SendPackageCacheTradeListServerEventHandler(CacheTradeDB[] param);
+    public delegate PackageCacheDB SendPackageCacheBaseListServerEventHandler(PackageCacheDB[] param);
+    public delegate StreamPackage SendStreamPackageListServerEventHandler(StreamPackage[] param, string msgName);
     public delegate PackageCacheDB SendPackageCacheDBServerEventHandler(PackageCacheDB param);
     public delegate int SendPackageLogServerEventHandler(RequestPackageLog param);
     public delegate int SendPackageLogListServerEventHandler(RequestPackageOrderLog[] param);
@@ -24,6 +27,9 @@ namespace SlmCommunicator.Server
     public delegate bool ReceivePackageServerEventHandler(ResponsePackage package, string uuid);
     public delegate PackageCacheDB ReceivePackageCacheTradeServerEventHandler(CacheTradeDB package, string uuid);
     public delegate bool ReceivePackageCacheTradeServerAsyncEventHandler(CacheTradeDB package, string uuid);
+    public delegate bool ReceivePackageCacheTradeListServerAsyncEventHandler(CacheTradeDB[] package, string uuid);
+    public delegate bool ReceivePackageCacheDBListServerAsyncEventHandler(PackageCacheDB[] package, string uuid);
+    public delegate bool ReceiveStreamPackageListServerEventHandler(StreamPackage[] package, string msgName, string uuid);
     public delegate void ReceivePackageCacheTradeServerAsyncCallBackEventHandler(PackageCacheDB package);
     public delegate bool ReceivePackageCacheBaseServerEventHandler(PackageCacheDB package, string uuid);
     public delegate bool ReceivePackageListServerEventHandler(ResponsePackageOrder[] package, string uuid);
@@ -44,6 +50,9 @@ namespace SlmCommunicator.Server
         private event SendPackageServerEventHandler SendPackageEvent;
         private event SendPackageListServerEventHandler SendPackageListEvent;
         private event SendPackageCacheTradeServerEventHandler SendPackageCacheTradeEvent;
+        private event SendPackageCacheTradeListServerEventHandler SendPackageCacheTradeListEvent;
+        private event SendPackageCacheBaseListServerEventHandler SendPackageCacheBaseListEvent;
+        private event SendStreamPackageListServerEventHandler SendStreamPackageListEvent;
         private event SendPackageCacheDBServerEventHandler SendPackageCacheDBEvent;
         private event SendPackageLogServerEventHandler SendPackageLogEvent;
         private event SendPackageLogListServerEventHandler SendPackageLogListEvent;
@@ -53,6 +62,9 @@ namespace SlmCommunicator.Server
         private event ReceivePackageServerEventHandler ReceivePackageEvent;
         private event ReceivePackageCacheTradeServerEventHandler ReceivePackageCacheTradeEvent;
         private event ReceivePackageCacheTradeServerAsyncEventHandler ReceivePackageCacheTradeAsyncEvent;
+        private event ReceivePackageCacheTradeListServerAsyncEventHandler ReceivePackageCacheTradeListAsyncEvent;
+        private event ReceivePackageCacheDBListServerAsyncEventHandler ReceivePackageCacheDBListAsyncEvent;
+        private event ReceiveStreamPackageListServerEventHandler ReceiveStreamPackageListAsyncEvent;
         private event ReceivePackageCacheTradeServerAsyncCallBackEventHandler ReceivePackageCacheTradeAsyncCallBackEvent;
         private event ReceivePackageCacheBaseServerEventHandler ReceivePackageCacheBaseAsyncEvent;
         private event ReceivePackageListServerEventHandler ReceivePackageListEvent;
@@ -121,6 +133,12 @@ namespace SlmCommunicator.Server
 
             ReceivePackageCacheBaseAsyncEvent = null;
             ReceivePackageCacheTradeAsyncEvent = null;
+
+            SendStreamPackageListEvent = null;
+            ReceiveStreamPackageListAsyncEvent = null;
+
+            ReceivePackageCacheDBListAsyncEvent = null;
+            ReceivePackageCacheTradeListAsyncEvent = null;
         }
 
         #region 发送打包数据
@@ -164,6 +182,49 @@ namespace SlmCommunicator.Server
         public SendPackageCacheTradeServerEventHandler GetReceivePackageCacheTradeEvent()
         {
             return SendPackageCacheTradeEvent;
+        }
+        #endregion
+        #region 发送打包数据,SendPackageCacheTradeList
+        public void RegSendPackageCacheTradeListEvent(SendPackageCacheTradeListServerEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                SendPackageCacheTradeListEvent += messageHandler;
+            }
+        }
+
+        public SendPackageCacheTradeListServerEventHandler GetReceivePackageCacheTradeListEvent()
+        {
+            return SendPackageCacheTradeListEvent;
+        }
+        #endregion
+
+        #region 发送打包数据,SendPackageCacheBaseList
+        public void RegSendPackageCacheBaseListEvent(SendPackageCacheBaseListServerEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                SendPackageCacheBaseListEvent += messageHandler;
+            }
+        }
+
+        public SendPackageCacheBaseListServerEventHandler GetReceivePackageCacheBaseListEvent()
+        {
+            return SendPackageCacheBaseListEvent;
+        }
+        #endregion
+        #region 发送打包数据,SendStreamPackageList
+        public void RegSendStreamPackageListEvent(SendStreamPackageListServerEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                SendStreamPackageListEvent += messageHandler;
+            }
+        }
+
+        public SendStreamPackageListServerEventHandler GetReceiveStreamPackageListEvent()
+        {
+            return SendStreamPackageListEvent;
         }
         #endregion
         #region 发送打包数据,SendPackageCacheDB
@@ -375,6 +436,24 @@ namespace SlmCommunicator.Server
             return false;
         }
         #endregion
+        #region 接收打包数据 ReceivePackageCacheTradeList Async
+        public void RegReceivePackageCacheTradeListAsyncEvent(ReceivePackageCacheTradeListServerAsyncEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceivePackageCacheTradeListAsyncEvent += messageHandler;
+            }
+        }
+
+        public bool OnReceivePackageCacheTradeListAsyncEvent(CacheTradeDB[] package, string uuid)
+        {
+            if (ReceivePackageCacheTradeListAsyncEvent != null)
+            {
+                return ReceivePackageCacheTradeListAsyncEvent(package, uuid);
+            }
+            return false;
+        }
+        #endregion
         #region 接收打包数据 ReceivePackageCacheTrade CallBack Async
         /// <summary>
         /// 注册异步回调,回包处理
@@ -400,6 +479,51 @@ namespace SlmCommunicator.Server
         }
         #endregion
 
+        #region 接收打包数据 ReceiveStreamPackageList Async
+        public void RegReceiveStreamPackageListAsyncEvent(ReceiveStreamPackageListServerEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceiveStreamPackageListAsyncEvent += messageHandler;
+            }
+        }
+
+        public bool OnReceiveStreamPackageListAsyncEvent(StreamPackage[] package, string msgName, string uuid)
+        {
+            if (ReceiveStreamPackageListAsyncEvent != null)
+            {
+                return ReceiveStreamPackageListAsyncEvent(package, msgName, uuid);
+            }
+            return false;
+        }
+        #endregion
+
+
+        #region 接收打包数据 ReceivePackageCacheDB list Async
+        /// <summary>
+        /// 注册异步回调,回包处理
+        /// </summary>
+        /// <param name="messageHandler"></param>
+        public void RegReceivePackageCacheBaseListAsyncEvent(ReceivePackageCacheDBListServerAsyncEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceivePackageCacheDBListAsyncEvent += messageHandler;
+            }
+        }
+        /// <summary>
+        /// 推送后的回包处理
+        /// </summary>
+        /// <param name="package"></param>
+        public bool OnReceivePackageCacheDBListAsyncEvent(PackageCacheDB[] package, string uuid)
+        {
+            if (ReceivePackageCacheDBListAsyncEvent != null)
+            {
+                return ReceivePackageCacheDBListAsyncEvent(package, uuid);
+            }
+            return false;
+        }
+        #endregion
 
         #region 客户端连接变化事件
         public void RegSessionChangeEvent(SessionChangeServerEventHandler messageHandler)

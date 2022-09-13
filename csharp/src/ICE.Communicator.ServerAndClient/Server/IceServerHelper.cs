@@ -21,7 +21,7 @@ namespace SlmCommunicator.Server
         private string _port = string.Empty;
         private bool _isReady = false;
         public int ACM_TIME_OUT = 60; //60秒 心跳间隔
-        public bool _iszip = false;
+        public string needZip = string.Empty;
         #region ssl
         private bool _enableSSL = false;
         private string _sslPath = string.Empty;
@@ -81,10 +81,10 @@ namespace SlmCommunicator.Server
                 initData.properties.setProperty("Ice.MessageSizeMax", "2097152");//最大2GB 2097152KB;
                 //initData.properties.setProperty("Ice.Override.Timeout", "5000");
                 //tcp,upd缓存 字节
-                initData.properties.setProperty("Ice.TCP.RcvSize", "10240000");
-                initData.properties.setProperty("Ice.TCP.SndSize", "10240000");
-                initData.properties.setProperty("Ice.UDP.RcvSize", "10240000");
-                initData.properties.setProperty("Ice.UDP.SndSize", "10240000");
+                initData.properties.setProperty("Ice.TCP.RcvSize", "1024000000");
+                initData.properties.setProperty("Ice.TCP.SndSize", "1024000000");
+                initData.properties.setProperty("Ice.UDP.RcvSize", "1024000000");
+                initData.properties.setProperty("Ice.UDP.SndSize", "1024000000");
                 //服务器线程设置
                 //initData.properties.setProperty("Ice.ThreadPool.Client.Size", "4");
                 //initData.properties.setProperty("Ice.ThreadPool.Client.SizeMax", "4");
@@ -115,11 +115,10 @@ namespace SlmCommunicator.Server
                 };
 
                 _communicator = Ice.Util.initialize(initData);
-                string needZip = string.Empty;
-                if (System.Configuration.ConfigurationManager.AppSettings["NeedZip"] == "1" || _iszip)
+                needZip = string.Empty;
+                if (System.Configuration.ConfigurationManager.AppSettings["NeedZip"] == "1")
                 {
                     needZip = " -z";
-                    _iszip = true;
                 }
                 endPointStr = string.Format("tcp -h {0} -p {1}{2}", _ip, _port, needZip);
                 if (_enableSSL) //如果启用SSL
@@ -137,8 +136,8 @@ namespace SlmCommunicator.Server
                 adapter.add(new PackageSenderServerI(), _communicator.stringToIdentity("packageSender"));
                 adapter.activate();
                 EventServerHelper.GetInstance().OnConnectChangeEvent(ConnectStateServer.Connect_Ready);
-
                 LogHelper.WriteSystemLog($"Client ICE:{GetIPStr()}");
+                _communicatorInstance = new Instance(_communicator, initData);
                 _communicator.waitForShutdown();
                 _communicator?.Dispose();
                 _communicator = null;
@@ -152,11 +151,10 @@ namespace SlmCommunicator.Server
         #endregion
 
         #region 公有方法
-        public int Init(string ip, string port, bool iszip = false)
+        public int Init(string ip, string port)
         {
             _ip = ip;
             _port = port;
-            _iszip = iszip;
             Thread initThread = new Thread(workThread);
             initThread.IsBackground = true;
             initThread.Name = "initIceThread";
@@ -199,14 +197,14 @@ namespace SlmCommunicator.Server
         }
         public string GetIPStr()
         {
-            return $"{_ip}:{_port} ACM_TIME_OUT：{ACM_TIME_OUT},_iszip:{_iszip}";
+            return $"{_ip}:{_port} ACM_TIME_OUT：{ACM_TIME_OUT},needZip:{needZip},BZip2:{BZip2.supported()}";
         }
         //public byte[] readByteSeq(SlmOrderRow requestPackageOrderLog)
         //{
         //    BasicStream os__ = new BasicStream(GetInstanceOs(), new Ice.EncodingVersion(3, 6));
         //    SlmCommunicator.SlmOrderRow.write__(os__, requestPackageOrderLog);
         //    var dd = os__.getBuffer();
-        //    return dd.b.rawBytes();
+        //    return dd.b.rawBytes(0, dd.size());
         //}
         //public SlmOrderRow GetSlmOrderRow(byte[] readByteSeq)
         //{
@@ -217,15 +215,26 @@ namespace SlmCommunicator.Server
         //}
         public Instance GetInstanceOs()
         {
-            if (initData == null)
+            lock (this)
             {
-                initData = new Ice.InitializationData();
+                if (_communicatorInstance != null)
+                {
+                    return _communicatorInstance;
+                }
+                if (initData == null)
+                {
+                    initData = new Ice.InitializationData();
+                }
+                if (_communicatorInstance == null)
+                {
+                    _communicatorInstance = new Instance(_communicator, initData);
+                }
+                return _communicatorInstance;
             }
-            if (_communicatorInstance == null)
-            {
-                _communicatorInstance = new Instance(_communicator, initData);
-            }
-            return _communicatorInstance;
+        }
+        private Ice.EncodingVersion GetEncodingVersion()
+        {
+            return Ice.Util.currentEncoding;
         }
         #endregion
     }

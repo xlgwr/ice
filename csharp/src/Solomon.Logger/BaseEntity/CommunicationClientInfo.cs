@@ -157,6 +157,31 @@ namespace System
         Deposit = 4
     }
     /// <summary>
+    /// 主要用于持久化写CacheTradeDB log
+    /// 表示日志为发送，还是接收
+    /// PackageCacheDB 
+    /// 参数：DatasDic 加 k:v "MsgTypeForLog":"Receive"
+    /// </summary>
+    public class MsgTypeForLog
+    {
+        public const string MsgTypeForLogKey = "MsgTypeForLog";
+        public const string Receive = "Receive";
+        public const string Send = "Send";
+        public const string ReceiveClient = "ReceiveClient";
+        public const string ReceiveServer = "ReceiveServer";
+        public const string Recover = "Recover";
+        public const string RecoverServer = "RecoverServer";
+        public const string RecoverClient = "RecoverClient";
+        public const string Other = "Other";
+        #region StreamPackage对象
+        public const string PackageOrderType = "PackageOrderType";
+        /// <summary>
+        /// 用于区分DB操作
+        /// </summary>
+        public const string MsgNameForDB = "DB";
+        #endregion
+    }
+    /// <summary>
     /// 内存服务器服务号
     /// </summary>
     public enum CacheSeverServiceNo
@@ -179,6 +204,15 @@ namespace System
         /// 主向备推送差异文件更新
         /// </summary>
         Cache_Recover_Check = 38200000,
+        /// <summary>
+        /// 恢复文件相关检测及恢复
+        /// 主向备推送全量恢复文件更新
+        /// </summary>
+        Cache_AllRecover_Check = 38200001,
+        /// <summary>
+        /// 默认合包回报服务号
+        /// </summary>
+        TE_All_DEFAUL = 38300000,
         /// <summary>
         /// 获取全量 委托数据缓存
         /// </summary>
@@ -282,6 +316,28 @@ namespace System
         /// 增量消息 数据同步
         /// </summary>
         TE_DEPOSIT_OFFSET = 38000034,
+        /// <summary>
+        /// 成交转移主备交易服资金同步
+        /// </summary>
+        TE_TRADECHANGE_FUND = 38000035,
+
+        /// <summary>
+        /// 备交易服获取主交易的委托消息恢复文件
+        /// </summary>
+        TE_OrderMsgRecovery = 38000036,
+        /// <summary>
+        /// 备交易服获取主交易的委托流水消息恢复文件
+        /// </summary>
+        TE_OrderJourMsgRecovery = 38000037,
+        /// <summary>
+        /// 备交易服获取主交易的成交消息恢复文件
+        /// </summary>
+        TE_MatchMsgRecovery = 38000038,
+        /// <summary>
+        /// 备交易服获取主交易的成交消息恢复文件
+        /// </summary>
+        TE_DepositMsgRecovery = 38000039,
+
     }
 
     public enum ActiveStandbyFrontServiceNo
@@ -292,6 +348,7 @@ namespace System
     public enum ActiveStandbyTradeServiceNo
     {
         TE_ACTIVE_SENDPROXY_FAILED = 58000000,
+        TE_ACTIVE_READY = 58000001,
     }
 
     public enum GatewayServiceNo
@@ -300,5 +357,31 @@ namespace System
         /// 网关推送增量消息
         /// </summary>
         TE_QUERY_ORDER_RETURN = 930010
+    }
+
+    /// <summary>
+    /// 持久化服务号
+    /// </summary>
+    public enum PersistentServiceNo
+    {
+        /// <summary>
+        /// 同步数据备服务
+        /// </summary>
+        TE_PUSH_STANDBY_LOG = 68000000
+    }
+
+    public enum TradeDataType
+    {
+        SlmOrder = 1,
+        SlmOrderJour = 2,
+        SlmMatch = 3,
+        Deposit = 4
+    }
+
+    public class ToStandby
+    {
+        //public TradeDataType type { get; set; }
+        public int serviceNo { get; set; }
+        public object obj { get; set; }
     }
 }

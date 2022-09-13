@@ -148,13 +148,13 @@ namespace SlmCommunicator.Client
         /// <summary>
         /// 释放资源
         /// </summary>
-        public async void Dispose()
+        public void Dispose()
         {
             if (_ice != null)
             {
                 _ice.SetNormalClose();
                 //关闭ice
-                await _ice.Close();
+                _ice.Close();
 
                 _ice = null;
             }
@@ -629,7 +629,7 @@ namespace SlmCommunicator.Client
                 }, (Ice.Exception excb) =>
                 {
                     LogHelper.Error(excb, "通信失去连接", $"SendPackageCacheTradeAsync:{requestPackages.toJsonStr()}");
-                    _eventHelper.OnReceivePackageEvent(new ResponsePackage() { ServiceNo = requestPackages.PackageData.ServiceNo, ErrorNo = 1001, ErrorInfo = excb.toJsonStr(), DataBody = requestPackages.PackageData.DataBody });
+                    //_eventHelper.OnReceivePackageEvent(new ResponsePackage() { ServiceNo = requestPackages.PackageData.ServiceNo, ErrorNo = 1001, ErrorInfo = excb.toJsonStr(), DataBody = requestPackages.PackageData.DataBody });
 
                 });
                 result = true;
@@ -637,6 +637,96 @@ namespace SlmCommunicator.Client
             catch (System.Exception ex)
             {
                 LogHelper.Error(ex, "SendPackageCacheTradeAsync", requestPackages.toJsonStr());
+            }
+            return result;
+        }
+        public bool SendPackageCacheTradeListAsync(CacheTradeDB[] requestPackages, bool isChangeUUId = true)
+        {
+            var result = false;
+            try
+            {
+                if (_ice == null)
+                {
+                    return result;
+                }
+                if (!requestPackages.HasItem())
+                {
+                    LogHelper.Error("SendPackageCacheTradeListAsync requestPackages 不能为null");
+                    return false;
+                }
+                var rspPackage = _ice.SendPackageCacheTradeListAsync(requestPackages, isChangeUUId);
+                if (rspPackage == null)
+                {
+                    return false;
+                }
+
+                rspPackage.whenCompleted((CacheTradeDB rsp) =>
+                {
+                    _eventHelper.OnReceivePackageCacheTradeListAsynCallBackEvent(rsp);
+
+                }, (Ice.Exception excb) =>
+                {
+                    LogHelper.Error(excb, "通信失去连接", $"SendPackageCacheTradeAsync:{requestPackages.toJsonStr()}");
+                    //foreach (var item in requestPackages)
+                    //{
+                    //    _eventHelper.OnReceivePackageEvent(new ResponsePackage() { ServiceNo = item.PackageData.ServiceNo, ErrorNo = 1001, ErrorInfo = excb.toJsonStr(), DataBody = item.PackageData.DataBody });
+                    //}
+
+                });
+                result = true;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "SendPackageCacheTradeAsync", requestPackages.toJsonStr());
+            }
+            return result;
+        }
+        /// <summary>
+        /// 合包 cache base
+        /// </summary>
+        /// <param name="requestPackages"></param>
+        /// <param name="isChangeUUId"></param>
+        /// <returns></returns>
+
+        public bool SendPackageCacheBaseListAsync(PackageCacheDB[] requestPackages, bool isChangeUUId = true)
+        {
+            var result = false;
+            try
+            {
+                if (_ice == null)
+                {
+                    return result;
+                }
+                if (!requestPackages.HasItem())
+                {
+                    LogHelper.Error("SendPackageCacheBaseListAsync requestPackages 不能为null");
+                    return false;
+                }
+                var rspPackage = _ice.SendPackageCacheBaseListAsync(requestPackages, isChangeUUId);
+                if (rspPackage == null)
+                {
+                    return false;
+                }
+
+                rspPackage.whenCompleted((PackageCacheDB rsp) =>
+                {
+                    var dd = new CacheTradeDB() { PackageData = rsp };
+                    _eventHelper.OnReceivePackageCacheTradeListAsynCallBackEvent(dd);
+
+                }, (Ice.Exception excb) =>
+                {
+                    LogHelper.Error(excb, "通信失去连接", $"SendPackageCacheBaseListAsync:{requestPackages.toJsonStr()}");
+                    //foreach (var item in requestPackages)
+                    //{
+                    //    _eventHelper.OnReceivePackageEvent(new ResponsePackage() { ServiceNo = item.PackageData.ServiceNo, ErrorNo = 1001, ErrorInfo = excb.toJsonStr(), DataBody = item.PackageData.DataBody });
+                    //}
+
+                });
+                result = true;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "SendPackageCacheBaseListAsync", requestPackages.toJsonStr());
             }
             return result;
         }
@@ -673,7 +763,123 @@ namespace SlmCommunicator.Client
             }
             return result;
         }
+        /// <summary>
+        /// 同步
+        /// </summary>
+        /// <param name="requestPackages"></param>
+        /// <param name="msgName"></param>
+        /// <param name="updateUUID"></param>
+        /// <returns></returns>
+        public StreamPackage SendStreamPackageList(StreamPackage[] requestPackages, string msgName = "Send", bool updateUUID = true)
+        {
+            if (_ice == null)
+            {
+                return null;
+            }
+            try
+            {
+                if (!requestPackages.HasItem())
+                {
+                    LogHelper.Error("CacheTradeDB PackageData List 不能为null");
+                    return null;
+                }
 
+                var result = _ice.SendStreamPackageList(requestPackages, msgName, updateUUID);
+
+                return result;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "SendStreamPackageAsync", requestPackages.toJsonStr());
+            }
+            return null;
+        }
+        /// <summary>
+        /// 异步发送 ice stream list
+        /// </summary>
+        /// <param name="requestPackages"></param>
+        /// <returns></returns>
+        public bool SendStreamPackageListAsync(StreamPackage[] requestPackages, string msgName = "Send", bool updateUUID = true)
+        {
+            var result = false;
+            if (_ice == null)
+            {
+                return result;
+            }
+            try
+            {
+                if (!requestPackages.HasItem())
+                {
+                    LogHelper.Error("CacheTradeDB PackageData List 不能为null");
+                    return false;
+                }
+
+                var rspPackage = _ice.SendStreamPackageListAsync(requestPackages, msgName, updateUUID);
+                if (rspPackage == null)
+                {
+                    return false;
+                }
+
+                rspPackage.whenCompleted((StreamPackage rsp) =>
+                {
+                    _eventHelper.OnReceiveStreamPackageEvent(rsp);
+
+                }, (Ice.Exception excb) =>
+                {
+                    LogHelper.Error(excb, "通信失去连接", $"SendStreamPackageListAsync:{requestPackages.toJsonStr()}");
+
+                    foreach (var item in requestPackages)
+                    {
+                        _eventHelper.OnReceivePackageEvent(new ResponsePackage() { ErrorNo = 1001, ErrorInfo = excb.toJsonStr(), DataBody = item.DataBody });
+                    }
+
+                });
+                result = true;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "SendStreamPackageAsync", requestPackages.toJsonStr());
+            }
+            return result;
+        }
+        public bool SendStreamPackageListAsync(StreamPackage[] requestPackages, Action<StreamPackage[]> actionErrorToDo, string msgName = "Send", bool updateUUID = true)
+        {
+            var result = false;
+            if (_ice == null)
+            {
+                return result;
+            }
+            try
+            {
+                if (!requestPackages.HasItem())
+                {
+                    LogHelper.Error("CacheTradeDB PackageData List 不能为null");
+                    return false;
+                }
+
+                var rspPackage = _ice.SendStreamPackageListAsync(requestPackages, msgName, updateUUID);
+                if (rspPackage == null)
+                {
+                    return false;
+                }
+
+                rspPackage.whenCompleted((StreamPackage rsp) =>
+                {
+                    _eventHelper.OnReceiveStreamPackageEvent(rsp);
+
+                }, (Ice.Exception excb) =>
+                {
+                    LogHelper.Error(excb, "通信失去连接", $"SendStreamPackageListAsync:{requestPackages.toJsonStr()}");
+                    actionErrorToDo?.Invoke(requestPackages);
+                });
+                result = true;
+            }
+            catch (System.Exception ex)
+            {
+                LogHelper.Error(ex, "SendStreamPackageAsync", requestPackages.toJsonStr());
+            }
+            return result;
+        }
         #endregion
         #endregion
         #region 日志发送功能
@@ -865,6 +1071,15 @@ namespace SlmCommunicator.Client
         }
         #endregion
 
+        /// <summary>
+        /// 注册收包StreamPackage回调事件
+        /// </summary>
+        /// <param name="call"></param>
+        /// <returns></returns>
+        public int RegReceiveStreamPackageEvent(ReceiveStreamPackageClientEventHandler call)
+        {
+            return _eventHelper.RegReceiveStreamPackageEvent(call);
+        }
 
         /// <summary>
         /// 注册收包回调事件
@@ -881,6 +1096,11 @@ namespace SlmCommunicator.Client
         public int RegResponseListEvent(ReceivePackageListClientEventHandler call)
         {
             return _eventHelper.RegReceivePackageListEvent(call);
+        }
+
+        public int RegReceiveStreamPackageListEvent(ReceiveStreamPackageListClientEventHandler messageHandler)
+        {
+            return _eventHelper.RegReceiveStreamPackageListEvent(messageHandler);
         }
         /// <summary>
         /// 注册 SendPackageListAsyn 发送回包 异步回调
@@ -907,6 +1127,25 @@ namespace SlmCommunicator.Client
         public int RegReceivePackageCacheTradeEvent(ReceivePackageCacheTradeClientEventHandler call)
         {
             return _eventHelper.RegReceivePackageCacheTradeEvent(call);
+        }
+        /// <summary>
+        /// 注册收包CacheTrade回调事件 list
+        /// </summary>
+        /// <param name="call"></param>
+        /// <returns></returns>
+        public int RegReceivePackageCacheTradeListEvent(ReceivePackageCacheTradeListClientEventHandler call)
+        {
+            return _eventHelper.RegReceivePackageCacheTradeListEvent(call);
+        }
+
+        /// <summary>
+        /// 注册收包CacheTrade回调事件 list 回报
+        /// </summary>
+        /// <param name="call"></param>
+        /// <returns></returns>
+        public int RegReceivePackageCacheTradeListAsynCallBackEvent(ReceivePackageCacheTradeListAsynCallBackClientEventHandler call)
+        {
+            return _eventHelper.RegReceivePackageCacheTradeListAsynCallBackEvent(call);
         }
         /// <summary>
         /// 连接成功后,第一次断线重连时,失败后,调用投票功能
@@ -977,6 +1216,39 @@ namespace SlmCommunicator.Client
                 throw ex;
             }
 
+        }
+        /// <summary>
+        /// 默认2秒
+        /// </summary>
+        /// <param name="millisecondsTimeout"></param>
+        /// <returns></returns>
+        public bool ice_ping_WaitTimeOut(int millisecondsTimeout = 2000)
+        {
+            return _ice.ice_ping_WaitTimeOut(millisecondsTimeout);
+
+        }
+        IceInternal.Instance instance;
+        public IceInternal.Instance GetInstanceOs()
+        {
+            if (instance != null)
+            {
+                return instance;
+            }
+            if (_ice == null)
+            {
+                return IceInternal.Util.getInstance(Ice.Util.initialize());
+            }
+            instance = _ice.GetInstanceOs();
+            return instance;
+
+        }
+        public Ice.EncodingVersion GetEncodingVersion()
+        {
+            if (_ice == null)
+            {
+                return Util.currentEncoding;
+            }
+            return _ice.GetEncodingVersion();
         }
         #endregion
     }

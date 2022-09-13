@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Trade.DataType;
 
 namespace Solomon.Log
 {
@@ -19,6 +20,18 @@ namespace Solomon.Log
         public string servertype { get; set; } = "1";
     }
 
+    public class ByteLogObj
+    {
+
+
+        public byte[][] BytesArray { get; set; }
+
+
+        public string FileName { get; set; }
+
+
+        public PackageOrderType packageOrderType { get; set; }
+    }
     /// <summary>
     /// 日志帮助类
     /// </summary>
@@ -43,12 +56,20 @@ namespace Solomon.Log
         private static LogHelper _instance = null;
         private static object _writeLock = new object();
 
-        private int _fileSize = 500; //默认文件大小50M
+        private int _fileSize = 20; //默认文件大小50M
         private string _filePath = "Log";
         private List<string> _errLog = new List<string>();
         private bool _stop = false;
         private Queue<LogData> _dataQueue = new Queue<LogData>();
         ConcurrentDictionary<string, ConcurrentQueue<LogData>> logQueueDatas = new ConcurrentDictionary<string, ConcurrentQueue<LogData>>();
+
+        ConcurrentQueue<ByteLogObj> ByteLogObjQueue = new ConcurrentQueue<ByteLogObj>();
+
+
+        public void EqueueByteLogObjQueue(ByteLogObj byteLogObj)
+        {
+            ByteLogObjQueue.Enqueue(byteLogObj);
+        }
 
         private Dictionary<string, StreamWriter> _writeList = new Dictionary<string, StreamWriter>();
         private Dictionary<string, int> _filePart = new Dictionary<string, int>();
@@ -58,6 +79,10 @@ namespace Solomon.Log
         /// </summary>
         private static Dictionary<string, int> _fileLinePart = new Dictionary<string, int>();
         /// <summary>
+        /// 记录需要按二进制文件写文件
+        /// </summary>
+        private static Dictionary<string, int> _fileICEBytePart = new Dictionary<string, int>();
+        /// <summary>
         /// 每个文件，最大行限制
         /// 默认为1w行
         /// </summary>
@@ -65,6 +90,7 @@ namespace Solomon.Log
         private WriteEventHandle _writeHandle;
         private long _mb = 1024 * 1024;
         public static bool IsSettle { get; set; } = false;
+        public static int LogTrade { get; set; }
 
         private static object _fileNameQueueLock = new object();
         #region 每10毫秒更新一次时间变量 
@@ -105,6 +131,39 @@ namespace Solomon.Log
         /// yyyyMMdd HHmmss
         /// </summary>
         public string DateTimeNowyyyyMMddHHmmss { get; private set; }
+        /// <summary>
+        /// 全局主备标识
+        /// </summary>
+        public bool IsActiveTradeService { get; set; }
+
+        /// <summary>
+        /// 主内存服连接成功，或者主备切换完成
+        /// </summary>
+        public bool IsActiveMemReady { get; set; } = false;
+        /// <summary>
+        /// 全局交易日
+        /// </summary>
+        public int TradeDate { get; set; }
+
+        /// <summary>
+        /// 期货交易
+        /// </summary>
+        public bool FutTrade { get; set; }
+
+        /// <summary>
+        /// 期权交易
+        /// </summary>
+        public bool OptTrade { get; set; }
+
+        /// <summary>
+        /// 价差交易
+        /// </summary>
+        public bool SpdTrade { get; set; }
+
+        /// <summary>
+        /// 是否写本地日志
+        /// </summary>
+        public string NotLogLocal { get; set; } = "";
         #endregion
 
         void AddLogueueDatas(LogData logData)
@@ -119,10 +178,378 @@ namespace Solomon.Log
 
         }
 
+        /// <summary>
+        /// 单条写二进制文件
+        /// </summary>
+        /// <param name="by">内容</param>
+        /// <param name="filename">日志文件名</param>
+        /// <param name="packageOrderType">类型</param>
+        /// <param name="isLineFilePath">按实体数限制</param>
+        public void WriteOneBytelog(byte[] by, string filename, PackageOrderType packageOrderType, bool isLineFilePath = false)
+        {
+            byte[][] bs = new byte[1][];
+            bs[0] = by;
+            //恢复日志转字节流写文件
+            ByteLogObj byteLogObj = new ByteLogObj
+            {
+                BytesArray = bs,
+                FileName = filename,
+                packageOrderType = packageOrderType
+            };
+            //按行分文件
+            if (isLineFilePath && !_fileLinePart.ContainsKey(filename))
+            {
+                int allLine = GetLineAllByLimitByte(filename);
+                //记数初始化
+                _fileLinePart.Add(filename, allLine);
+
+            }
+            EqueueByteLogObjQueue(byteLogObj);
+        }
+
+        /// <summary>
+        /// 多条写二进制文件
+        /// </summary>
+        /// <param name="by">内容</param>
+        /// <param name="filename">日志文件名</param>
+        /// <param name="packageOrderType">类型</param>
+        public void WriteBytelog(byte[][] bys, string filename, PackageOrderType packageOrderType)
+        {
+            //恢复日志转字节流写文件
+            ByteLogObj byteLogObj = new ByteLogObj
+            {
+                BytesArray = bys,
+                FileName = filename,
+                packageOrderType = packageOrderType
+            };
+            EqueueByteLogObjQueue(byteLogObj);
+        }
+
+        void WriteQueueLogToFile()
+        {
+
+            if (!ByteLogObjQueue.IsEmpty)
+            {
+                Dictionary<PackageOrderType, List<ByteLogObj>> keyValuePairs = new Dictionary<PackageOrderType, List<ByteLogObj>>();
+
+                while (!ByteLogObjQueue.IsEmpty)
+                {
+                    ByteLogObj byteLogObj;
+                    var obj = ByteLogObjQueue.TryDequeue(out byteLogObj);
+
+                    if (keyValuePairs.ContainsKey(byteLogObj.packageOrderType))
+                    {
+                        keyValuePairs[byteLogObj.packageOrderType].Add(byteLogObj);
+                    }
+                    else
+                    {
+                        var objs = new List<ByteLogObj>();
+                        objs.Add(byteLogObj);
+                        keyValuePairs.Add(byteLogObj.packageOrderType, objs);
+                    }
+                }
+
+                foreach (var item in keyValuePairs.Keys)
+                {
+                    try
+                    {
+                        ByteWriteLog(keyValuePairs[item]);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+
+                }
+            }
+        }
+
+        void ByteWriteLog(List<ByteLogObj> byteLogObjs)
+        {
+            var names = byteLogObjs.Select(t => t.FileName).Distinct();
+            foreach (var fileName in names)
+            {
+                var sameNameByteLogObjs = byteLogObjs.FindAll(t => t.FileName == fileName);
+                //var path = _filePath + byteLogObjs[0].FileName + ".log";
+                //按大小分文件
+                string fName = fileName;
+                int part = 0;
+                if (_filePart.ContainsKey(fileName))
+                {
+                    part = _filePart[fileName];
+                }
+                else
+                {
+                    _filePart.Add(fileName, part);
+                }
+                if (part > 0)
+                {
+                    fName = fName + "_" + part;
+                }
+                string path = string.Format("{0}{1}.log", _filePath, fName);
+
+
+                if (_fileLinePart.ContainsKey(fileName))
+                {
+                    //按行分文件
+                    #region 按行分文件   
+                    int msgLine = sameNameByteLogObjs.Count;
+
+                    //总行+要存的行
+                    long Alllines = _fileLinePart[fileName] + msgLine;
+                    //已存文件数对应行数
+                    long currSaveLine = part * _baseLineLimt;
+                    //求差，是否大于限制行
+                    int currModel = (int)(Alllines - currSaveLine - _baseLineLimt);
+                    bool isNewPart = currModel >= 0;
+                    if (isNewPart)
+                    {
+                        //补全当前文件为最大LineLimt
+                        int toTakeLine = (part + 1) * _baseLineLimt - _fileLinePart[fileName];
+                        WriteByteFielStream(path, sameNameByteLogObjs, 0, toTakeLine);
+
+                        _fileLinePart[fileName] += msgLine;//更新总行数
+
+                        //剩下的行
+                        int lastLine = msgLine - toTakeLine;
+                        if (lastLine <= _baseLineLimt)
+                        {
+                            //分文件加剩下的行
+                            //分
+                            part++;
+                            _filePart[fileName] = part; //更新
+                            fName = fileName + "_" + part;
+                            path = string.Format("{0}{1}.log", _filePath, fName);
+
+                            WriteByteFielStream(path, sameNameByteLogObjs, toTakeLine, _baseLineLimt);
+                        }
+                        else
+                        {
+                            //剩下行的倍数
+                            int tmpLastNextNumPath = lastLine / _baseLineLimt;
+                            //求模，存于最后一个文件
+                            int tmpLastModel = lastLine % _baseLineLimt;
+                            int skipNext = toTakeLine;
+
+                            for (int i = 0; i < tmpLastNextNumPath; i++)
+                            {
+                                part++;
+                                _filePart[fileName] = part; //更新
+                                fName = fileName + "_" + part;
+                                path = string.Format("{0}{1}.log", _filePath, fName);
+
+                                skipNext = toTakeLine + i * _baseLineLimt;
+                                WriteByteFielStream(path, sameNameByteLogObjs, skipNext, _baseLineLimt);
+                            }
+
+                            if (tmpLastModel > 0)
+                            {
+                                part++;
+                                _filePart[fileName] = part; //更新
+                                fName = fileName + "_" + part;
+                                path = string.Format("{0}{1}.log", _filePath, fName);
+
+                                //跳过
+                                skipNext = toTakeLine + tmpLastNextNumPath * _baseLineLimt;
+
+                                WriteByteFielStream(path, sameNameByteLogObjs, skipNext, _baseLineLimt);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        WriteByteFielStream(path, sameNameByteLogObjs);
+                        _fileLinePart[fileName] += msgLine;//更新总行数
+                    }
+                    #endregion
+                }
+                else
+                {
+                    //按大小分文件
+                    while (File.Exists(path))
+                    {
+                        FileInfo fiInput = new FileInfo(path);
+                        #region 按大小分文件
+                        long len = fiInput.Length;
+                        float mb = (float)len / _mb;
+
+                        //当文件大小超过设定值，则分块
+                        if (mb >= _fileSize)
+                        {
+                            part++;
+                            _filePart[fileName] = part; //更新
+                            fName = fileName + "_" + part;
+                            path = string.Format("{0}{1}.log", _filePath, fName);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                        #endregion
+                    }
+                    WriteByteFielStream(path, sameNameByteLogObjs);
+                }
+
+            }
+        }
+        void WriteByteFielStream(string path, List<ByteLogObj> sameNameByteLogObjs, int skipNum, int takeNum)
+        {
+            var logMsg = sameNameByteLogObjs.Skip(skipNum).Take(takeNum).ToList();
+            WriteByteFielStream(path, logMsg);
+        }
+        void WriteByteFielStream(string path, List<ByteLogObj> sameNameByteLogObjs)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            {
+                foreach (var byteLogObj in sameNameByteLogObjs)
+                {
+                    var FileName = byteLogObj.FileName;
+                    var bytesTwo = byteLogObj.BytesArray;
+                    var packageOrderType = byteLogObj.packageOrderType;
+                    for (int i = 0; i < bytesTwo.Length; i++)
+                    {
+                        byte[] bytes = bytesTwo[i];
+                        byte[] datalen = BitConverter.GetBytes(bytes.Length);
+                        byte dataType = ((byte)packageOrderType);
+                        //写入类型
+                        fs.Write(new byte[] { dataType }, 0, 1);
+                        //写入长度
+                        fs.Write(datalen, 0, datalen.Length);
+
+                        // 写入保留位
+                        byte[] bk = new byte[20];
+                        fs.Write(bk, 0, bk.Length);
+                        fs.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                fs.Close();
+            }
+        }
+
+        public List<byte[]> ReadByteFileByName(string fileName, out PackageOrderType packageOrderType)
+        {
+
+            string fName = fileName;
+            int part = 0;
+            string path = string.Format("{0}{1}.log", _filePath, fName);
+            // string logMsg = addTime ? string.Format("【{0}】{1}", this.DateTimeNowAll, msg) : msg;
+            //按大小分文件
+            packageOrderType = PackageOrderType.Unkow;
+            List<byte[]> bytes = new List<byte[]>();
+            while (File.Exists(path))
+            {
+                FileInfo fiInput = new FileInfo(path);
+                bytes.AddRange(ReadByteFileByPath(path, out packageOrderType));
+                part++;
+                _filePart[fileName] = part; //更新
+                fName = fileName + "_" + part;
+                path = string.Format("{0}{1}.log", _filePath, fName);
+
+            }
+            return bytes;
+
+
+        }
+        public List<byte[]> ReadByteFileByPath(string FilePath, out PackageOrderType packageOrderType)
+        {
+
+            try
+            {
+                FileStream fr = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                long size = fr.Length;
+                byte[] buf = new byte[size];
+                fr.Read(buf, 0, buf.Length);
+                fr.Close();
+                int skpNum = 0;
+                List<byte[]> bytes = new List<byte[]>();
+                packageOrderType = PackageOrderType.Unkow;
+                while (skpNum < buf.Length)
+                {
+                    if (skpNum == 0)
+                    {
+                        packageOrderType = (PackageOrderType)buf[0];
+                    }
+                    byte[] head = new byte[4];
+                    Buffer.BlockCopy(buf, skpNum + 1, head, 0, 4);
+                    int len = BitConverter.ToInt32(head, 0);
+                    skpNum += 5;
+                    skpNum += 20;//保留字节
+                    byte[] tail = new byte[len];
+                    Buffer.BlockCopy(buf, skpNum, tail, 0, len);
+                    skpNum += len;
+                    bytes.Add(tail);
+                }
+
+                return bytes;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return new List<byte[]>();
+
+        }
+        /// <summary>
+        /// 混合字节流读取
+        /// </summary>
+        /// <param name="FilePath"></param>
+        /// <returns></returns>
+        public Dictionary<PackageOrderType, List<byte[]>> ReadByteFileByPathDic(string FilePath)
+        {
+
+            Dictionary<PackageOrderType, List<byte[]>> bytesDic = new Dictionary<PackageOrderType, List<byte[]>>();
+            try
+            {
+                FileStream fr = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                long size = fr.Length;
+                byte[] buf = new byte[size];
+                fr.Read(buf, 0, buf.Length);
+                fr.Close();
+                int skpNum = 0;
+                var packageOrderType = PackageOrderType.Unkow;
+                while (skpNum < buf.Length)
+                {
+                    //if (skpNum == 0)
+                    {
+                        packageOrderType = (PackageOrderType)buf[skpNum];
+                    }
+                    byte[] head = new byte[4];
+                    Buffer.BlockCopy(buf, skpNum + 1, head, 0, 4);
+                    int len = BitConverter.ToInt32(head, 0);
+                    skpNum += 5;
+                    skpNum += 20;//保留字节
+                    byte[] tail = new byte[len];
+                    Buffer.BlockCopy(buf, skpNum, tail, 0, len);
+                    skpNum += len;
+                    if (!bytesDic.ContainsKey(packageOrderType))
+                    {
+                        bytesDic[packageOrderType] = new List<byte[]>() { tail };
+                    }
+                    else
+                    {
+                        bytesDic[packageOrderType].Add(tail);
+                    }
+                }
+
+                return bytesDic;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return bytesDic;
+
+        }
+
+
         void NewQueueWriteLog()
         {
             try
             {
+
                 foreach (var item in logQueueDatas.Keys)
                 {
                     StringBuilder stringBuilder = new StringBuilder();
@@ -170,7 +597,17 @@ namespace Solomon.Log
 
         public static LogHelper GetInstance()
         {
-
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        string logPath = string.Format("{0}Log\\{1}", System.AppDomain.CurrentDomain.BaseDirectory, LogTrade.ToString());
+                        _instance = new LogHelper(logPath, 20, 10000);
+                    }
+                }
+            }
             return _instance;
         }
         string SystemLog = "SystemLog.log";
@@ -277,6 +714,7 @@ namespace Solomon.Log
                     //}
                     ////处理消息
                     //processCommand(comm);
+                    WriteQueueLogToFile();
                     NewQueueWriteLog();
 
                 }
@@ -287,6 +725,9 @@ namespace Solomon.Log
                 Thread.Sleep(1);
             }
         }
+
+
+
 
         private bool haveLog()
         {
@@ -461,6 +902,10 @@ namespace Solomon.Log
             }
             //写日志
             string path = string.Format("{0}{1}.log", tmpPath, fileName);
+            if (!File.Exists(path))
+            {
+                return result;
+            }
             result[0] = path;
 
             if (part > 0)
@@ -469,6 +914,10 @@ namespace Solomon.Log
                 {
                     fName = fileName + "_" + i;
                     path = string.Format("{0}{1}.log", tmpPath, fName);
+                    if (!File.Exists(path))
+                    {
+                        continue;
+                    }
                     result[i] = path;
                 }
             }
@@ -518,31 +967,57 @@ namespace Solomon.Log
                         if (isNewPart)
                         {
                             //补全当前文件为最大LineLimt
-                            logMsg = string.Join(Environment.NewLine, allLineString.Take(msgLine - currModel));
-                            using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
-                            {
-                                file.Write(logMsg);// 直接追加文件末尾，换行 
-                                file.Flush();
-                            }
+                            int toTakeLine = (part + 1) * _baseLineLimt - _fileLinePart[fileName];
+                            WriteFile(path, allLineString, 0, toTakeLine);
 
-                            //分文件加剩下的行
-                            //分
-                            part++;
                             _fileLinePart[fileName] += msgLine;//更新总行数
-                            _filePart[fileName] = part; //更新
-                            fName = fileName + "_" + part;
-                            path = string.Format("{0}{1}.log", _filePath, fName);
 
-                            logMsg = string.Join(Environment.NewLine, allLineString.Skip(msgLine - currModel));
-                            if (!logMsg.IsNullOrWhiteSpace())
+                            //剩下的行
+                            int lastLine = msgLine - toTakeLine;
+                            if (lastLine <= _baseLineLimt)
                             {
-                                logMsg += Environment.NewLine;
+                                //分文件加剩下的行
+                                //分
+                                part++;
+                                _filePart[fileName] = part; //更新
+                                fName = fileName + "_" + part;
+                                path = string.Format("{0}{1}.log", _filePath, fName);
+
+                                WriteFile(path, allLineString, toTakeLine, _baseLineLimt);
                             }
-                            using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
+                            else
                             {
-                                file.Write(logMsg);// 直接追加文件末尾，换行 
-                                file.Flush();
+                                //剩下行的倍数
+                                int tmpLastNextNumPath = lastLine / _baseLineLimt;
+                                //求模，存于最后一个文件
+                                int tmpLastModel = lastLine % _baseLineLimt;
+                                int skipNext = toTakeLine;
+
+                                for (int i = 0; i < tmpLastNextNumPath; i++)
+                                {
+                                    part++;
+                                    _filePart[fileName] = part; //更新
+                                    fName = fileName + "_" + part;
+                                    path = string.Format("{0}{1}.log", _filePath, fName);
+
+                                    skipNext = toTakeLine + i * _baseLineLimt;
+                                    WriteFile(path, allLineString, skipNext, _baseLineLimt);
+                                }
+
+                                if (tmpLastModel > 0)
+                                {
+                                    part++;
+                                    _filePart[fileName] = part; //更新
+                                    fName = fileName + "_" + part;
+                                    path = string.Format("{0}{1}.log", _filePath, fName);
+
+                                    //跳过
+                                    skipNext = toTakeLine + tmpLastNextNumPath * _baseLineLimt;
+
+                                    WriteFile(path, allLineString, skipNext, _baseLineLimt);
+                                }
                             }
+
                             return 0;
                         }
                         else
@@ -592,6 +1067,19 @@ namespace Solomon.Log
                     return -1;
                 }
                 return 0;
+            }
+        }
+        public static void WriteFile(string path, string[] allLineString, int skipNum, int takeNum)
+        {
+            string logMsg = string.Join(Environment.NewLine, allLineString.Skip(skipNum).Take(takeNum));
+            if (!logMsg.IsNullOrWhiteSpace())
+            {
+                logMsg += Environment.NewLine;
+            }
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
+            {
+                file.Write(logMsg);// 直接追加文件末尾，换行 
+                file.Flush();
             }
         }
         /// <summary>
@@ -657,6 +1145,50 @@ namespace Solomon.Log
                 return _baseLineLimt;
             }
         }
+        public Dictionary<string,int> GetFileLinePart()
+        {
+            return _fileLinePart;
+        }
+        /// <summary>
+        /// 返回文件part最后一个文件及对应总行数
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static int GetLineAllByLimitByte(string filename)
+        {
+            string fName = filename;
+            int part = 0;
+            if (_instance == null)
+            {
+                return 0;
+            }
+            var filePath = _instance._filePath;
+            var filePart = _instance._filePart;
+            if (filePart.ContainsKey(filename))
+            {
+                part = filePart[filename];
+            }
+            else
+            {
+                filePart.Add(filename, part);
+            }
+            //获取最后的文件名
+            if (part > 0)
+            {
+                fName = fName + "_" + part;
+            }
+            string path = string.Format("{0}{1}.log", filePath, fName);
+            if (!path.FileExists())
+            {
+                return 0;
+            }
+            PackageOrderType packageOrderType = PackageOrderType.Unkow;
+            int allLine = _instance.ReadByteFileByPath(path, out packageOrderType).Count;
+
+            var result = part * _instance._baseLineLimt + allLine;
+
+            return result;
+        }
         /// <summary>
         /// 返回文件part最后一个文件及对应总行数
         /// </summary>
@@ -692,6 +1224,46 @@ namespace Solomon.Log
             allLine = part * _instance._baseLineLimt + allLine;
 
             return allLine;
+        }
+        /// <summary>
+        /// 取最后一个日志文件的字节流
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static List<byte[]> GetByteByEndFile(string filename, out PackageOrderType packageOrderType)
+        {
+            string fName = filename;
+            int part = 0;
+            packageOrderType = PackageOrderType.Unkow;
+
+            if (_instance == null)
+            {
+                return new List<byte[]>();
+            }
+            var filePath = _instance._filePath;
+            var filePart = _instance._filePart;
+            if (filePart.ContainsKey(filename))
+            {
+                part = filePart[filename];
+            }
+            else
+            {
+                filePart.Add(filename, part);
+            }
+            //获取最后的文件名
+            if (part > 0)
+            {
+                fName = fName + "_" + part;
+            }
+            string path = string.Format("{0}{1}.log", filePath, fName);
+
+            if (!path.FileExists())
+            {
+                return new List<byte[]>();
+            }
+            var allByte = _instance.ReadByteFileByPath(path, out packageOrderType);
+
+            return allByte;
         }
         private static string dataFormart(string[] data)
         {
@@ -736,7 +1308,6 @@ namespace Solomon.Log
         /// <param name="fileSize">文件大小，单位MB</param>
         /// <returns></returns>
         public static int Init(string filePath, int fileSize, int fileLine = 10000)
-
         {
             //实列化文件操作
             if (_instance == null)
@@ -810,7 +1381,7 @@ namespace Solomon.Log
         {
             try
             {
-                WriteLog(fileName, string.Format("【{0}】 {1} \r\n", info, ex.ToString()));
+                WriteLog(fileName, string.Format("【{0}】 {1} \r\n", info, ex.toJsonStr()));
             }
             catch //(Exception e)
             {
@@ -1003,6 +1574,53 @@ namespace Solomon.Log
         }
         #endregion
 
+        #region 公用方法
+        /// <summary>
+        /// 根据服务号获取服务类型
+        /// </summary>
+        /// <param name="serverNo"></param>
+        /// <returns></returns>
+        public PackageOrderType GetServerNoToOrderType(int serverNo)
+        {
+            var resultType = PackageOrderType.Unkow;
+            switch (serverNo)
+            {
+                case (int)TradeServerAvailable.TE_ORDER_ADD:
+                case (int)TradeServerCallBack.SE_ORDER_INSERT:
+                case (int)GatewayServerAvailable.TE_ORDER_ADD:
+                case (int)CacheSeverServiceNo.TE_ORDER_ADD:
+                case (int)CacheSeverServiceNo.TE_ORDER_UPD:
+                case (int)CacheSeverServiceNo.TE_ORDER_OFFSET:
+                case (int)TradeServerCallBack.SE_ORDER_STATUS:
+                case (int)CacheSeverServiceNo.TE_ORDER_RECOVERY:
+                    resultType = PackageOrderType.SlmOrderBody;
+                    break;
+                case (int)TradeServerCallBack.SE_ORDERJOUR:
+                case (int)CacheSeverServiceNo.TE_ORDERJOUR_ADD:
+                    resultType = PackageOrderType.SlmOrderJourBody;
+                    break;
+                case (int)CacheSeverServiceNo.TE_TRADE_ADD:
+                case (int)CacheSeverServiceNo.TE_TRADE_OFFSET:
+                case (int)TradeServerCallBack.SE_MATCH_INFO:
+                    resultType = PackageOrderType.SlmMatchBody;
+                    break;
+                case (int)CacheSeverServiceNo.TE_DEPOSIT_RECOVERY:
+                case (int)CacheSeverServiceNo.TE_DEPOSIT_ADD:
+                case (int)CacheSeverServiceNo.TE_DEPOSIT_UPD:
+                    resultType = PackageOrderType.Deposits;
+                    break;
+                case (int)GatewayServerCallBack.SE_ORDER_STATUS:
+                    resultType = PackageOrderType.PushOrderStateBody;
+                    break;
+                case (int)GatewayServerCallBack.SE_MATCH_INFO:
+                    resultType = PackageOrderType.PushMatchStateBody;
+                    break;
+                default:
+                    break;
+            }
+            return resultType;
+        }
+        #endregion
         #endregion
         #endregion
     }

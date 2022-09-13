@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Ice;
+using IceInternal;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -96,6 +98,9 @@ namespace SlmCommunicator.Server
             EventServerHelper.GetInstance().RegReceivePackageCacheBaseAsyncEvent(SessionServerManager.GetInstance().ReceivePackageCacheBaseAsync);
             EventServerHelper.GetInstance().RegReceivePackageCacheTradeEvent(SessionServerManager.GetInstance().ReceivePackageCacheTrade);
             EventServerHelper.GetInstance().RegReceivePackageCacheTradeAsyncEvent(SessionServerManager.GetInstance().ReceivePackageCacheTradeAsync);
+            EventServerHelper.GetInstance().RegReceivePackageCacheTradeListAsyncEvent(SessionServerManager.GetInstance().ReceivePackageCacheTradeListAsync);
+            EventServerHelper.GetInstance().RegReceiveStreamPackageListAsyncEvent(SessionServerManager.GetInstance().ReceiveStreamPackageListAsync);
+            EventServerHelper.GetInstance().RegReceivePackageCacheBaseListAsyncEvent(SessionServerManager.GetInstance().ReceivePackageCacheBaseListAsync);
         }
         /// <summary>
         /// 初始化通信
@@ -104,7 +109,7 @@ namespace SlmCommunicator.Server
         /// <param name="ip"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        public int Init(string ip, string port, int ACM_TIME_OUT = 60, bool iszip = false)
+        public int Init(string ip, string port, int ACM_TIME_OUT = 60)
         {
             //启动ice连接
             IceServerHelper.GetInstance().ACM_TIME_OUT = ACM_TIME_OUT;
@@ -113,7 +118,7 @@ namespace SlmCommunicator.Server
             RegInitDefaultEven();
 
             //init
-            IceServerHelper.GetInstance().Init(ip, port, iszip);
+            IceServerHelper.GetInstance().Init(ip, port);
 
             return 0;
         }
@@ -216,6 +221,23 @@ namespace SlmCommunicator.Server
             EventServerHelper.GetInstance().RegReceivePackageCacheTradeAsyncCallBackEvent(handler);
         }
         #endregion
+
+        #region cache Reg List
+        public void RegSendPackageCacheTradeListEvent(SendPackageCacheTradeListServerEventHandler handler)
+        {
+            EventServerHelper.GetInstance().RegSendPackageCacheTradeListEvent(handler);
+        }
+        public void RegSendStreamPackageListEvent(SendStreamPackageListServerEventHandler handler)
+        {
+            EventServerHelper.GetInstance().RegSendStreamPackageListEvent(handler);
+        }
+        #endregion
+        #region cache base Reg List
+        public void RegSendPackageCacheBaseListEvent(SendPackageCacheBaseListServerEventHandler handler)
+        {
+            EventServerHelper.GetInstance().RegSendPackageCacheBaseListEvent(handler);
+        }
+        #endregion
         /// <summary>
         /// 推送 异步消息
         /// </summary>
@@ -258,12 +280,36 @@ namespace SlmCommunicator.Server
             return EventServerHelper.GetInstance().OnReceivePackageCacheTradeAsyncEvent(package, connectId);
         }
         /// <summary>
+        ///  推送 异步 ReceivePackageCacheTradeAsync 消息
+        /// </summary>
+        /// <param name="package"></param>
+        public bool SendPackageCacheTradeListAsync(CacheTradeDB[] package, string connectId)
+        {
+            return EventServerHelper.GetInstance().OnReceivePackageCacheTradeListAsyncEvent(package, connectId);
+        }
+        /// <summary>
+        ///  推送 异步 ReceivePackageCacheBaseList 消息
+        /// </summary>
+        /// <param name="package"></param>
+        public bool SendPackageCacheBaseListAsync(PackageCacheDB[] package, string connectId)
+        {
+            return EventServerHelper.GetInstance().OnReceivePackageCacheDBListAsyncEvent(package, connectId);
+        }
+        /// <summary>
         ///  推送 同步 ReceivePackageCacheTrade 消息
         /// </summary>
         /// <param name="package"></param>
         public PackageCacheDB SendPackageCacheTrade(CacheTradeDB package, string connectId)
         {
             return EventServerHelper.GetInstance().OnReceivePackageCacheTradeEvent(package, connectId);
+        }
+        /// <summary>
+        ///  推送 异步 OnReceiveStreamPackageListAsyncEvent 消息
+        /// </summary>
+        /// <param name="package"></param>
+        public bool SendStreamPackageListAsync(StreamPackage[] package, string connectId, string msgName = "Push")
+        {
+            return EventServerHelper.GetInstance().OnReceiveStreamPackageListAsyncEvent(package, msgName, connectId);
         }
         #endregion
         #region log
@@ -439,6 +485,59 @@ namespace SlmCommunicator.Server
             SessionServerManager.GetInstance().PushPackage(connectionId, type, nfArray, dArray);
         }
 
+        public byte[] ObjectToBytes(object data, PackageOrderType dataType)
+        {
+            OutputStream os__ = new OutputStream(GetInstanceOs(), new Ice.EncodingVersion(3, 6));
+            switch (dataType)
+            {
+                case PackageOrderType.SlmOrderBody:
+                    SlmOrderRow.ice_write(os__, data as SlmOrderRow);
+                    break;
+                case PackageOrderType.SlmOrderJourBody:
+                    SlmOrderJourRow.ice_write(os__, data as SlmOrderJourRow);
+                    break;
+                case PackageOrderType.SlmMatchBody:
+                    SlmMatchRow.ice_write(os__, data as SlmMatchRow);
+                    break;
+                case PackageOrderType.PushOrderStateBody:
+                    PushOrderStateRow.ice_write(os__, data as PushOrderStateRow);
+                    break;
+                case PackageOrderType.PushMatchStateBody:
+                    PushMatchStateRow.ice_write(os__, data as PushMatchStateRow);
+                    break;
+                case PackageOrderType.Deposits:
+                    DepositCacheDB.ice_write(os__, data as DepositCacheDB);
+                    break;
+                default:
+                    return null;
+            }
+            var dd = os__.getBuffer();
+            return dd.b.rawBytes(0, dd.size());
+        }
+        public object BytesToObject(byte[] readByteSeq, PackageOrderType dataType)
+        {
+            InputStream os__ = new InputStream(GetInstanceOs(), new Ice.EncodingVersion(3, 6), readByteSeq);
+
+            switch (dataType)
+            {
+                case PackageOrderType.SlmOrderBody:
+                    return SlmOrderRow.ice_read(os__).GetSlmOrder();
+                case PackageOrderType.SlmOrderJourBody:
+                    return SlmOrderJourRow.ice_read(os__).GetSlmOrderJour();
+                case PackageOrderType.SlmMatchBody:
+                    return SlmMatchRow.ice_read(os__).GetSlmMatch();
+                case PackageOrderType.PushOrderStateBody:
+                    return PushOrderStateRow.ice_read(os__).GetPushOrderState();
+                case PackageOrderType.PushMatchStateBody:
+                    return PushMatchStateRow.ice_read(os__).GetPushMatchState();
+                case PackageOrderType.Deposits:
+                    return DepositCacheDB.ice_read(os__).GetDeposit();
+                default:
+                    break;
+            }
+            return null;
+        }
+
         /// <summary>
         /// 主动断开客户端连接
         /// </summary>
@@ -446,6 +545,14 @@ namespace SlmCommunicator.Server
         public void RemoveClientById(string id)
         {
             SessionServerManager.GetInstance().CloseClientById(id);
+        }
+        public IceInternal.Instance GetInstanceOs()
+        {
+            return IceServerHelper.GetInstance().GetInstanceOs();
+        }
+        public Ice.EncodingVersion GetEncodingVersion()
+        {
+            return Ice.Util.currentEncoding;
         }
         #endregion
     }

@@ -28,7 +28,7 @@ namespace Solomon.Logger
         public string[] DataHead { get; set; }
         public ClientType ClientType { get; set; }
 
-        public bool IsSync { get; set; } = false;
+        public bool IsSync { get; set; } = true;
 
         public string MsgID { get; set; }
 

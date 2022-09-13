@@ -69,6 +69,7 @@ namespace Solomon.Log
         private void workProcess()
         {
             _start = true;
+            SpinWait spinWait = new SpinWait();
             while (_start)
             {
                 try
@@ -77,7 +78,7 @@ namespace Solomon.Log
                     string[] comm = getCommand();
                     if (comm == null)
                     {
-                        Thread.Sleep(1);
+                        spinWait.SpinOnce();
                         continue;
                     }
                     //处理消息

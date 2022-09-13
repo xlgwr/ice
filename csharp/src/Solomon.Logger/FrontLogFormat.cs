@@ -50,7 +50,9 @@ namespace Solomon.Log
                 "proxy_id",
                 "trade_fee",
                 "currency_code",
-                "front_id"
+                "front_id",
+                "action",
+                "msg_num",
             };
             servers.Add(slc);
 
@@ -107,6 +109,8 @@ namespace Solomon.Log
                 "order_Type",
                 "order_from",
                 "remarks",
+                "action",
+                "msg_num",
             };
             servers.Add(slc);
 
@@ -136,8 +140,9 @@ namespace Solomon.Log
                 "contract_code",
                 "buy_sell",
                 "trade_fee",
-                "operator_no"
-
+                "operator_no",
+                "action",
+                "msg_num",
             };
             servers.Add(slc);
 
@@ -208,12 +213,12 @@ namespace Solomon.Log
                 "order_no",
                 "order_date",
                 "order_time",
-                "strategy_reference",
-                "strategy_type",
-                "strategy_content",
                 "proxy_id",
-                "front_id",
+                "router_no",
                 "init_date",
+                "order_status",
+                "action",
+                "msg_num",
             };
             servers.Add(slc);
 

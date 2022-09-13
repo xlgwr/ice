@@ -15,8 +15,6 @@ namespace SlmCommunicator.Client
         {
             _connEvent = connEvent;
         }
-
-
         public override int ReceivePackage(ResponsePackage responsePackage, Ice.Current current)
         {
             //发送数据
@@ -60,6 +58,36 @@ namespace SlmCommunicator.Client
                 return _connEvent.EventObj.OnReceivePackageCacheDBEvent(responseField);
             }
             return new PackageCacheDB() { ErrorInfo = "responseField参数为空", ErrorNo = -1 };
+        }
+
+        public override PackageCacheDB ReceivePackageCacheTradeList(CacheTradeDB[] responseFieldes, Current current__)
+        {
+            //推送数据
+            if (responseFieldes != null)
+            {
+                return _connEvent.EventObj.OnReceivePackageCacheTradeListEvent(responseFieldes);
+            }
+            return new PackageCacheDB() { ErrorInfo = "responseFieldes参数为空", ErrorNo = -1 };
+        }
+
+        public override PackageCacheDB ReceivePackageCacheBaseList(PackageCacheDB[] responseFieldes, Current current__)
+        {
+            //推送数据
+            if (responseFieldes != null)
+            {
+                return _connEvent.EventObj.OnReceivePackageCacheBaseListEvent(responseFieldes);
+            }
+            return new PackageCacheDB() { ErrorInfo = "responseFieldes参数为空", ErrorNo = -1 };
+        }
+
+        public override StreamPackage ReceiveICEStreamPackageList(StreamPackage[] responseFields, string msgName, Current current__)
+        {
+            //推送数据
+            if (responseFields != null)
+            {
+                return _connEvent.EventObj.OnReceiveStreamPackageListEvent(responseFields, msgName);
+            }
+            return new StreamPackage() { ErrorInfo = "responseFieldes参数为空", ErrorNo = -1 };
         }
     }
 

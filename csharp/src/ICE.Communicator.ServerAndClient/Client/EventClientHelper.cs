@@ -21,14 +21,19 @@ namespace SlmCommunicator.Client
     public delegate int ReceivePackageListClientEventHandler(ResponsePackageOrder[] responsePackagePackage);
     public delegate void SendPackageListAsynCallBackEventHandler(ResponsePackageOrderBackMsg responsePackagePackage);
     public delegate PackageCacheDB ReceivePackageCacheTradeClientEventHandler(CacheTradeDB responsePackagePackage);
+    public delegate PackageCacheDB ReceivePackageCacheTradeListClientEventHandler(CacheTradeDB[] responsePackagePackage);
+    public delegate PackageCacheDB ReceivePackageCacheBaseListClientEventHandler(PackageCacheDB[] responsePackagePackage);
+    public delegate StreamPackage ReceiveStreamPackageListClientEventHandler(StreamPackage[] responsePackagePackage, string msgName);
+    public delegate void ReceivePackageCacheTradeListAsynCallBackClientEventHandler(CacheTradeDB responsePackagePackage);
     public delegate PackageCacheDB ReceivePackageCacheDBClientEventHandler(PackageCacheDB responsePackagePackage);
+    public delegate StreamPackage ReceiveStreamPackageClientEventHandler(StreamPackage responsePackagePackage);
     public delegate void ConnectionEventClientHandler(string uuid, ConnectStateClient state);
     public delegate void RecQuotEventClientHandler(byte type, NewFlashData[] nfArray, DeepData[] dArray);
     public delegate void RequestStartVoteHandler(string idAndType);
 
     #endregion
 
-   public class EventClientHelper
+    public class EventClientHelper
     {
         #region 属性变量
         #endregion
@@ -38,7 +43,12 @@ namespace SlmCommunicator.Client
         private event ReceivePackageListClientEventHandler ReceivePackageListEvent;
         private event SendPackageListAsynCallBackEventHandler SendPackageListAsynCallBackEvent;
         private event ReceivePackageCacheTradeClientEventHandler ReceivePackageCacheTradeEvent;
+        private event ReceivePackageCacheTradeListClientEventHandler ReceivePackageCacheTradeListEvent;
+        private event ReceivePackageCacheBaseListClientEventHandler ReceivePackageCacheBaseListEvent;
+        private event ReceiveStreamPackageListClientEventHandler ReceiveStreamPackageListEvent;
+        private event ReceivePackageCacheTradeListAsynCallBackClientEventHandler ReceivePackageCacheTradeListAsynCallBackEvent;
         private event ReceivePackageCacheDBClientEventHandler ReceivePackageCacheDBEvent;
+        private event ReceiveStreamPackageClientEventHandler ReceiveStreamPackageEvent;
         private event ConnectionEventClientHandler ConnectionEvent;
         private event RecQuotEventClientHandler RecQuotEvent;
         private event RequestStartVoteHandler RequestStartVoteEvent;
@@ -139,6 +149,81 @@ namespace SlmCommunicator.Client
         }
         #endregion
 
+        #region 收到打包数据 ReceivePackageCacheTradeList
+        public int RegReceivePackageCacheTradeListEvent(ReceivePackageCacheTradeListClientEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceivePackageCacheTradeListEvent += messageHandler;
+            }
+            return 0;
+        }
+
+        public PackageCacheDB OnReceivePackageCacheTradeListEvent(CacheTradeDB[] responsePackagePackages)
+        {
+            if (ReceivePackageCacheTradeListEvent != null)
+            {
+                return ReceivePackageCacheTradeListEvent(responsePackagePackages);
+            }
+            return new PackageCacheDB() { ErrorInfo = "未注册 ReceivePackageCacheTradeListEvent 事件处理方法", ErrorNo = -1 };
+        }
+        #endregion
+        #region 收到打包数据 ReceivePackageCacheBaseList
+        public int RegReceivePackageCacheBaseListEvent(ReceivePackageCacheBaseListClientEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceivePackageCacheBaseListEvent += messageHandler;
+            }
+            return 0;
+        }
+
+        public PackageCacheDB OnReceivePackageCacheBaseListEvent(PackageCacheDB[] responsePackagePackages)
+        {
+            if (ReceivePackageCacheBaseListEvent != null)
+            {
+                return ReceivePackageCacheBaseListEvent(responsePackagePackages);
+            }
+            return new PackageCacheDB() { ErrorInfo = "未注册 ReceivePackageCacheBaseListEvent 事件处理方法", ErrorNo = -1 };
+        }
+        #endregion
+        #region 收到打包数据 ReceiveStreamPackageList
+        public int RegReceiveStreamPackageListEvent(ReceiveStreamPackageListClientEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceiveStreamPackageListEvent += messageHandler;
+            }
+            return 0;
+        }
+
+        public StreamPackage OnReceiveStreamPackageListEvent(StreamPackage[] responsePackagePackages, string msgName)
+        {
+            if (ReceiveStreamPackageListEvent != null)
+            {
+                return ReceiveStreamPackageListEvent(responsePackagePackages, msgName);
+            }
+            return new StreamPackage() { ErrorInfo = "未注册 ReceiveStreamPackageListEvent 事件处理方法", ErrorNo = -1 };
+        }
+        #endregion
+        #region 收到打包数据 ReceivePackageCacheTradeListAsynCallBack
+        public int RegReceivePackageCacheTradeListAsynCallBackEvent(ReceivePackageCacheTradeListAsynCallBackClientEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceivePackageCacheTradeListAsynCallBackEvent += messageHandler;
+            }
+            return 0;
+        }
+
+        public void OnReceivePackageCacheTradeListAsynCallBackEvent(CacheTradeDB responsePackagePackages)
+        {
+            if (ReceivePackageCacheTradeListAsynCallBackEvent != null)
+            {
+                ReceivePackageCacheTradeListAsynCallBackEvent(responsePackagePackages);
+            }
+        }
+        #endregion
         #region 收到打包数据 ReceivePackageCacheBase
         public int RegReceivePackageCacheDBEvent(ReceivePackageCacheDBClientEventHandler messageHandler)
         {
@@ -158,7 +243,25 @@ namespace SlmCommunicator.Client
             return new PackageCacheDB() { ErrorInfo = "未注册ReceivePackageCacheDBEvent事件处理方法", ErrorNo = -1 };
         }
         #endregion
+        #region 收到打包数据 ReceiveStreamPackage
+        public int RegReceiveStreamPackageEvent(ReceiveStreamPackageClientEventHandler messageHandler)
+        {
+            if (messageHandler != null)
+            {
+                ReceiveStreamPackageEvent += messageHandler;
+            }
+            return 0;
+        }
 
+        public StreamPackage OnReceiveStreamPackageEvent(StreamPackage responsePackagePackages)
+        {
+            if (ReceiveStreamPackageEvent != null)
+            {
+                return ReceiveStreamPackageEvent(responsePackagePackages);
+            }
+            return new StreamPackage() { ErrorInfo = "未注册ReceiveStreamPackageEvent事件处理方法", ErrorNo = -1 };
+        }
+        #endregion
         #region 连接状态通知
         public void RegConnectionEvent(ConnectionEventClientHandler messageHandler)
         {
