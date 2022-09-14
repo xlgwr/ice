@@ -3354,7 +3354,7 @@ namespace Tools.OpenExe
                         if (istoSend)
                         {
                             toSendPackage.MsgId = Guid.NewGuid().ToString();
-                            MsgIdCheckClientQueue.GetInstance().AddDataDic(toSendPackage.MsgId, $"{toSendPackage.ServiceNo}");
+                            //MsgIdCheckClientQueue.GetInstance().AddDataDic(toSendPackage.MsgId, $"{toSendPackage.ServiceNo}");
                         }
                         SendRequest(toSendPackage);
                         sendcount++;
@@ -3505,7 +3505,7 @@ namespace Tools.OpenExe
         {
             try
             {
-                initClient.GetInstanceLazy.isAddTime = ckAutoSend.IsChecked.GetValueOrDefault();
+                initClient.GetInstanceLazy.isAutoCheckTime = ckAutoSend.IsChecked.GetValueOrDefault();
                 timetoSleep = txtTimeAutoSend.Text.TryToInt(3);
                 istoSend = ckAutoSend.IsChecked.GetValueOrDefault();
                 changeNoticeClientICE($"ICE客户端订时发送功能开关：{istoSend}");

@@ -174,8 +174,8 @@ namespace Tools.OpenExe.QueueToDo
                     return;
                 }
 
-                var msg = $"收到回报:{msgid},{msgnotice}";
-                LogHelper.WriteLog($"{logName}Success", msg);
+                //var msg = $"收到回报:{msgid},{msgnotice}";
+                //LogHelper.WriteLog($"{logName}Success", msg);
 
                 if (!_commandTimeDic.ContainsKey(msgid))
                 {

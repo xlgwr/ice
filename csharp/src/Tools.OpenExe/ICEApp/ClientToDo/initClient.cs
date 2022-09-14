@@ -47,7 +47,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
         public Queue<ResponsePackageEx> QueueresponsePackages = new Queue<ResponsePackageEx>();
         public bool isShowAllMsg { get; set; }
         public List<int> filterServernos { get; set; } = new List<int>();
-        public bool isAddTime { get; set; } = false;
+        public bool isAutoCheckTime { get; set; } = false;
 
         #endregion
 
@@ -190,6 +190,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
         {
             var pushFData = new SendCommData();
             pushFData.DtoData.MType = curr.MType;
+            pushFData.DtoData.MsgId = curr.MsgId;
             pushFData.Type = type;
             //实体类发送类
             RequestPackage pushData = new RequestPackage();
@@ -224,6 +225,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
         {
             var pushFData = new SendCommData();
             pushFData.DtoData.MType = curr.MType;
+            pushFData.DtoData.MsgId = curr.MsgId;
             pushFData.Type = type;
             //实体类发送类
             RequestPackageOrder pushData = new RequestPackageOrder();
@@ -265,6 +267,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
             var pushFData = new SendCommData();
 
             pushFData.DtoData.MType = curr.MType;
+            pushFData.DtoData.MsgId = curr.MsgId;
             pushFData.Type = type;
             //实体类发送类
             PackageCacheDB pushData = new PackageCacheDB();
@@ -308,6 +311,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                 curr.Head = new List<string> { DateTime.Now.toFormatfff() };
             }
             pushFData.DtoData.MType = model.MType;
+            pushFData.DtoData.MsgId = model.MsgId;
             pushFData.ServiceNo = curr.ServiceNo;
             pushFData.Type = type;
             //
@@ -327,6 +331,10 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
             {
                 case emMType.Base:
                     var currSend = data.PushData as RequestPackage;
+                    if (isAutoCheckTime)
+                    {
+                        MsgIdCheckClientQueue.GetInstance().AddDataDic(data.DtoData.MsgId, $"{data.DtoData.MType}");
+                    }
                     return currC.SendPackageAsyn(currSend.ServiceNo, currSend.Head, currSend.DataBody);
                     break;
                 case emMType.OrderList:
@@ -379,6 +387,10 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                         requestPackageOrders[j] = pushData.CopyStream(isAdd.Item1, addNumDic, iOs, v);
                         addNum++;
                     }
+                    if (isAutoCheckTime)
+                    {
+                        MsgIdCheckClientQueue.GetInstance().AddDataDic(pushData.MsgId, $"{pushData.ServiceNo}");
+                    }
                     currC.SendStreamPackageListAsync(requestPackageOrders);
                     //是否保存字节流
 
@@ -403,6 +415,10 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                     {
                         requestPackageOrders[j] = pushData.Copy(isAdd.Item1, addNumDic);
                         addNum++;
+                    }
+                    if (isAutoCheckTime)
+                    {
+                        MsgIdCheckClientQueue.GetInstance().AddDataDic(pushData.MsgId, $"{pushData.ServiceNo}");
                     }
                     currC.SendPackageListAsyn(requestPackageOrders);
                 }
@@ -815,7 +831,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                     //QueueresponsePackages.Enqueue(result);
                     var msg = $"收到服务号：{DateTime.Now.toFormatfff()},{responsePackagePackage.ServiceNo},databodysize:{responsePackagePackage.DataBody?.Length}";
                     actionMsg?.Invoke(msg);
-                    if (isAddTime)
+                    if (isAutoCheckTime)
                     {
                         string msgid = responsePackagePackage.Head.TryGetArrayByIndex(1);
                         if (msgid.IsNotNullOrWhiteSpace())
@@ -851,7 +867,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                     var msg = $"收到批量包数：{DateTime.Now.toFormatfff()},{responsePackagePackage.Length}";
                     actionMsg?.Invoke(msg);
                     LogHelper.WriteLog("ReceiveList", msg);
-                    if (responsePackagePackage.Length > 0 && isAddTime)
+                    if (responsePackagePackage.Length > 0 && isAutoCheckTime)
                     {
                         foreach (var item in responsePackagePackage)
                         {
@@ -886,7 +902,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                     var msg = $"收到批量,{DateTime.Now.toFormatfff()},回报：{responsePackagePackage.toJsonStr()}";
                     actionMsg?.Invoke(msg);
                     LogHelper.WriteLog("ReceiveListCallBack", msg);
-                    if (responsePackagePackage.MsgId.IsNotNullOrWhiteSpace() && isAddTime)
+                    if (responsePackagePackage.MsgId.IsNotNullOrWhiteSpace() && isAutoCheckTime)
                     {
                         MsgIdCheckClientQueue.GetInstance().CallBackAddDataDic(responsePackagePackage.MsgId, "ResponsePackageOrderBackMsg");
                     }
@@ -912,7 +928,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                     var msg = $"收到{DateTime.Now.toFormatfff()},CacheTradeDB,回报：{responsePackagePackage.toJsonStr()}";
                     actionMsg?.Invoke(msg);
                     LogHelper.WriteLog("ReceiveCacheTradeDBCallBack", msg);
-                    if (isAddTime)
+                    if (isAutoCheckTime)
                     {
                         MsgIdCheckClientQueue.GetInstance().CallBackAddDataDic(responsePackagePackage.PackageData.MsgId, "CacheTradeDB");
                     }
@@ -985,7 +1001,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
 
                         var msg = $"OnReceivePackageCacheTrade {DateTime.Now.toFormatfff()},收到服务号：{responsePackagePackage.PackageData.ServiceNo},databodysize:{responsePackagePackage.toJsonStr()?.Length}";
                         actionMsg?.Invoke(msg);
-                        if (isAddTime)
+                        if (isAutoCheckTime)
                         {
                             MsgIdCheckClientQueue.GetInstance().CallBackAddDataDic(responsePackagePackage.PackageData.MsgId, "CacheTradeDB");
                         }
@@ -1016,7 +1032,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                     {
                         var msg = param.toJsonStr();
                         actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},StreamPackage合包条数：{param.Length},msgName:{msgName},DataStreamBody:{param[0].DataStreamBody[0].Length},内容大小：{msg.GetBytesOfString(2)}KB");
-                        if (isAddTime)
+                        if (isAutoCheckTime)
                         {
                             foreach (var item in param)
                             {
@@ -1062,7 +1078,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
 
                             actionMsg?.Invoke(msg);
 
-                            if (isAddTime)
+                            if (isAutoCheckTime)
                             {
                                 MsgIdCheckClientQueue.GetInstance().CallBackAddDataDic(responsePackagePackage.MsgId, "StreamPackage");
                             }
@@ -1131,7 +1147,7 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                 {
                     var msg = $"OnReceivePackageCacheBase 收到{DateTime.Now.toFormatfff()},服务号：{responsePackagePackage.ServiceNo},databodysize:{responsePackagePackage.toJsonStr()?.Length}";
                     actionMsg?.Invoke(msg);
-                    if (isAddTime)
+                    if (isAutoCheckTime)
                     {
                         MsgIdCheckClientQueue.GetInstance().CallBackAddDataDic(responsePackagePackage.MsgId, "PackageCacheDB");
                     }
