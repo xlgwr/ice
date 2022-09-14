@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Title>一键开启或者关闭V8</Title>
+		<Title>一键开启或者关闭V8-ICE3.7</Title>
 		<Product>Tools.OpenExe</Product>
 		<Copyright>Copyright ©  2022</Copyright>
 	</PropertyGroup>
