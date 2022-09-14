@@ -41,6 +41,8 @@ namespace Tools.OpenExe.ICEApp
     public class ComDto
     {
         public int ServiceNo { get; set; }
+        public string MsgId { get; set; }
+        public bool IsAddSendTime { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -61,7 +63,6 @@ namespace Tools.OpenExe.ICEApp
         public string ServiceName { get; set; }
         public string ClientId { get; set; }
         public string UUID { get; set; }
-        public string MsgId { get; set; }
         public int ErrorNo { get; set; }
         public string ErrorInfo { get; set; }
         public long SyncPoint { get; set; }
@@ -116,7 +117,6 @@ namespace Tools.OpenExe.ICEApp
                 ErrorInfo = this.ErrorInfo,
                 ErrorNo = this.ErrorNo,
                 DatasDic = this.DatasDic,
-                MsgId = this.MsgId,
                 PagingInfo = this.PagingInfo != null ? (PagingInfoBase)this.PagingInfo : new PagingInfoBase(),
                 //OffSet = this.OffSet
             };
@@ -138,7 +138,6 @@ namespace Tools.OpenExe.ICEApp
         public string ServiceName { get; set; }
         public string ClientId { get; set; }
         public string UUId { get; set; }
-        public string MsgId { get; set; }
         public List<string> Head { get; set; }
         public Dictionary<int, List<string>> DataBody { get; set; }
         public SlmOrderRow SlmOrderBody { get; set; }

@@ -1040,6 +1040,14 @@ namespace System
             }
             return m.ToString(format);
         }
+        public static string toFormatfff(this DateTime m, string format = "yyyy-MM-dd HH:mm:ss.fff")
+        {
+            if (m == null)
+            {
+                return "";
+            }
+            return m.ToString(format);
+        }
         #endregion
 
         #region 数据转换

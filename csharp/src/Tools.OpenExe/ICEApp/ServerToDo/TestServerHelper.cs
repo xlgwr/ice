@@ -34,6 +34,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
         /// </summary>
         public List<string> ActiveList { get; set; }
         public List<string> ActiveListTrade { get; set; }
+        public bool isAddTime { get; set; } = false;
         #region 构造方法
         public TestServerHelper()
         {
@@ -85,7 +86,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             return rp;
         }
 
-        private ResponsePackage getErrResponsePackage(int serviceNo, string clientId, int err, string errInfo)
+        private ResponsePackage getErrResponsePackage(int serviceNo, string clientId, int err, string errInfo, bool isAddTime)
         {
             ResponsePackage rp = new ResponsePackage();
             rp.ClientId = clientId;
@@ -93,9 +94,10 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             rp.ErrorInfo = errInfo;
             rp.ServiceNo = serviceNo;
             rp.DataBody = null;
+            rp.Head = isAddTime ? new string[] { DateTime.Now.toFormatfff() } : null;
             return rp;
         }
-        private PackageCacheDB getErrPackageCacheDB(int serviceNo, string clientId, int err, string errInfo)
+        private PackageCacheDB getErrPackageCacheDB(int serviceNo, string clientId, int err, string errInfo, bool isAddTime)
         {
             var rp = new PackageCacheDB();
             rp.ClientId = clientId;
@@ -103,6 +105,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             rp.ErrorInfo = errInfo;
             rp.ServiceNo = serviceNo;
             rp.DataBody = null;
+            rp.Head = isAddTime ? new string[] { DateTime.Now.toFormatfff() } : null;
             return rp;
         }
         public Dictionary<string, CommunicationClientInfo> allClientInfo = new Dictionary<string, CommunicationClientInfo>();
@@ -201,7 +204,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             _communicator.RegSendStreamPackageListEvent(onSendStreamPackageList);
 
             _communicator.Init(ip, port);
-        } 
+        }
 
         public void Dispose()
         {
@@ -405,7 +408,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                     var sendflag = _communicator.SendStreamPackageListAsync(rps, sessionList[i].ConnectionId, msgName);
                     if (!sendflag)
                     {
-                        App._ActionAll.OnSystemMessageICEServerEvent($"PushMsgError:{sendflag},PushStreamPackageListAsync Async:true\n{rps.Length}",2); 
+                        App._ActionAll.OnSystemMessageICEServerEvent($"PushMsgError:{sendflag},PushStreamPackageListAsync Async:true\n{rps.Length}", 2);
                     }
                 }
             }
@@ -438,12 +441,12 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                     {
                         var msg = param.toJsonStr();
                         //Console.WriteLine(msg);
-                        noticemsg = $"收到数据服务号：{param.ServiceNo},内容大小：{msg.GetBytesOfString(2)}KB";
+                        noticemsg = $"收到{DateTime.Now.toFormatfff()},数据服务号：{param.ServiceNo},内容大小：{msg.GetBytesOfString(2)}KB";
                         actionMsg?.Invoke(noticemsg);
                         LogHelper.WriteLog("ReceiveMsg", noticemsg);
                         if (isShowAllMsg)
                         {
-                            actionMsg?.Invoke($"收到数据：{msg}");
+                            actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},数据：{msg}");
                             LogHelper.WriteLog("ReceiveMsg", msg);
                         }
                         //queueList.Enqueue(param.ServiceNo);  
@@ -458,7 +461,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             });
             checkThread.IsBackground = true;
             checkThread.Start();
-            return getErrResponsePackage(param.ServiceNo, param.ClientId, ErrCode.OK, "Test.PackageServer OK Success");
+            return getErrResponsePackage(param.ServiceNo, param.ClientId, ErrCode.OK, "Test.PackageServer OK Success", isAddTime);
         }
 
         /// <summary>
@@ -497,10 +500,10 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                         //Console.WriteLine(msg);
                         GetInfo(param);
                         var msg = param.toJsonStr();
-                        actionMsg?.Invoke($"收到合包条数：{param.Length},内容大小：{msg.GetBytesOfString(2)}KB");
+                        actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},合包条数：{param.Length},内容大小：{msg.GetBytesOfString(2)}KB");
                         if (isShowAllMsg)
                         {
-                            actionMsg?.Invoke($"收到数据：{msg}");
+                            actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},数据：{msg}");
                             LogHelper.WriteLog("ReceiveMsgList", msg);
                         }
                     }
@@ -569,7 +572,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                 actionMsg?.Invoke($"Size:{param.Length},收到数据成功：处理出错。{ex}");
                 LogHelper.WriteErrorLog(ex);
             }
-            return new ResponsePackageOrderBackMsg() { ErrorNo = ErrCode.OK, ErrorInfo = "Test.PackageServer OK Success" };
+            return new ResponsePackageOrderBackMsg() { MsgId = param.FirstOrDefault()?.MsgId, ErrorNo = ErrCode.OK, ErrorInfo = "Test.PackageServer OK Success", Head = isAddTime ? new string[] { DateTime.Now.toFormatfff() } : null };
         }
         private StreamPackage onSendStreamPackageList(StreamPackage[] param, string msgName)
         {
@@ -580,7 +583,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                     try
                     {
                         var msg = param.toJsonStr();
-                        actionMsg?.Invoke($"收到StreamPackage合包条数：{param.Length},msgName:{msgName},内容大小：{msg.GetBytesOfString(2)}KB");
+                        actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},StreamPackage合包条数：{param.Length},msgName:{msgName},内容大小：{msg.GetBytesOfString(2)}KB");
                         if (param[0].DataStreamBody?.Length > 0)
                         {
                             actionMsg?.Invoke($"DataStreamBody:{param?[0].DataStreamBody?[0].Length}");
@@ -588,7 +591,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                         if (isShowAllMsg)
                         {
                             msg = GetIceObjectFromStream(param).toJsonStr();
-                            actionMsg?.Invoke($"收到数据：{msg}");
+                            actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},数据：{msg}");
                             LogHelper.WriteLog("onSendStreamPackageList", msg);
                         }
                     }
@@ -601,7 +604,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             });
             checkThread.IsBackground = true;
             checkThread.Start();
-            return new StreamPackage() { ServiceNo = (int)CacheSeverServiceNo.TE_All_DEFAUL, ErrorInfo = "Test.PackageServer onSendStreamPackageList OK Success", DatasDic = param[0].DatasDic, DataStreamBody = param[0].DataStreamBody };
+            return new StreamPackage() { MsgId = param.FirstOrDefault()?.MsgId, ServiceNo = (int)CacheSeverServiceNo.TE_All_DEFAUL, ErrorInfo = "Test.PackageServer onSendStreamPackageList OK Success", DatasDic = param[0].DatasDic, DataStreamBody = param[0].DataStreamBody, Head = isAddTime ? new string[] { DateTime.Now.toFormatfff() } : null };
         }
         private List<object> GetIceObjectFromStream(StreamPackage[] streams)
         {
@@ -619,7 +622,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
         public Ice.EncodingVersion GetEncodingVersion()
         {
             return _communicator.GetEncodingVersion();
-        } 
+        }
         public Tuple<string, object> GetICEObject(StreamPackage stream)
         {
             var baseMsg = stream.toJsonNoByteStr();
@@ -685,10 +688,10 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                     try
                     {
                         var msg = param.toJsonStr();
-                        actionMsg?.Invoke($"收到Cache合包条数：{param.Length},内容大小：{msg.GetBytesOfString(2)}KB");
+                        actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},Cache合包条数：{param.Length},内容大小：{msg.GetBytesOfString(2)}KB");
                         if (isShowAllMsg)
                         {
-                            actionMsg?.Invoke($"收到数据：{msg}");
+                            actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},数据：{msg}");
                             LogHelper.WriteLog("onSendPackageCacheTradeList", msg);
                         }
                     }
@@ -701,7 +704,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             });
             checkThread.IsBackground = true;
             checkThread.Start();
-            return new CacheTradeDB() { PackageData = new PackageCacheDB() { ServiceNo = (int)CacheSeverServiceNo.TE_All_DEFAUL, ErrorInfo = "Test.PackageServer onSendPackageCacheTradeList OK Success" } };
+            return new CacheTradeDB() { PackageData = new PackageCacheDB() { MsgId = param.FirstOrDefault()?.PackageData.MsgId, ServiceNo = (int)CacheSeverServiceNo.TE_All_DEFAUL, ErrorInfo = "Test.PackageServer onSendPackageCacheTradeList OK Success", Head = isAddTime ? new string[] { DateTime.Now.toFormatfff() } : null } };
         }
         public void GetInfo(RequestPackageOrder[] items)
         {
@@ -744,12 +747,12 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                     {
                         var msg = param.toJsonStr();
                         //Console.WriteLine(msg);
-                        noticemsg = $"onSendPackageCacheTrade 收到数据服务号：{param.PackageData?.ServiceNo},内容大小：{msg.GetBytesOfString(2)}KB";
+                        noticemsg = $"onSendPackageCacheTrade 收到{DateTime.Now.toFormatfff()},数据服务号：{param.PackageData?.ServiceNo},内容大小：{msg.GetBytesOfString(2)}KB";
                         actionMsg?.Invoke(noticemsg);
                         LogHelper.WriteLog("ReceiveMsg", noticemsg);
                         if (isShowAllMsg)
                         {
-                            actionMsg?.Invoke($"收到数据：{msg}");
+                            actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},数据：{msg}");
                             LogHelper.WriteLog("ReceiveMsg", msg);
                         }
                         //queueList.Enqueue(param.ServiceNo);  
@@ -765,7 +768,8 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             checkThread.IsBackground = true;
             checkThread.Start();
 
-            var package = getErrPackageCacheDB(param.PackageData.ServiceNo, param.PackageData.ClientId, ErrCode.OK, "Test.PackageServer onSendPackageCacheTrade OK Success");
+            var package = getErrPackageCacheDB(param.PackageData.ServiceNo, param.PackageData.ClientId, ErrCode.OK, "Test.PackageServer onSendPackageCacheTrade OK Success", isAddTime);
+            package.MsgId = param.PackageData?.MsgId;
             return new CacheTradeDB() { PackageData = package };
         }
 
@@ -780,12 +784,12 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
                     {
                         var msg = param.toJsonStr();
                         //Console.WriteLine(msg);
-                        noticemsg = $"onSendPackageCacheDB 收到数据服务号：{param.ServiceNo},内容大小：{msg.GetBytesOfString(2)}KB";
+                        noticemsg = $"onSendPackageCacheDB 收到{DateTime.Now.toFormatfff()},数据服务号：{param.ServiceNo},内容大小：{msg.GetBytesOfString(2)}KB";
                         actionMsg?.Invoke(noticemsg);
                         LogHelper.WriteLog("ReceiveMsg", noticemsg);
                         if (isShowAllMsg)
                         {
-                            actionMsg?.Invoke($"收到数据：{msg}");
+                            actionMsg?.Invoke($"收到{DateTime.Now.toFormatfff()},数据：{msg}");
                             LogHelper.WriteLog("ReceiveMsg", msg);
                         }
                         //queueList.Enqueue(param.ServiceNo);  
@@ -800,7 +804,8 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             });
             checkThread.IsBackground = true;
             checkThread.Start();
-            var package = getErrPackageCacheDB(param.ServiceNo, param.ClientId, ErrCode.OK, "Test.PackageServer onSendPackageCacheDB OK Success");
+            var package = getErrPackageCacheDB(param.ServiceNo, param.ClientId, ErrCode.OK, "Test.PackageServer onSendPackageCacheDB OK Success", isAddTime);
+            package.MsgId = param?.MsgId;
             return package;
         }
 

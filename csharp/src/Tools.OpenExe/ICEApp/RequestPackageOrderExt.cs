@@ -100,6 +100,8 @@ namespace Tools.OpenExe.ICEApp
         public static RequestPackageOrder Copy(this RequestPackageOrder request, bool isAdd, Dictionary<int, int> addNum)
         {
             var curr = request.Clone() as RequestPackageOrder;
+            curr.Head = request.Head;
+            curr.DataBody = request.DataBody;
             curr.SlmOrderBody = request.SlmOrderBody?.Clone() as SlmOrderRow;
             curr.PushMatchStateBody = request.PushMatchStateBody?.Clone() as PushMatchStateRow;
             curr.PushOrderStateBody = request.PushOrderStateBody?.Clone() as PushOrderStateRow;

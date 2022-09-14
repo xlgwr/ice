@@ -100,7 +100,8 @@
             </Fluent:Ribbon.QuickAccessItems>
 
             <!--Tabs-->
-            <Fluent:RibbonTabItem Header="文件" IsOpen="True">
+
+            <Fluent:RibbonTabItem Header="文件" IsOpen="True" >
                 <Fluent:RibbonGroupBox Header="方案" TabIndex="1">
                     <StackPanel Orientation="Vertical" Width="auto">
                         <Fluent:ComboBox Header="查找类型:" x:Name="GetNameExt" Text=".exe"  Margin="2,10,5,0" Width="190"  Height="25" IsEditable="True" SelectionChanged="GetName_SelectionChanged" >
@@ -191,7 +192,7 @@
                             <Label Content="合包数" ToolTip="每次发送合包数，单个包，消息数"  HorizontalContentAlignment="Right"   VerticalAlignment="Top" MinWidth="68"/>
                             <TextBox x:Name="txtDataSize" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="1" VerticalAlignment="Center" MinWidth="50"/>
                         </StackPanel>
-                    </StackPanel> 
+                    </StackPanel>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="条件设置" TabIndex="3">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5" >
@@ -217,7 +218,7 @@
                 <Fluent:RibbonGroupBox Header="默认布局">
                     <Fluent:Button Header="ICEServer布局" ToolTip="ICEServer布局" Margin="10,5,5,0" 
                                 Icon="{iconPacks:Material Kind=PageLayoutHeaderFooter}" 
-                                LargeIcon="{iconPacks:Material Kind=PageLayoutHeaderFooter, Height=30, Width=30}" Foreground="Blue" Click="Button_ConfigLoad_Click" /> 
+                                LargeIcon="{iconPacks:Material Kind=PageLayoutHeaderFooter, Height=30, Width=30}" Foreground="Blue" Click="Button_ConfigLoad_Click" />
 
                     <Fluent:Button Header="ICEServerAndClient布局" ToolTip="ICEServerAndClient布局" Margin="10,5,5,0" 
                                 Icon="{iconPacks:Material Kind=PageLayoutHeaderFooter}" 
@@ -259,9 +260,10 @@
                                 Icon="{iconPacks:Material Kind=Target}" 
                                 LargeIcon="{iconPacks:Material Kind=Target, Height=30, Width=30}" Foreground="Green" Click="btnSendClient_Click" />
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="0,5,0,0" >
-                        <CheckBox x:Name="ckIsAsync" IsChecked="False" Margin="2"  Content="是否异步"  />
-                        <CheckBox x:Name="ckAddOne" IsChecked="False"  Margin="2"   Content="是否加1" ToolTip="服务号是否加1"/>
-                        <CheckBox x:Name="ckAddKey" IsChecked="False"  Margin="2"   Content="是否增量" ToolTip="委托号，成交号，持仓号是否加1"/>
+                        <CheckBox x:Name="ckIsAsync" IsChecked="False" Margin="1"  Content="是否异步"  />
+                        <CheckBox x:Name="ckAddOne" IsChecked="False"  Margin="1"   Content="是否加1" ToolTip="服务号是否加1"/>
+                        <CheckBox x:Name="ckAddKey" IsChecked="False"  Margin="1"   Content="是否增量" ToolTip="委托号，成交号，持仓号是否加1"/>
+                        <CheckBox x:Name="ckAutoSend" IsChecked="False"  Margin="1"   Content="定时发送" ToolTip="定时触发，发送功能。" Click="ckAutoSend_Click"/>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Left" Margin="0,5,0,0">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-4,0,0" >
@@ -269,8 +271,12 @@
                             <TextBox x:Name="txtNumber" HorizontalAlignment="Left" TextWrapping="Wrap" Text="1"  VerticalAlignment="Center"	MinWidth="50" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-5,0,0" >
-                            <Label Content="合包数" ToolTip="每次发送合包数，单个包，消息数" HorizontalAlignment="Left"   VerticalAlignment="Top" />
+                            <Label Content="合包数" ToolTip="每次发送合包数，单个包，消息数" HorizontalAlignment="Left"   VerticalAlignment="Top"  />
                             <TextBox x:Name="txtNumberSend" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="1" VerticalAlignment="Center" MinWidth="50"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-5,0,0" >
+                            <Label Content="定时间" ToolTip="每次发送间隔时间（s)" HorizontalAlignment="Left"   VerticalAlignment="Top"  />
+                            <TextBox x:Name="txtTimeAutoSend" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="3" VerticalAlignment="Center" MinWidth="50"/>
                         </StackPanel>
                         <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,-5,0,0" >
                             <Label Content="发送间隔s" ToolTip="" HorizontalAlignment="Left"   VerticalAlignment="Top"/>
@@ -300,6 +306,11 @@
                         <CheckBox x:Name="ckSizeTest" Content="单包大小测试" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="databody大小发包" />
                         <TextBlock>过滤服务号：</TextBlock>
                         <TextBox x:Name="txtFilterServerNo" ToolTip="收到回报不显示对应内容，只显示长度。">920003,921001</TextBox>
+                    </StackPanel>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="其它设置">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0" >
+                        <CheckBox x:Name="ckAddSendTime" IsChecked="False"  Margin="1"   Content="带上发送时间" ToolTip="发送包Head加上发送时间" Click="ckAddSendTime_Click"/>
                     </StackPanel>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="默认布局">

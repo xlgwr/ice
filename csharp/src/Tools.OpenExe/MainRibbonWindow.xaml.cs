@@ -39,6 +39,7 @@ namespace Tools.OpenExe
     using AvalonDock.Layout.Serialization;
     using System.Reflection;
     using Tools.OpenExe.ICEApp.ClientToDo;
+    using Tools.OpenExe.QueueToDo;
 
     /// <summary>
     /// MainRibbonWindow.xaml 的交互逻辑
@@ -73,10 +74,15 @@ namespace Tools.OpenExe
         int NummberLayoutDocument { get; set; }
         private Forms.NotifyIcon notifyIcon { get; set; }
         public OpenExeConfig currConfig;
+        public MainRibbonWindow currMain;
+        public readonly object _sendLock = new object();
         #region log
         public void changeNoticeQueue(string msg, bool ishow = true, int type = 1)
         {
-            logShow?.changeNoticeQueue(msg, ishow, type);
+            currMain?.Dispatcher.Invoke(() =>
+            {
+                logShow?.changeNoticeQueue(msg, ishow, type);
+            });
         }
         #endregion
         #endregion
@@ -93,12 +99,16 @@ namespace Tools.OpenExe
 
                 this.InitializeComponent();
 
+                currMain = this;
+
                 this.viewModel = new MainViewModel();
                 this.DataContext = this.viewModel;
 
                 initNotifyIcon();
 
                 initFirst();
+
+                initThread();
 
                 //注册事件
                 this.Loaded += MainRibbonWindow_Loaded;
@@ -111,10 +121,21 @@ namespace Tools.OpenExe
                 isInitOver = true;
             }
         }
+
+        private void initThread()
+        {
+            MsgIdCheckClientQueue.GetInstance().StartThread();
+
+            StartThread();
+        }
+
         ~MainRibbonWindow()
         {
             try
             {
+                isStopSend = true;
+                MsgIdCheckClientQueue.GetInstance().Dispose();
+
                 mutex?.Close();
                 //TestServerHelper.GetInstance().Dispose();
                 //initClient.GetInstanceLazy.DisconnectServer();
@@ -183,9 +204,9 @@ namespace Tools.OpenExe
         void initNotifyIcon()
         {
             this.notifyIcon = new Forms.NotifyIcon();
-            this.notifyIcon.BalloonTipText = "一键启动多功能工具V8.net6.....";
+            this.notifyIcon.BalloonTipText = "一键启动多功能工具V8......";
             this.notifyIcon.ShowBalloonTip(2000);
-            this.notifyIcon.Text = "一键启动多功能工具V8.net6.....";
+            this.notifyIcon.Text = "一键启动多功能工具V8......";
             this.notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
             this.notifyIcon.Visible = true;
             //打开菜单项
@@ -3145,6 +3166,7 @@ namespace Tools.OpenExe
                 logShowSendIceClient.AddSendTodo("发送", btnSendTodoClient);
                 logShowSendIceClient.changeNoticeOtherAction = changeNoticeClientICEAction;
 
+                MsgIdCheckClientQueue.GetInstance().logShowActionAll = changeNoticeClientICEAction;
                 //清空
                 logShowSendIceClient.comboBoxSelectedIndex(0);
                 logShowSendIceClient.SetSyntaxHighlighting("Json");
@@ -3202,6 +3224,7 @@ namespace Tools.OpenExe
             try
             {
                 initClient.GetInstanceLazy.DisconnectServer();
+                toStopClient = true;
             }
             catch (Exception ex)
             {
@@ -3221,93 +3244,124 @@ namespace Tools.OpenExe
         }
         void btnSendTodoClient()
         {
-            var currbtn = btnSendClient;
-            try
+            //lock (currMain)
             {
-                currbtn.IsEnabled = false;
-
-                initAvalonEditClient();
-
-                ShowAndAddLayoutDocumentPane("AutoHide2LogIceClient", "ICE Client 收到消息", logShowIceClient);
-                ShowAndAddLayoutDocumentPane("AutoHide2LogPushIceClient", "ICE Client 发送消息", logShowSendIceClient);
-
-                if (isLondLayoutSendOne)
+                var currbtn = btnSendClient;
+                try
                 {
-                    LoadLayoutByText("ICEClient布局");
-                    isLondLayoutSendOne = false;
+                    currbtn.IsEnabled = false;
+
+                    initAvalonEditClient();
+
+                    ShowAndAddLayoutDocumentPane("AutoHide2LogIceClient", "ICE Client 收到消息", logShowIceClient);
+                    ShowAndAddLayoutDocumentPane("AutoHide2LogPushIceClient", "ICE Client 发送消息", logShowSendIceClient);
+
+                    if (isLondLayoutSendOne)
+                    {
+                        LoadLayoutByText("ICEClient布局");
+                        isLondLayoutSendOne = false;
+                    }
+
+
+                    sendMessageClient();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+                    currbtn.IsEnabled = true;
                 }
 
-                if (toStopClient)
+            }
+
+        }
+
+        void sendMessageClient()
+        {
+            lock (_sendLock)
+            {
+                currMain.Dispatcher.Invoke(() =>
                 {
-                    changeNoticeClientICE("**当前服务未连接，无法发送", 2);
-                    return;
-                }
+                    //加载默认发包  
+                    changeNoticeClientICE("*****************ICE 客户端 发送消息****************");
 
-                //加载默认发包  
-                changeNoticeClientICE("*****************ICE 客户端 发送消息****************");
-
-                var _curr = this;
-                var listTo = new List<ComDto>();
-
-                var jsonStr = logShowSendIceClient.Text();
-                var toSendPackage = jsonStr.JsonTo<ComDto>();
-                int num = 1;
-                decimal takeTime = 1;
-                //int.TryParse(txtNumber.Text, out num);
-                //decimal.TryParse(txtSendTime.Text, out takeTime);
-
-                switch (toSendPackage.MType)
-                {
-                    case emMType.Base:
-                        toSendPackage = PushDataOrderList(jsonStr, "Base");
-                        toSendPackage.MType = emMType.Base;
-                        break;
-                    case emMType.OrderList:
-                        toSendPackage = PushDataOrderList(jsonStr, "OrderList");
-                        toSendPackage.MType = emMType.OrderList;
-                        break;
-                    case emMType.CacheDB:
-                        toSendPackage = PushDataCacheDB2(jsonStr);
-                        toSendPackage.MType = emMType.CacheDB;
-                        break;
-                    case emMType.TradeDB:
-                        toSendPackage = PushCacheTradeDBDto2(jsonStr);
-                        toSendPackage.MType = emMType.TradeDB;
-                        break;
-                    default:
-                        break;
-                }
-                int sendcount = 0;
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                for (int i = 0; i < num; i++)
-                {
                     if (toStopClient)
                     {
-                        changeNoticeClientICE($"**##**停止成功，目前第：{i}/{num}个.");
-                        break;
+                        changeNoticeClientICE("**当前服务未连接，无法发送", 2);
+
+                        if (istoSend)
+                        {
+                            istoSend = false;
+
+                            ckAutoSend.IsChecked = false;
+
+                        }
+
+                        return;
                     }
-                    changeNoticeClientICE($"**##**开始发送第：{i}/{num}个.");
-                    if (ckAddOne.IsChecked.GetValueOrDefault())
+
+
+                    var listTo = new List<ComDto>();
+
+                    var jsonStr = logShowSendIceClient.Text();
+                    var toSendPackage = jsonStr.JsonTo<ComDto>();
+                    int num = 1;
+                    decimal takeTime = 1;
+                    bool AddSendTime = ckAddSendTime.IsChecked.GetValueOrDefault();
+                    //int.TryParse(txtNumber.Text, out num);
+                    //decimal.TryParse(txtSendTime.Text, out takeTime);
+
+                    switch (toSendPackage.MType)
                     {
-                        toSendPackage.ServiceNo++;
+                        case emMType.Base:
+                            toSendPackage = PushDataOrderList(jsonStr, "Base");
+                            toSendPackage.MType = emMType.Base;
+                            break;
+                        case emMType.OrderList:
+                            toSendPackage = PushDataOrderList(jsonStr, "OrderList");
+                            toSendPackage.MType = emMType.OrderList;
+                            break;
+                        case emMType.CacheDB:
+                            toSendPackage = PushDataCacheDB2(jsonStr);
+                            toSendPackage.MType = emMType.CacheDB;
+                            break;
+                        case emMType.TradeDB:
+                            toSendPackage = PushCacheTradeDBDto2(jsonStr);
+                            toSendPackage.MType = emMType.TradeDB;
+                            break;
+                        default:
+                            break;
                     }
-                    SendRequest(toSendPackage);
-                    sendcount++;
-                }
-                stopwatch.Stop();
-                changeNoticeClientICE($"**##**已全部发送完成：{sendcount}/{num}个.发送总时间：{stopwatch.Elapsed}");
-
+                    int sendcount = 0;
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    for (int i = 0; i < num; i++)
+                    {
+                        if (toStopClient)
+                        {
+                            changeNoticeClientICE($"**##**停止成功，目前第：{i}/{num}个.");
+                            break;
+                        }
+                        changeNoticeClientICE($"**##**开始发送第：{i}/{num}个.");
+                        if (ckAddOne.IsChecked.GetValueOrDefault())
+                        {
+                            toSendPackage.ServiceNo++;
+                        }
+                        toSendPackage.IsAddSendTime = AddSendTime;
+                        toSendPackage.MsgId = Guid.NewGuid().ToString();
+                        if (istoSend && toSendPackage.MType != emMType.Base)
+                        {
+                            MsgIdCheckClientQueue.GetInstance().AddDataDic(toSendPackage.MsgId, $"{toSendPackage.ServiceNo}");
+                        }
+                        SendRequest(toSendPackage);
+                        sendcount++;
+                    }
+                    stopwatch.Stop();
+                    changeNoticeClientICE($"**##**已全部发送完成：{sendcount}/{num}个.发送总时间：{stopwatch.Elapsed}");
+                });
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                currbtn.IsEnabled = true;
-            }
-
         }
         private void isClientShowMsg_Click(object sender, RoutedEventArgs e)
         {
@@ -3428,8 +3482,74 @@ namespace Tools.OpenExe
 
 
 
+
         #endregion
 
+        #endregion
+
+        private void ckAddSendTime_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TestServerHelper.GetInstance().isAddTime = ckAddSendTime.IsChecked.GetValueOrDefault();
+                changeNoticeServerICE($"ICE服务端回报Head是否带上时间：{TestServerHelper.GetInstance().isAddTime}");
+                changeNoticeClientICE($"ICE客户端回报Head是否带上时间：{TestServerHelper.GetInstance().isAddTime}");
+            }
+            catch (Exception ex)
+            {
+                changeNoticeServerICE(ex.Message);
+            }
+        }
+        private void ckAutoSend_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                initClient.GetInstanceLazy.isAddTime = ckAutoSend.IsChecked.GetValueOrDefault();
+                timetoSleep = txtTimeAutoSend.Text.TryToInt(3);
+                istoSend = ckAutoSend.IsChecked.GetValueOrDefault();
+                changeNoticeClientICE($"ICE客户端订时发送功能开关：{istoSend}");
+            }
+            catch (Exception ex)
+            {
+                changeNoticeClientICE(ex.Message);
+            }
+        }
+        #region auto time tosend client
+        bool istoSend = false;
+        bool isStopSend = false;
+        int timetoSleep = 3;
+        private void workProcessToSendToDo()
+        {
+
+            SpinWait spinWait = new SpinWait();
+            while (!isStopSend)
+            {
+                try
+                {
+                    if (!istoSend)
+                    {
+                        spinWait.SpinOnce();
+                        continue;
+                    }
+                    sendMessageClient();
+
+                    timetoSleep = timetoSleep < 1 ? 3 : timetoSleep;
+                    Thread.Sleep(timetoSleep*1000);
+
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.WriteErrorLog($"workProcessToSendToDo:{ex}");
+                }
+            }
+        }
+        public void StartThread()
+        {
+            Thread checkThread = new Thread(workProcessToSendToDo);
+            checkThread.IsBackground = true;
+            checkThread.Name = "workProcessToSendToDo";
+            checkThread.Start();
+        }
         #endregion
 
 
