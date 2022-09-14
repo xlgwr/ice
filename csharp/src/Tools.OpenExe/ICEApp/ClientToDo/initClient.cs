@@ -198,9 +198,9 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
             pushData.ServiceNo = curr.ServiceNo;
             pushData.Head = curr.Head?.ToArray();
 
-            if (curr.IsAddSendTime)
+            if (curr.IsAddSendTime || curr.MsgId.IsNotNullOrWhiteSpace())
             {
-                pushData.Head = new string[] { DateTime.Now.toFormatfff() };
+                pushData.Head = new string[] { DateTime.Now.toFormatfff(), curr.MsgId };
             }
 
             string[][] arrbody = null;
@@ -815,6 +815,14 @@ namespace Tools.OpenExe.ICEApp.ClientToDo
                     //QueueresponsePackages.Enqueue(result);
                     var msg = $"收到服务号：{DateTime.Now.toFormatfff()},{responsePackagePackage.ServiceNo},databodysize:{responsePackagePackage.DataBody?.Length}";
                     actionMsg?.Invoke(msg);
+                    if (isAddTime)
+                    {
+                        string msgid = responsePackagePackage.Head.TryGetArrayByIndex(1);
+                        if (msgid.IsNotNullOrWhiteSpace())
+                        {
+                            MsgIdCheckClientQueue.GetInstance().CallBackAddDataDic(msgid, "ResponsePackage");
+                        }
+                    }
                     if (isShowAllMsg && !filterServernos.Contains(responsePackagePackage.ServiceNo))
                     {
                         //if (responsePackagePackage.DataBody?.Length > 1000)

@@ -86,7 +86,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             return rp;
         }
 
-        private ResponsePackage getErrResponsePackage(int serviceNo, string clientId, int err, string errInfo, bool isAddTime)
+        private ResponsePackage getErrResponsePackage(int serviceNo, string clientId, int err, string errInfo, bool isAddTime, string msgid)
         {
             ResponsePackage rp = new ResponsePackage();
             rp.ClientId = clientId;
@@ -94,7 +94,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             rp.ErrorInfo = errInfo;
             rp.ServiceNo = serviceNo;
             rp.DataBody = null;
-            rp.Head = isAddTime ? new string[] { DateTime.Now.toFormatfff() } : null;
+            rp.Head = isAddTime | msgid.IsNotNullOrWhiteSpace() ? new string[] { DateTime.Now.toFormatfff(), msgid } : null;
             return rp;
         }
         private PackageCacheDB getErrPackageCacheDB(int serviceNo, string clientId, int err, string errInfo, bool isAddTime)
@@ -461,7 +461,9 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             });
             checkThread.IsBackground = true;
             checkThread.Start();
-            return getErrResponsePackage(param.ServiceNo, param.ClientId, ErrCode.OK, "Test.PackageServer OK Success", isAddTime);
+            string msgid = param.PackageData.Head.TryGetArrayByIndex(1);
+            var rsp = getErrResponsePackage(param.ServiceNo, param.ClientId, ErrCode.OK, "Test.PackageServer OK Success", isAddTime, msgid);
+            return rsp;
         }
 
         /// <summary>

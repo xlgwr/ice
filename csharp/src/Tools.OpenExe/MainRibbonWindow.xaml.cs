@@ -3350,9 +3350,10 @@ namespace Tools.OpenExe
                             toSendPackage.ServiceNo++;
                         }
                         toSendPackage.IsAddSendTime = AddSendTime;
-                        toSendPackage.MsgId = Guid.NewGuid().ToString();
-                        if (istoSend && toSendPackage.MType != emMType.Base)
+
+                        if (istoSend)
                         {
+                            toSendPackage.MsgId = Guid.NewGuid().ToString();
                             MsgIdCheckClientQueue.GetInstance().AddDataDic(toSendPackage.MsgId, $"{toSendPackage.ServiceNo}");
                         }
                         SendRequest(toSendPackage);
@@ -3534,7 +3535,7 @@ namespace Tools.OpenExe
                     sendMessageClient();
 
                     timetoSleep = timetoSleep < 1 ? 3 : timetoSleep;
-                    Thread.Sleep(timetoSleep*1000);
+                    Thread.Sleep(timetoSleep * 1000);
 
                 }
                 catch (Exception ex)
