@@ -1,5 +1,6 @@
 ﻿
 using Ice;
+using ICE.Communicator.ServerAndClient.ICE.Logger;
 using IceInternal;
 using Solomon.Log;
 using System;
@@ -239,6 +240,17 @@ namespace SlmCommunicator.Client
                     initData.properties.setProperty("IceSSL.CertFile", _p12Name);
                     initData.properties.setProperty("IceSSL.Password", _sslPass);
                 }
+
+                //ice log init
+                initData.logger = new ICELogger("iceClient");
+                initData.properties.setProperty("Ice.Trace.Network", "1");
+                initData.properties.setProperty("Ice.Trace.Protocol", "1");
+                initData.properties.setProperty("Ice.Trace.Retry", "1");
+                initData.properties.setProperty("Ice.Trace.Locator", "1");
+                initData.properties.setProperty("Ice.Trace.Slicing", "1");
+                initData.properties.setProperty("Ice.Trace.ThreadPool", "1");
+                initData.threadStart = () => { initData.logger.print("threadStart"); };
+                initData.threadStop = () => { initData.logger.print("threadStop"); };
 
                 initData.dispatcher = (System.Action action, Ice.Connection connection) =>
                 {
