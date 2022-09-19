@@ -145,7 +145,7 @@ namespace SlmCommunicator.Server
                 adapter.activate();
                 EventServerHelper.GetInstance().OnConnectChangeEvent(ConnectStateServer.Connect_Ready);
                 LogHelper.WriteSystemLog($"Client ICE:{GetIPStr()}");
-                _communicatorInstance = new Instance(_communicator, initData);
+                _communicatorInstance = Util.getInstance(_communicator);
                 _communicator.waitForShutdown();
                 _communicator?.Dispose();
                 _communicator = null;
@@ -230,14 +230,21 @@ namespace SlmCommunicator.Server
                 {
                     return _communicatorInstance;
                 }
-                if (initData == null)
+
+                if (_communicator == null)
                 {
-                    initData = new Ice.InitializationData();
+                    if (initData == null)
+                    {
+                        initData = new Ice.InitializationData();
+                    }
+                    _communicator = Ice.Util.initialize(initData);
                 }
+
                 if (_communicatorInstance == null)
                 {
-                    _communicatorInstance = new Instance(_communicator, initData);
+                    _communicatorInstance = Util.getInstance(_communicator);
                 }
+
                 return _communicatorInstance;
             }
         }
