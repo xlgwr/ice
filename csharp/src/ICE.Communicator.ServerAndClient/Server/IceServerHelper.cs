@@ -106,6 +106,12 @@ namespace SlmCommunicator.Server
 
                 //ice log init
                 initData.logger = new ICELogger("iceServer");
+                initData.properties.setProperty("Ice.Trace.Network", "1");
+                initData.properties.setProperty("Ice.Trace.Protocol", "1");
+                initData.properties.setProperty("Ice.Trace.Retry", "1");
+                initData.properties.setProperty("Ice.Trace.Locator", "1");
+                initData.properties.setProperty("Ice.Trace.Slicing", "1");
+                initData.properties.setProperty("Ice.Trace.ThreadPool", "1");
                 initData.threadStart = () => { initData.logger.print("threadStart"); };
                 initData.threadStop = () => { initData.logger.print("threadStop"); };
 
