@@ -256,6 +256,7 @@ namespace SlmCommunicator.Client
                 {
                     try
                     {
+                        initData.logger.print(connection.ice_toString_());
                         action();
                     }
                     catch (Ice.Exception ex)
