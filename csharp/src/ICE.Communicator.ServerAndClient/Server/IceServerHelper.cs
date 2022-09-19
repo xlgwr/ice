@@ -1,4 +1,5 @@
-﻿using IceInternal;
+﻿using ICE.Communicator.ServerAndClient.ICE.Logger;
+using IceInternal;
 using Solomon.Log;
 using System;
 using System.Collections.Generic;
@@ -103,10 +104,16 @@ namespace SlmCommunicator.Server
                     initData.properties.setProperty("IceSSL.Password", _sslPass);
                 }
 
+                //ice log init
+                initData.logger = new ICELogger("iceServer");
+                initData.threadStart = () => { initData.logger.print("threadStart"); };
+                initData.threadStop = () => { initData.logger.print("threadStop"); };
+
                 initData.dispatcher = (System.Action action, Ice.Connection connection) =>
                 {
                     try
                     {
+                        initData.logger.print(connection.ice_toString_());
                         action();
                     }
                     catch (Exception ex)
