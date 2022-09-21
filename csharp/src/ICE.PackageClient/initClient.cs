@@ -535,7 +535,7 @@ namespace Test.PackageClient
         /// <param name="port"></param>
         /// <param name="type"></param>
         /// <param name="isOneWay"></param>
-        public void ConnectServer(string clientId, string ip, string port, ClientType type, char isOneWay = 'o', bool iszip = false)
+        public void ConnectServer(string clientId, string ip, string port, ClientType type, char isOneWay = 'o', bool iszip = false, int ACM_TIME_OUT = 60)
         {
             c = new Communicator();
             clientType = (int)type;
@@ -545,7 +545,7 @@ namespace Test.PackageClient
                 c.RegResponseEvent(OnReceiveResponse);
                 c.RegResponseListEvent(OnReceiveListResponse);
 
-                c.Init(clientId, ip, port, 'c', type, QuotConnectionEventHandler, iszip);
+                c.Init(clientId, ip, port, 'c', type, QuotConnectionEventHandler, iszip, ACM_TIME_OUT);
             }
             else
             {
@@ -554,7 +554,7 @@ namespace Test.PackageClient
                 c.RegReceivePackageCacheBaseEvent(OnReceivePackageCacheBase);
                 c.RegReceivePackageCacheTradeEvent(OnReceivePackageCacheTrade);
 
-                c.Init(clientId, ip, port, isOneWay, type, QuotConnectionEventHandler, iszip);
+                c.Init(clientId, ip, port, isOneWay, type, QuotConnectionEventHandler, iszip, ACM_TIME_OUT);
 
             }
         }

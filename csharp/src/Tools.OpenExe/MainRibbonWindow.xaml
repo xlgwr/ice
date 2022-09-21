@@ -275,6 +275,10 @@
                             <TextBox x:Name="txtNumberSend" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="1" VerticalAlignment="Center" MinWidth="50"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-5,0,0" >
+                            <Label Content="ACMTime" ToolTip="心跳时间" HorizontalAlignment="Left"   VerticalAlignment="Top"  />
+                            <TextBox x:Name="txtAcmTime" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="3" VerticalAlignment="Center" MinWidth="50"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,-5,0,0" >
                             <Label Content="定时间" ToolTip="每次发送间隔时间（s)" HorizontalAlignment="Left"   VerticalAlignment="Top"  />
                             <TextBox x:Name="txtTimeAutoSend" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="3" VerticalAlignment="Center" MinWidth="50"/>
                         </StackPanel>

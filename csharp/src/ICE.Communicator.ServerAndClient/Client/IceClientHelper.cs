@@ -243,12 +243,12 @@ namespace SlmCommunicator.Client
 
                 //ice log init
                 initData.logger = new ICELogger("iceClient");
-                initData.properties.setProperty("Ice.Trace.Network", "1");
-                initData.properties.setProperty("Ice.Trace.Protocol", "1");
-                initData.properties.setProperty("Ice.Trace.Retry", "1");
-                initData.properties.setProperty("Ice.Trace.Locator", "1");
-                initData.properties.setProperty("Ice.Trace.Slicing", "1");
-                initData.properties.setProperty("Ice.Trace.ThreadPool", "1");
+                initData.properties.setProperty("Ice.Trace.Network", "3");
+                initData.properties.setProperty("Ice.Trace.Protocol", "3");
+                initData.properties.setProperty("Ice.Trace.Retry", "3");
+                initData.properties.setProperty("Ice.Trace.Locator", "3");
+                initData.properties.setProperty("Ice.Trace.Slicing", "3");
+                initData.properties.setProperty("Ice.Trace.ThreadPool", "3");
                 initData.threadStart = () => { initData.logger.print("threadStart"); };
                 initData.threadStop = () => { initData.logger.print("threadStop"); };
 

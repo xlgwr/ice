@@ -3205,8 +3205,9 @@ namespace Tools.OpenExe
                 ClientType.TryParse(txtClientType.Text, out clientType);
                 char isOnewey = ckOnewey.IsChecked.GetValueOrDefault() ? 't' : 'o';
                 bool isZip = ckZip.IsChecked.GetValueOrDefault();
+                int acmtime = txtAcmTime.Text.TryToInt(60);
                 initClient.GetInstanceLazy.actionMsg = changeNoticeClientICEFroAction;
-                initClient.GetInstanceLazy.ConnectServer(txtClientId.Text.Trim(), txtClientIP.Text.Trim(), txtClientPort.Text.Trim(), clientType, isOnewey, isZip);
+                initClient.GetInstanceLazy.ConnectServer(txtClientId.Text.Trim(), txtClientIP.Text.Trim(), txtClientPort.Text.Trim(), clientType, isOnewey, isZip, acmtime);
 
 
             }
