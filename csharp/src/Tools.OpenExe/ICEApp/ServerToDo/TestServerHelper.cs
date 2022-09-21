@@ -180,7 +180,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
         #endregion
 
 
-        public void Init(string ip, string port)
+        public void Init(string ip, string port, int ACM_TIME_OUT = 60)
         {
             if (_isStart)
             {
@@ -203,7 +203,7 @@ namespace Tools.OpenExe.ICEApp.ServerToDo
             _communicator.RegSendPackageCacheTradeListEvent(onSendPackageCacheTradeList);
             _communicator.RegSendStreamPackageListEvent(onSendStreamPackageList);
 
-            _communicator.Init(ip, port);
+            _communicator.Init(ip, port, ACM_TIME_OUT);
         }
 
         public void Dispose()

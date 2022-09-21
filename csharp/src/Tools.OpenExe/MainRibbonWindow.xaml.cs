@@ -2703,7 +2703,8 @@ namespace Tools.OpenExe
             {
                 AddClientType(clienttype, isadd);
             };
-            TestServerHelper.GetInstance().Init(ip, port);
+            int acmTime = txtAcmTimeServer.Text.TryToInt(60);
+            TestServerHelper.GetInstance().Init(ip, port, acmTime);
             _startICEServer = true;
         }
         #region State event 
