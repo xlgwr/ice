@@ -18,7 +18,10 @@ module SlmCommunicator
 	*  交易前置 交易服 SlmOrder  910001
 	**/
 	struct SlmOrderRow{
-		long MsgNum; // 增量序列号
+		long MsgNum; // 增量序列号		
+		int InitDate; // 交易日期		
+		long OrderNo; // 定单号		
+		byte OrderState; // 委托状态
 		string AccountNo; // 账户号码
 		string OperatorNo; // 交易员编号
 		string OrderPerson; // 委托人
@@ -46,13 +49,10 @@ module SlmCommunicator
 		string InfoS1; // 用户交易关联字段1
 		string InfoS2; // 用户交易关联字段2
 		string LocalNo; // 本地号
-		long OrderNo; // 定单号
 		int OrderDate; // 定单日期
 		int OrderTime; // 定单时间
 		string RouterNo; // 前置号
-		int InitDate; // 交易日期
 		string UpdatePerson; // 最后一次修改委托的人 
-		byte OrderState; // 委托状态
 		short FilledNum; // 已成交数量
 		int UpdateDate; // 订单修改日期（本地日期）
 		int UpdateTime; // 订单修改时间（本地时间）
@@ -75,8 +75,8 @@ module SlmCommunicator
 	**/
 	struct PushMatchStateRow {
 		long MsgNum; // 增量序列号
-		string AccountNo; 
 		long OrderNo; 
+		string AccountNo; 
 		int TradeDate; 
 		string TradeNo; 
 		int TradeTime; 
@@ -131,9 +131,9 @@ module SlmCommunicator
 	**/
 	struct SendOrderStatusRow{
 		long MsgNum; // 增量序列号
+		long OrderNo; //orderId
 		string AccountNo; //账户号码
 		string OperatorNo; //交易员编号
-		long OrderNo; //orderId
 		byte OrderState; //委托状态
 		short OrderJourNo; //内部委托流水号
 		int UpdateDate;//更新日期
@@ -166,6 +166,8 @@ module SlmCommunicator
 	struct SlmOrderJourRow{	
 		long MsgNum; // 增量序列号
 		int InitDate; 
+		long OrderNo; 
+		short OrderJourNo; 
 		string RouterNo; 
 		string OperatorNo; 
 		string OrderPerson; 
@@ -193,8 +195,6 @@ module SlmCommunicator
 		int UpdateTime; 
 		int ExchangeDate; 
 		int ExchangeTime; 
-		long OrderNo; 
-		short OrderJourNo; 
 		string BrokerOrderNo; 
 		string BrokerOrderJourNo; 
 		string ExchangeOrderNo; 
@@ -214,12 +214,12 @@ module SlmCommunicator
 	struct SlmMatchRow{  
 		long MsgNum; // 增量序列号
 		int InitDate; 
+		long TradeNo; 
+		long OrderNo; 
 		string AccountNo; 
 		int OrderDate; 
 		int OrderTime; 
-		long OrderNo; 
 		int TradeDate; 
-		long TradeNo; 
 		int TradeTime; 
 		double TradePrice; 
 		int TradeVol; 
@@ -248,10 +248,10 @@ module SlmCommunicator
 	**/
 	struct SlmPositionRow{
 		long MsgNum; // 增量序列号
-		int InitDate; 
+		int InitDate;
+		long OpenNo;  
 		string AccountNo; 
 		int OpenDate; 
-		long OpenNo; 
 		double OpenPrice; 
 		int OpenNum; 
 		string CurrencyCode; 
@@ -272,9 +272,9 @@ module SlmCommunicator
 	struct SlmCloseRow{ 
 		long MsgNum; // 增量序列号
 		int InitDate; 
+		long OpenNo; 
 		string AccountNo; 
 		int OpenDate; 
-		long OpenNo; 
 		double OpenPrice; 
 		int CloseDate; 
 		long CloseNo; 
@@ -410,6 +410,20 @@ module SlmCommunicator
 
 	sequence<NewFlashData> NewFlashArray;
 	sequence<DeepData> DeepDataArray;
+
+	/**
+	* 行情消息结构
+	**/
+	struct QuotICEData{
+		byte type;
+		NewFlashArray nfArray;
+		DeepDataArray dArray;
+	};
+	
+	/**
+	* 行情消息结构 用于合包
+	**/
+	sequence<QuotICEData> QuotICEDataList;
 
 	/**
 	* 日志消息结构
@@ -569,6 +583,11 @@ module SlmCommunicator
 		 * 推送数据包
 		 **/
 		void PushPackage(byte type, NewFlashArray nfArray, DeepDataArray dArray);
+		
+		/**
+		 * 推送数据包list 行情
+		 **/
+		void PushPackageList(QuotICEDataList quotdatas);
 	};
 	 
 

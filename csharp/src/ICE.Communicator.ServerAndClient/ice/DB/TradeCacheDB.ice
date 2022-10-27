@@ -13,12 +13,12 @@ module SlmCommunicator
 	{
 		long MsgNum; // 增量序列号
 		int InitDate; 
+		long TradeNo; 
+		long OrderNo; 
 		string AccountNo; 
 		int OrderDate; 
 		int OrderTime; 
-		long OrderNo; 
 		int TradeDate; 
-		long TradeNo; 
 		int TradeTime; 
 		double TradePrice; 
 		int TradeVol; 

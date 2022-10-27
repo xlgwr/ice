@@ -13,6 +13,8 @@ module SlmCommunicator
 	{
 		long MsgNum; // 增量序列号
 		int InitDate; 
+		long OrderNo; 
+		short OrderJourNo; 
 		string RouterNo; 
 		string OperatorNo; 
 		string OrderPerson; 
@@ -40,8 +42,6 @@ module SlmCommunicator
 		int UpdateTime; 
 		int ExchangeDate; 
 		int ExchangeTime; 
-		long OrderNo; 
-		short OrderJourNo; 
 		string BrokerOrderNo; 
 		string BrokerOrderJourNo; 
 		string ExchangeOrderNo; 

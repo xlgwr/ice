@@ -12,10 +12,10 @@ module SlmCommunicator
 	struct PositionCacheDB
 	{
 		long MsgNum; // 增量序列号
-		int InitDate; 
+		int InitDate;
+		long OpenNo;  
 		string AccountNo; 
 		int OpenDate; 
-		long OpenNo; 
 		double OpenPrice; 
 		int OpenNum; 
 		string CurrencyCode; 
@@ -27,7 +27,7 @@ module SlmCommunicator
 		byte BuySell; 
 		int ExpiryDate; 
 		int LastTradeDate; 
-		double MarketValue;
+		double MarketValue; 
 	};
  //end
 };

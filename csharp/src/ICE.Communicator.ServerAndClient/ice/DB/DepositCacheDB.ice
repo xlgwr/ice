@@ -13,11 +13,11 @@ module SlmCommunicator
 	{ 	
 		long MsgNum; 
 		int InitDate; 
-		int BusinessFlag; 
 		string BusinessNo; 
+		string AccountNo; 
+		int BusinessFlag; 
 		int OccurTime; 
 		string OperatorNo; 
-		string AccountNo; 
 		string CurrencyCode; 
 		double OccurBalance; 
 		string Remark; 

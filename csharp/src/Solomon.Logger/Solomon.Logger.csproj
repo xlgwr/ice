@@ -96,6 +96,7 @@
     <Compile Include="FrontLogFormat.cs" />
     <Compile Include="LogFormatHelper.cs" />
     <Compile Include="LogHelper.cs" />
+    <Compile Include="LogTool.cs" />
     <Compile Include="PagingInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StopwatchHelper.cs" />

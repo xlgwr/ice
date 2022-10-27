@@ -11,7 +11,10 @@ module SlmCommunicator
 	//委托表
 	struct OrderCacheDB
 	{	
-		long MsgNum; // 增量序列号
+		long MsgNum; // 增量序列号		
+		int InitDate; // 交易日期		
+		long OrderNo; // 定单号		
+		byte OrderState; // 委托状态
 		string AccountNo; // 账户号码
 		string OperatorNo; // 交易员编号
 		string OrderPerson; // 委托人
@@ -39,13 +42,10 @@ module SlmCommunicator
 		string InfoS1; // 用户交易关联字段1
 		string InfoS2; // 用户交易关联字段2
 		string LocalNo; // 本地号
-		long OrderNo; // 定单号
 		int OrderDate; // 定单日期
 		int OrderTime; // 定单时间
 		string RouterNo; // 前置号
-		int InitDate; // 交易日期
 		string UpdatePerson; // 最后一次修改委托的人 
-		byte OrderState; // 委托状态
 		short FilledNum; // 已成交数量
 		int UpdateDate; // 订单修改日期（本地日期）
 		int UpdateTime; // 订单修改时间（本地时间）
