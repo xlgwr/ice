@@ -104,5 +104,10 @@ namespace SlmCommunicator.Client
         {
             _connEvent.EventObj.OnRecQuotEvent(type, nfArray, dArray);
         }
+
+        public override void PushPackageList(QuotICEData[] quotdatas, Current current = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
