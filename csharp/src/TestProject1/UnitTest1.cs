@@ -56,7 +56,7 @@ namespace TestProject1
 
             //Queue
             var streamQueue = new Queue<StreamMessageData>();
-            sp.Start();
+            sp.Restart();
             for (int i = 0; i < toAll; i++)
             {
                 var dd = new StreamMessageData(PackageOrderType.Orders, byteList, bs);
