@@ -303,31 +303,39 @@ namespace Tools.OpenExe
         }
         private void MainRibbonWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (ckCloseToHide.IsChecked.GetValueOrDefault())
+            try
             {
-                //不让在任务栏显示。
-                //this.ShowInTaskbar = false;
-                this.Hide();
+
+                if (ckCloseToHide.IsChecked.GetValueOrDefault())
+                {
+                    //不让在任务栏显示。
+                    //this.ShowInTaskbar = false;
+                    this.Hide();
+                    e.Cancel = true;
+                    return;
+                }
+                var result = MessageBox.Show("确认是否退出，否：最小化到右下角任务栏中。。", "提示", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        this.Hide();
+                        Closingtodo();
+                        App.app.Shutdown();
+                        break;
+                    case MessageBoxResult.No:
+                        this.Hide();
+                        break;
+                    case MessageBoxResult.Cancel:
+                    default:
+                        break;
+                }
                 e.Cancel = true;
-                return;
             }
-            var result = MessageBox.Show("确认是否退出，否：最小化到右下角任务栏中。。", "提示", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
-            switch (result)
+            catch (Exception ex)
             {
-                case MessageBoxResult.Yes:
-                    this.Hide();
-                    Closingtodo();
-                    App.app.Shutdown();
-                    Environment.Exit(0);
-                    break;
-                case MessageBoxResult.No:
-                    this.Hide();
-                    break;
-                case MessageBoxResult.Cancel:
-                default:
-                    break;
+                e.Cancel = false;
+                Environment.Exit(0);
             }
-            e.Cancel = true;
         }
 
         private async void MainRibbonWindow_Loaded(object sender, RoutedEventArgs e)
