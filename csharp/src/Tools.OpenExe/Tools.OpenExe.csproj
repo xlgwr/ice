@@ -18,7 +18,7 @@
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net6.0-windows'">
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net7.0-windows'">
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<PublishSingleFile>true</PublishSingleFile>
 		<IncludeAllContentInSingleFile>true</IncludeAllContentInSingleFile>
@@ -40,6 +40,16 @@
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<StartupObject>Tools.OpenExe.App</StartupObject>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-windows|AnyCPU'">
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-windows|AnyCPU'">
+	  <DebugType>none</DebugType>
 	</PropertyGroup>
 
 
@@ -221,21 +231,21 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AvalonEdit" Version="6.1.3.50" />
-		<PackageReference Include="Dirkster.AvalonDock.Themes.Aero" Version="4.70.2" />
-		<PackageReference Include="Dirkster.AvalonDock.Themes.Expression" Version="4.70.2" />
-		<PackageReference Include="Dirkster.AvalonDock.Themes.Metro" Version="4.70.2" />
-		<PackageReference Include="Dirkster.AvalonDock.Themes.VS2010" Version="4.70.2" />
-		<PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" Version="4.70.2" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.Aero" Version="4.70.3" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.Expression" Version="4.70.3" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.Metro" Version="4.70.3" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.VS2010" Version="4.70.3" />
+		<PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" Version="4.70.3" />
 		<PackageReference Include="Fluent.Ribbon" Version="9.0.4" />
-		<PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+		<PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
 		<PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.11.0" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<!--<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />-->
 		<PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-		<PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.346201">
+		<PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.355802">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ApplicationDefinition Update="App.xaml">
@@ -275,7 +285,7 @@
 		<RemoveDir Directories="$(OutputPath)\ca-ES\;$(OutputPath)\cs-CZ\;$(OutputPath)\cs-CZ\;$(OutputPath)\de\;$(OutputPath)\es\;$(OutputPath)\fr\;$(OutputPath)\hu\;$(OutputPath)\it\;$(OutputPath)\ja\;$(OutputPath)\ja\;$(OutputPath)\ko\;$(OutputPath)\nl-BE\;$(OutputPath)\pl\;$(OutputPath)\pt\;$(OutputPath)\ro\;$(OutputPath)\ru\;$(OutputPath)\sv\;$(OutputPath)\zh-Hant\;$(OutputPath)\tr\;$(OutputPath)\pt-BR\;$(OutputPath)\cs\;$(OutputPath)\zh-Hans\" />
 	</Target>
 
-	<Target Condition="'$(TargetFramework)' == 'net6.0-windows'" Name="DeleteOtherFileNet6" AfterTargets="AfterBuild">
+	<Target Condition="'$(TargetFramework)' == 'net7.0-windows'" Name="DeleteOtherFileNet6" AfterTargets="AfterBuild">
 
 		<Message Text="Project File Name = $(MSBuildProjectFile)" />
 		<Message Text="Project Extension = $(MSBuildProjectExtension)" />
