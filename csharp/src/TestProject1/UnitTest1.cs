@@ -32,7 +32,7 @@ namespace TestProject1
         {
             int toAll = 120 * 10000;
             //≤‚ ‘◊÷µ‰–‘ƒ‹
-            var streamDic = new ConcurrentDictionary<int, StreamMessageData>();
+            var streamDic = new ConcurrentDictionary<int, StreamMessageData>(Environment.ProcessorCount / 2, toAll);
             var comm = CommunicatorServerHelper.GetInstance();
             var _io = comm.GetInstanceOs();
             var _v = comm.GetEncodingVersion();
