@@ -5,10 +5,10 @@
 		<AssemblyName>Ice</AssemblyName>
 		<Version>$(IceVersion)</Version>
 		<OutputPath>../../../../lib</OutputPath>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 
 	</PropertyGroup>
-	<PropertyGroup  Condition="!Exists('$(IceToolsPath)')">
+	<PropertyGroup Condition="!Exists('$(IceToolsPath)')">
 		<IceToolsPath>C:\Users\$(username)\.nuget\packages\zeroc.ice.net\3.7.8\tools</IceToolsPath>
 	</PropertyGroup>
 	<ItemGroup>
