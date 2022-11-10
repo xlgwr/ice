@@ -294,12 +294,19 @@ namespace Tools.OpenExe
         #endregion
         public void Closingtodo()
         {
-            mutex?.Close();
-            logShow._runShow = false;
-            autoSave(currPathes);
-            //TestServerHelper.GetInstance().Dispose();
-            //initClient.GetInstanceLazy.DisconnectServer();
-            //LogHelper.GetInstance().Dispose();
+            try
+            {
+                mutex?.Close();
+                logShow._runShow = false;
+                autoSave(currPathes);
+                //TestServerHelper.GetInstance().Dispose();
+                //initClient.GetInstanceLazy.DisconnectServer();
+                //LogHelper.GetInstance().Dispose();
+            }
+            catch (Exception)
+            {
+
+            }
         }
         private void MainRibbonWindow_Closing(object sender, CancelEventArgs e)
         {
@@ -320,7 +327,7 @@ namespace Tools.OpenExe
                     case MessageBoxResult.Yes:
                         this.Hide();
                         Closingtodo();
-                        App.app.Shutdown();
+                        Environment.Exit(0);
                         break;
                     case MessageBoxResult.No:
                         this.Hide();
@@ -421,6 +428,7 @@ namespace Tools.OpenExe
         }
         void autoSave(List<string> tmpPaths, bool isSet = false)
         {
+
             if (isSet)
             {
                 currPathes.Clear();
