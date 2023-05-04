@@ -129,6 +129,19 @@
 		<Compile Include="generated\Version.cs">
 			<SliceCompileSource>..\..\..\..\..\slice\Ice\Version.ice</SliceCompileSource>
 		</Compile>
+		<Compile Include="SharpZipLib\BZip2\BZip2.cs" />
+		<Compile Include="SharpZipLib\BZip2\BZip2Constants.cs" />
+		<Compile Include="SharpZipLib\BZip2\BZip2Exception.cs" />
+		<Compile Include="SharpZipLib\BZip2\BZip2InputStream.cs" />
+		<Compile Include="SharpZipLib\BZip2\BZip2OutputStream.cs" />
+		<Compile Include="SharpZipLib\Checksum\Adler32.cs" />
+		<Compile Include="SharpZipLib\Checksum\BZip2Crc.cs" />
+		<Compile Include="SharpZipLib\Checksum\Crc32.cs" />
+		<Compile Include="SharpZipLib\Checksum\CrcUtilities.cs" />
+		<Compile Include="SharpZipLib\Checksum\IChecksum.cs" />
+		<Compile Include="SharpZipLib\Core\FileSystemScanner.cs" />
+		<Compile Include="SharpZipLib\Core\SharpZipBaseException.cs" />
+		<Compile Include="SharpZipLib\Core\StreamUtils.cs" />
 		<SliceCompile Include="../../../../../slice/Ice/*.ice" />
 		<Compile Include="../../*.cs" />
 	</ItemGroup>

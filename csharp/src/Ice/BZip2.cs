@@ -108,6 +108,12 @@ namespace IceInternal
                                   int verbosity);
     public class BZip2
     {
+        /// <summary>
+        /// 是否使用SharpZipLib对应源码
+        /// </summary>
+        public bool IsUseSharpZipLib = false;
+
+
         static BZip2()
         {
             //
