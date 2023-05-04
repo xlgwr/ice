@@ -1,5 +1,6 @@
 using SharpZipLib.Checksum;
 using System;
+using System.Collections;
 using System.IO;
 
 namespace SharpZipLib.BZip2
@@ -70,7 +71,7 @@ namespace SharpZipLib.BZip2
         private int bsLive;
         private IChecksum mCrc = new BZip2Crc();
 
-        private bool[] inUse = new bool[256];
+        private BitArray inUse = new BitArray(256);
         private int nInUse;
 
         private char[] seqToUnseq = new char[256];
@@ -364,40 +365,40 @@ namespace SharpZipLib.BZip2
                 {
                     mCrc.Update(currentChar);
                 }
-
+                byte currChar = (byte)currentChar;
                 switch (runLength)
                 {
                     case 1:
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         break;
 
                     case 2:
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         break;
 
                     case 3:
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         break;
 
                     default:
                         inUse[runLength - 4] = true;
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         last++;
-                        block[last + 1] = (byte)currentChar;
+                        block[last + 1] = currChar;
                         last++;
                         block[last + 1] = (byte)(runLength - 4);
                         break;

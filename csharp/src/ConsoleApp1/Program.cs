@@ -31,6 +31,9 @@ namespace ConsoleApp1
 
                 testIceBZlib(dataResult);
 
+
+                testIceBZlib(dataResult);
+
             }
             catch (System.Exception ex)
             {
