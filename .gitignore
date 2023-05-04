@@ -125,3 +125,5 @@ Carthage
 .settings
 *.dep
 /csharp/src/Ice/msbuild/net6.0/packages
+# Android Tets
+**/android/**/raw/*.bks
