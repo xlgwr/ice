@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace SharpZipLib.BZip2
 {
@@ -8,6 +9,39 @@ namespace SharpZipLib.BZip2
     /// </summary>
     public static class BZip2
     {
+        #region ice
+        public static int CompressBuffer(byte[] dest,
+                                ref int destLen,
+                                byte[] source,
+                                int sourceLen,
+                                int blockSize100k,
+                                int verbosity,
+                                int workFactor)
+        {
+            using (MemoryStream destStream = new MemoryStream(dest))
+            using (MemoryStream sourceStream = new MemoryStream(source))
+            {
+                Compress(sourceStream, destStream, false, blockSize100k);
+                destLen = (int)destStream.Length;
+            }
+            return 0;
+        }
+        public static int DecompressBuffer(byte[] dest,
+                                  ref int destLen,
+                                  byte[] source,
+                                  int sourceLen,
+                                  int small,
+                                  int verbosity)
+        {
+            using (MemoryStream destStream = new MemoryStream(dest))
+            using (MemoryStream sourceStream = new MemoryStream(source))
+            {
+                Decompress(sourceStream, destStream, false);
+                destLen = (int)destStream.Length;
+            }
+            return 0;
+        }
+        #endregion
         /// <summary>
         /// Decompress the <paramref name="inStream">input</paramref> writing
         /// uncompressed data to the <paramref name="outStream">output stream</paramref>
