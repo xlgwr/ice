@@ -7,7 +7,7 @@ namespace SharpZipLib.BZip2
     /// <summary>
     /// An example class to demonstrate compression and decompression of BZip2 streams.
     /// </summary>
-    public static class BZip2
+    public static class SharpBZip2
     {
         #region ice
         public static int CompressBuffer(byte[] dest,
@@ -22,7 +22,7 @@ namespace SharpZipLib.BZip2
             using (MemoryStream sourceStream = new MemoryStream(source))
             {
                 Compress(sourceStream, destStream, false, blockSize100k);
-                destLen = (int)destStream.Length;
+                destLen = (int)destStream.Position;
             }
             return 0;
         }
@@ -37,7 +37,7 @@ namespace SharpZipLib.BZip2
             using (MemoryStream sourceStream = new MemoryStream(source))
             {
                 Decompress(sourceStream, destStream, false);
-                destLen = (int)destStream.Length;
+                destLen = (int)destStream.Position;
             }
             return 0;
         }
@@ -91,7 +91,6 @@ namespace SharpZipLib.BZip2
 
             if (outStream == null)
                 throw new ArgumentNullException(nameof(outStream));
-
             try
             {
                 using (BZip2OutputStream bzipOutput = new BZip2OutputStream(outStream, level))

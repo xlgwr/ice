@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "icessl", "..\..\IceSSL\msbu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{DF79C5AB-0238-44CF-864B-6105AB49A924}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "..\..\ConsoleApp1\ConsoleApp1.csproj", "{27DB8043-ADA7-47C9-A895-D04A44B668BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,14 @@ Global
 		{3CB0FEC3-34F7-4C75-A4B9-308D7A733E2D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CB0FEC3-34F7-4C75-A4B9-308D7A733E2D}.Release|x64.ActiveCfg = Release|Any CPU
 		{3CB0FEC3-34F7-4C75-A4B9-308D7A733E2D}.Release|x64.Build.0 = Release|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{27DB8043-ADA7-47C9-A895-D04A44B668BA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

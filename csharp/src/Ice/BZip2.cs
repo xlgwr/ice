@@ -93,7 +93,7 @@ namespace IceInternal
                                                                    int verbosity);
     }
 
-    delegate int CompressBuffer(byte[] dest,
+    public delegate int CompressBuffer(byte[] dest,
                                 ref int destLen,
                                 byte[] source,
                                 int sourceLen,
@@ -101,20 +101,14 @@ namespace IceInternal
                                 int verbosity,
                                 int workFactor);
 
-    delegate int DecompressBuffer(byte[] dest,
-                                  ref int destLen,
-                                  byte[] source,
-                                  int sourceLen,
-                                  int small,
-                                  int verbosity);
+    public delegate int DecompressBuffer(byte[] dest,
+                                   ref int destLen,
+                                   byte[] source,
+                                   int sourceLen,
+                                   int small,
+                                   int verbosity);
     public class BZip2
     {
-        /// <summary>
-        /// 是否使用SharpZipLib对应源码
-        /// </summary>
-        public static bool IsUseSharpZipLib = false;
-
-
         static BZip2()
         {
             //
@@ -125,43 +119,28 @@ namespace IceInternal
             _bzlibName = "";
             try
             {
-                //if (ConfigurationManager.AppSettings["IsUseSharpZipLib"] == "1")
-                //{
-                //    IsUseSharpZipLib = true;
-                //}
-
-                if (IsUseSharpZipLib)
+                if (AssemblyUtil.isWindows)
                 {
-                    //use
-                    Console.WriteLine("warning: found IsUseSharpZipLib.");
+                    _bzlibName = "bzip2.dll";
+                    SafeNativeMethods.windowsBZ2_bzlibVersion();
+                }
+                else if (AssemblyUtil.isMacOS)
+                {
+                    _bzlibName = "libbz2.dylib";
+                    SafeNativeMethods.macOSBZ2_bzlibVersion();
                 }
                 else
                 {
-                    //dll
-                    if (AssemblyUtil.isWindows)
+                    try
                     {
-                        _bzlibName = "bzip2.dll";
-                        SafeNativeMethods.windowsBZ2_bzlibVersion();
+                        _bzlibName = "libbz2.so.1.0";
+                        SafeNativeMethods.unixBZ2_10_bzlibVersion();
                     }
-                    else if (AssemblyUtil.isMacOS)
+                    catch (TypeLoadException)
                     {
-                        _bzlibName = "libbz2.dylib";
-                        SafeNativeMethods.macOSBZ2_bzlibVersion();
+                        _bzlibName = "libbz2.so.1";
+                        SafeNativeMethods.unixBZ2_1_bzlibVersion();
                     }
-                    else
-                    {
-                        try
-                        {
-                            _bzlibName = "libbz2.so.1.0";
-                            SafeNativeMethods.unixBZ2_10_bzlibVersion();
-                        }
-                        catch (TypeLoadException)
-                        {
-                            _bzlibName = "libbz2.so.1";
-                            SafeNativeMethods.unixBZ2_1_bzlibVersion();
-                        }
-                    }
-
                 }
                 _bzlibInstalled = true;
             }
@@ -188,11 +167,6 @@ namespace IceInternal
                 Console.Error.WriteLine();
             }
 
-            if (IsUseSharpZipLib)
-            {
-                InitIsUseSharpZipLib();
-                return;
-            }
             if (AssemblyUtil.isWindows)
             {
                 _compressBuffer = (byte[] dest, ref int destLen, byte[] source, int sourceLen, int blockSize100k,
@@ -265,29 +239,43 @@ namespace IceInternal
         }
         #region 初始化IsUseSharpZipLib
         static bool isFirst = true;
-        static void InitIsUseSharpZipLib()
-        {
-            if (IsUseSharpZipLib && isFirst)
+        /// <summary>
+        /// 是否使用SharpZipLib对应源码
+        /// </summary>
+        public static void InitIsUseSharpZipLib()
+        { 
+            _bzlibInstalled = true;
+
+            Console.Error.Write("warning: InitIsUseSharpZipLib use to do");
+            if (isFirst)
             {
                 isFirst = false;
                 _compressBuffer = (byte[] dest, ref int destLen, byte[] source, int sourceLen, int blockSize100k,
                                      int verbosity, int workFactor) =>
                 {
-                    return SharpZipLib.BZip2.BZip2.CompressBuffer(dest, ref destLen, source, sourceLen,
+                    return SharpZipLib.BZip2.SharpBZip2.CompressBuffer(dest, ref destLen, source, sourceLen,
                                                                              blockSize100k, verbosity, workFactor);
                 };
 
                 _decompressBuffer = (byte[] dest, ref int destLen, byte[] source, int sourceLen, int small,
                                      int verbosity) =>
                 {
-                    return SharpZipLib.BZip2.BZip2.DecompressBuffer(dest, ref destLen, source, sourceLen,
+                    return SharpZipLib.BZip2.SharpBZip2.DecompressBuffer(dest, ref destLen, source, sourceLen,
                                                                                small, verbosity);
                 };
 
             }
         }
+        public static CompressBuffer GetCompressBuffer()
+        {
+            return _compressBuffer;
+        }
+        public static DecompressBuffer GetDecompressBuffer()
+        {
+            return _decompressBuffer;
+        }
         #endregion
-        static string getBZ2Error(int error)
+        public static string getBZ2Error(int error)
         {
             string rc;
 
@@ -356,8 +344,6 @@ namespace IceInternal
         {
             Debug.Assert(supported());
 
-            InitIsUseSharpZipLib();
-
             //
             // Compress the message body, but not the header.
             //
@@ -414,8 +400,6 @@ namespace IceInternal
         public static Buffer uncompress(Buffer buf, int headerSize, int messageSizeMax)
         {
             Debug.Assert(supported());
-
-            InitIsUseSharpZipLib();
 
             buf.b.position(headerSize);
             int uncompressedSize = buf.b.getInt();

@@ -129,7 +129,7 @@
 		<Compile Include="generated\Version.cs">
 			<SliceCompileSource>..\..\..\..\..\slice\Ice\Version.ice</SliceCompileSource>
 		</Compile>
-		<Compile Include="SharpZipLib\BZip2\BZip2.cs" />
+		<Compile Include="SharpZipLib\BZip2\SharpBZip2.cs" />
 		<Compile Include="SharpZipLib\BZip2\BZip2Constants.cs" />
 		<Compile Include="SharpZipLib\BZip2\BZip2Exception.cs" />
 		<Compile Include="SharpZipLib\BZip2\BZip2InputStream.cs" />

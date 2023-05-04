@@ -163,6 +163,26 @@ namespace SharpZipLib.Core
             }
         }
 
+        public static long GetLength(Stream source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            long length = 0;
+            bool copying = true;
+
+            while (copying)
+            {
+                int bytesRead = source.ReadByte();
+                if (bytesRead > 0)
+                {
+                    length++;
+                }
+            }
+            return length;
+        }
         /// <summary>
         /// Copy the contents of one <see cref="Stream"/> to another.
         /// </summary>
