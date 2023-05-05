@@ -162,7 +162,25 @@ namespace SharpZipLib.Core
                 }
             }
         }
+        public static void Copy(byte[] source, Stream destination)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
 
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
+            foreach (var item in source)
+            {
+                destination.WriteByte(item);
+            }
+
+            destination.Flush();
+        }
         public static long GetLength(Stream source)
         {
             if (source == null)

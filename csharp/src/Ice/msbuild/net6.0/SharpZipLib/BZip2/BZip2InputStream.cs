@@ -1,9 +1,10 @@
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER || NET6_0_OR_GREATER || NET7_0_OR_GREATER
 #define VECTORIZE_MEMORY_MOVE
 #endif
 
 using SharpZipLib.Checksum;
 using System;
+using System.Collections;
 using System.IO;
 
 namespace SharpZipLib.BZip2
@@ -54,7 +55,7 @@ namespace SharpZipLib.BZip2
         private int bsLive;
         private IChecksum mCrc = new BZip2Crc();
 
-        private bool[] inUse = new bool[256];
+        private BitArray inUse = new BitArray(256);
         private int nInUse;
 
         private byte[] seqToUnseq = new byte[256];

@@ -19,9 +19,8 @@ namespace SharpZipLib.BZip2
                                 int workFactor)
         {
             using (MemoryStream destStream = new MemoryStream(dest))
-            using (MemoryStream sourceStream = new MemoryStream(source))
             {
-                Compress(sourceStream, destStream, false, blockSize100k);
+                Compress(source, destStream, false, blockSize100k);
                 destLen = (int)destStream.Position;
             }
             return 0;
@@ -107,6 +106,21 @@ namespace SharpZipLib.BZip2
                     inStream.Dispose();
                 }
             }
+        }
+        public static void Compress(byte[] inStream, Stream outStream, bool isStreamOwner, int level)
+        {
+            if (inStream == null || inStream.Length <= 0)
+                throw new ArgumentNullException(nameof(inStream));
+
+            if (outStream == null)
+                throw new ArgumentNullException(nameof(outStream));
+
+            using (BZip2OutputStream bzipOutput = new BZip2OutputStream(outStream, level))
+            {
+                bzipOutput.IsStreamOwner = isStreamOwner;
+                Core.StreamUtils.Copy(inStream, bzipOutput);
+            }
+
         }
     }
 }
