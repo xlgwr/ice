@@ -16,12 +16,14 @@ namespace IceInternal
         public static readonly bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         public static readonly bool isMacOS = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         public static readonly bool isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        public static readonly bool isFreeBSD = RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD);
         public static readonly bool isMono = RuntimeInformation.FrameworkDescription.Contains("Mono");
 #else
         public static readonly bool isWindows = true;
         public static readonly bool isMacOS = false;
         public static readonly bool isLinux = false;
         public static readonly bool isMono = false;
+        public static readonly bool isFreeBSD = false;
 #endif
         public static Type findType(Instance instance, string csharpId)
         {
