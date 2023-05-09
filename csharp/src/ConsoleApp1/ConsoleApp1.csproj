@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\0dotnet\maui\BaseCommon\Solomon.Logger\Solomon.Logger.csproj" />
     <ProjectReference Include="..\Ice\msbuild\net6.0\ice.csproj" />
   </ItemGroup>
 
