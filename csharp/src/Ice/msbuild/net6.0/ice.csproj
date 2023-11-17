@@ -6,10 +6,10 @@
 		<Version>$(IceVersion)</Version>
 		<OutputPath>../../../../lib</OutputPath>
 		<TargetFrameworks>net8.0;net8.0-android;</TargetFrameworks>
-		<NoWarn>SYSLIB0011;</NoWarn>
+		<NoWarn>SYSLIB0050;SYSLIB0011;SYSLIB0051;CS3005;CS3009;CS1574;</NoWarn>
 	</PropertyGroup>
 	<PropertyGroup Condition="!Exists('$(IceToolsPath)')">
-		<IceToolsPath>C:\Users\$(username)\.nuget\packages\zeroc.ice.net\3.7.9\tools</IceToolsPath>
+		<IceToolsPath>C:\Users\$(username)\.nuget\packages\zeroc.ice.net\3.7.10\tools</IceToolsPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="generated\BuiltinSequences.cs">
@@ -148,7 +148,7 @@
 	<ItemGroup>
 		<!--<PackageReference Include="zeroc.ice.net" Version="3.7.8" />-->
 		<PackageReference Include="zeroc.icebuilder.msbuild" Version="5.0.9" PrivateAssets="All" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 	<Import Project="$(MSBuildThisFileDirectory)../../../../msbuild/ice.sign.targets" />
 </Project>
