@@ -12,7 +12,7 @@ namespace IceInternal
 
     public sealed class AssemblyUtil
     {
-#if NETSTANDARD2_0 || NET6_0_OR_GREATER || NET7_0_OR_GREATER
+#if NETSTANDARD2_0 || NET6_0_OR_GREATER || net8_0_OR_GREATER
         public static readonly bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         public static readonly bool isMacOS = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         public static readonly bool isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);

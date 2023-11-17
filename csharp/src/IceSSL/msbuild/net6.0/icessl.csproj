@@ -5,7 +5,7 @@
 		<AssemblyName>IceSSL</AssemblyName>
 		<Version>$(IceVersion)</Version>
 		<OutputPath>../../../../lib</OutputPath>
-		<TargetFrameworks>net7.0;net7.0-android;</TargetFrameworks>
+		<TargetFrameworks>net8.0;net8.0-android;</TargetFrameworks>
 	</PropertyGroup>
 	<PropertyGroup>
 		<IceToolsPath>C:\Users\$(username)\.nuget\packages\zeroc.ice.net\3.7.9\tools</IceToolsPath>
